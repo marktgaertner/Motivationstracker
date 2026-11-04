@@ -47,19 +47,24 @@ function toIso(s) {
   const iso = String(s || '').match(/\d{4}-\d{2}-\d{2}/); return iso ? iso[0] : null;
 }
 const CATEGORY_RULES = [
-  ['Essen', /rewe|edeka|lidl|aldi|netto|penny|kaufland|dm-|rossmann|baeckerei|backerei|kantine|mensa|lieferando|wolt|uber eats|mcdonald|burger king|subway|doener|pizza|cafe|restaurant|supermarkt|denns|bio company|alnatura|nahkauf/],
-  ['Mobilität', /\bdb\b|deutsche bahn|bvg|vbb|hvv|mvg|rnv|flixbus|uber|bolt|tier|lime|nextbike|tankstelle|aral|shell|esso|jet |total|parken/],
-  ['Gesundheit', /apotheke|arzt|praxis|zahn|optik|fielmann|physio/],
-  ['Bildung', /hwr|hochschule|universit|semesterbeitrag|buch|thalia|hugendubel|udemy|coursera/],
-  ['Kleidung', /zalando|h&m|h & m|c&a|zara|uniqlo|about you|snipes|nike|adidas|primark|tk maxx/],
-  ['Freizeit', /kino|cinema|netflix|spotify|steam|playstation|nintendo|eventim|ticket|bar |club|konzert|fitness|urban sports|amazon prime|disney|dazn|sky/],
+  ['Umbuchung', /girokonto-aufladung|umbuchung|eigenes konto|uebertrag/],
+  ['Bargeld', /\bga nr|geldautomat|bargeld|\/\/(berliner sparkasse|sparkasse [a-z]+)\/de|\/\/sparkasse/],
+  ['Konsum', /tabakwaren|tabak|vape|dampf|headshop|blackmarket/],
+  ['Fitness', /east bank club|superfit|fitx|mcfit|boulderhalle|kletter|freizeitbad|schwimmbad|urban sports|gym/],
+  ['Gesundheit', /doktorabc|apotheke|\barzt|praxis|zahn|optik|fielmann|physio|dak-gesundheit|krankenkasse/],
+  ['Kleidung', /vinted|zalando|h&m|h & m|c&a|zara|uniqlo|about you|snipes|\bnike\b|adidas|under armour|primark|tk ?maxx|newyorker|new yorker|sportscheck|decathlon|jack & jones|peek/],
+  ['Haushalt', /dm drogerie|dm-drogerie|\bdm\b|rossmann|mueller drogerie|toom|\bobi\b|ikea|bauhaus|hornbach|porta|action \d|mcpaper|de\.longhi|media markt|mediamarkt|saturn|getranke hoffmann|getraenke/],
+  ['Mobilität', /\bdb\b|deutsche bahn|\bbvg\b|\bvbb\b|flixbus|\buber\b|\bbolt\b|\btier\b|\blime\b|\bvoi\b|nextbike|tankstelle|\baral\b|\bshell\b|\besso\b|\bjet\b|\btotal\b|service station|parken|parkhaus/],
+  ['Essen', /rewe|edeka|lidl|aldi|netto|penny|kaufland|famila|e-center|nahkauf|city markt|ullrich|baeckerei|backerei|bakerei|steinecke|exner|kantine|mensa|lieferando|takeaway|wolt|uber eats|mcdonald|burger ?king|\bkfc\b|subway|nordsee|doener|kebap|kebab|pizza|cafe|coffee|espresso|restaurant|bistro|noodle|korean|eisfrau|\beis\b|spati|spaeti|nya\.cash|supermarkt|denns|bio company|alnatura|imbiss|sushi|burger/],
+  ['Bildung', /hwr|hochschule|universit|semesterbeitrag|\bbuch|thalia|hugendubel|udemy|coursera|sprintout|digitaldruck|copyshop/],
+  ['Freizeit', /kino|cinema|netflix|spotify|steam|playstation|nintendo|microsoft payments|xbox|eventim|ticket|\bbar\b|club\b|konzert|amazon prime|disney|dazn|\bsky\b|therme|sauna|sv babelsberg|stadion|museum|theater/],
 ];
 function guessCategory(text) { const t = norm(text); for (const [cat, re] of CATEGORY_RULES) if (re.test(t)) return cat; return 'Sonstiges'; }
 const STOP = new Set(['und', 'der', 'die', 'das', 'fuer', 'mit', 'von', 'gmbh', 'sparen']);
 function keywords(fc) {
   const extra = String(fc.match || '').split(',').map((x) => norm(x.trim())).filter(Boolean);
-  const fromName = norm(fc.name).replace(/\(.*?\)/g, '').split(/[^a-z0-9]+/).filter((w) => w.length >= 3 && !STOP.has(w));
-  return [...extra, ...fromName];
+  if (extra.length) return extra; // gesetztes Stichwortfeld gilt allein
+  return norm(fc.name).replace(/\(.*?\)/g, '').split(/[^a-z0-9]+/).filter((w) => w.length >= 3 && !STOP.has(w));
 }
 function matches(hay, kw) { return new RegExp('(^|[^a-z0-9])' + kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '([^a-z0-9]|$)').test(hay); }
 
@@ -77,7 +82,8 @@ if (iDate < 0 || iAmount < 0) { console.error('Spalten nicht erkannt. Kopfzeile:
 const finances = store.read('finances');
 finances.payments = Array.isArray(finances.payments) ? finances.payments : [];
 const known = new Set([...finances.expenses, ...finances.payments].map((x) => x.sourceId).filter(Boolean));
-const result = { paid: [], expenses: [], income: [], skipped: 0, unknownDate: 0 };
+const transferMatch = (finances.transferMatch || []).map(norm).filter(Boolean);
+const result = { paid: [], expenses: [], income: [], transfers: [], skipped: 0, unknownDate: 0 };
 for (const r of rows.slice(1)) {
   const date = toIso(r[iDate]); const amount = toAmount(r[iAmount]);
   if (!date || Number.isNaN(amount)) { result.unknownDate++; continue; }
@@ -86,7 +92,9 @@ for (const r of rows.slice(1)) {
   if (known.has(sourceId)) { result.skipped++; continue; }
   const hay = norm(`${payee} ${purpose} ${btext}`);
   if (amount >= 0) { result.income.push({ date, amount, text: `${payee} ${purpose}`.trim().slice(0, 70) }); continue; }
-  const fc = finances.fixedCosts.find((c) => keywords(c).some((k) => matches(hay, k)));
+  if (guessCategory(hay) === 'Umbuchung' || transferMatch.some((k) => hay.includes(k))) { result.transfers.push({ date, amount: -amount, text: `${payee} ${purpose}`.trim().slice(0, 70) }); continue; }
+  const hits = finances.fixedCosts.filter((c) => keywords(c).some((k) => matches(hay, k)));
+  const fc = hits.sort((a, b) => Math.abs(-amount - Number(a.amount)) - Math.abs(-amount - Number(b.amount)))[0]; // bei mehreren Treffern: Betrag am nächsten
   if (fc) { result.paid.push({ date, amount: -amount, fixedCostId: fc.id, name: fc.name, sourceId, expected: Number(fc.amount) }); continue; }
   result.expenses.push({ id: store.newId(), date, amount: -amount, category: guessCategory(hay), note: `${payee}${purpose ? ' · ' + purpose : ''}`.trim().slice(0, 90), source: 'bank-csv', sourceId });
 }
@@ -96,6 +104,8 @@ console.log(`FIXKOSTEN ERKANNT (${result.paid.length})`);
 for (const p of result.paid) console.log(`  ${S.fmtDate(p.date)}  ${S.fmtMoney(p.amount, cur).padStart(12)}  ${p.name}${Math.abs(p.amount - p.expected) > 0.01 ? `  ⚠ erwartet ${S.fmtMoney(p.expected, cur)}` : ''}`);
 console.log(`\nVARIABLE AUSGABEN (${result.expenses.length}) → ${S.fmtMoney(result.expenses.reduce((a, e) => a + e.amount, 0), cur)}`);
 for (const e of result.expenses) console.log(`  ${S.fmtDate(e.date)}  ${S.fmtMoney(e.amount, cur).padStart(12)}  ${e.category.padEnd(10)} ${e.note}`);
+console.log(`\nUMBUCHUNGEN AUF EIGENE KONTEN (${result.transfers.length}, werden nicht gespeichert) → ${S.fmtMoney(result.transfers.reduce((a, e) => a + e.amount, 0), cur)}`);
+for (const t of result.transfers) console.log(`  ${S.fmtDate(t.date)}  ${S.fmtMoney(t.amount, cur).padStart(12)}  ${t.text}`);
 console.log(`\nEINGÄNGE (${result.income.length}, werden nicht gespeichert)`);
 for (const i of result.income) console.log(`  ${S.fmtDate(i.date)}  ${S.fmtMoney(i.amount, cur).padStart(12)}  ${i.text}`);
 if (!APPLY) { console.log('\nVorschau. Mit --apply speichern. Kategorien danach in der App korrigierbar.'); process.exit(0); }

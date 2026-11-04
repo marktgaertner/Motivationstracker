@@ -54,7 +54,7 @@ function zipEntryStream(path, wantedSuffix) {
       q += 4 + len;
     }
     p += 46 + nlen + elen + clen;
-    if (!name.endsWith(wantedSuffix)) continue;
+    if (!name.toLowerCase().endsWith(wantedSuffix)) continue;
     const lh = Buffer.alloc(30); fs.readSync(fd, lh, 0, 30, lho);
     if (lh.readUInt32LE(0) !== 0x04034b50) throw new Error('Lokaler ZIP-Header ungültig');
     const start = lho + 30 + lh.readUInt16LE(26) + lh.readUInt16LE(28);
@@ -83,7 +83,7 @@ function mapType(t) { for (const [re, name] of TYPE_MAP) if (re.test(t)) return 
 async function run() {
   const stream = file.endsWith('.zip') ? zipEntryStream(file, 'export.xml') : fs.createReadStream(file);
   const rl = readline.createInterface({ input: stream, crlfDelay: Infinity });
-  const workouts = [];
+  const workouts = []; const outliers = []; let current = null;
   const steps = {}, sleep = {}, weight = {}, rhr = {}; // date -> source -> value
   let lines = 0;
   for await (const line of rl) {
@@ -99,7 +99,19 @@ async function run() {
       const name = mapType(type);
       if (/Walking|Hiking/.test(type) && minutes < 30) continue; // kurze Spaziergänge sind kein Workout
       if (minutes < 5) continue;
-      workouts.push({ date: isoDate(start), type: name, minutes, intensity: 2, note: `${type.replace('HKWorkoutActivityType', '')}${attr(line, 'sourceName') ? ' · ' + attr(line, 'sourceName') : ''}`, source: 'apple-health', sourceId: start });
+      if (minutes > 300) { outliers.push({ date: isoDate(start), minutes, type }); continue; } // vergessen zu stoppen
+      current = { date: isoDate(start), type: name, minutes, intensity: 2, note: `${type.replace('HKWorkoutActivityType', '')}${attr(line, 'sourceName') ? ' · ' + attr(line, 'sourceName') : ''}`, source: 'apple-health', sourceId: start };
+      workouts.push(current);
+      if (line.includes('</Workout>') || line.trim().endsWith('/>')) current = null;
+      continue;
+    }
+    if (current) {
+      if (line.includes('<WorkoutStatistics') && /DistanceWalkingRunning|DistanceCycling|DistanceSwimming/.test(line)) {
+        let km = Number(attr(line, 'sum')); const u = attr(line, 'unit');
+        if (u === 'm') km /= 1000; if (u === 'mi') km *= 1.609;
+        if (Number.isFinite(km) && km > 0) { current.km = Math.round(km * 100) / 100; current.note = `${current.km} km · ` + current.note; }
+      }
+      if (line.includes('</Workout>')) current = null;
       continue;
     }
     if (!line.includes('<Record ')) continue;
@@ -133,10 +145,12 @@ async function run() {
   const newWorkouts = workouts.filter((w) => !known.has(w.sourceId));
   console.log(`${lines.toLocaleString('de-DE')} Zeilen gelesen · seit ${SINCE}`);
   console.log(`Workouts: ${workouts.length} gefunden, ${newWorkouts.length} neu`);
-  for (const w of newWorkouts.slice(-15)) console.log(`  ${w.date}  ${w.type.padEnd(10)} ${String(w.minutes).padStart(4)} min  ${w.note}`);
+  for (const w of newWorkouts) console.log(`  ${w.date}  ${w.type.padEnd(10)} ${String(w.minutes).padStart(4)} min  ${w.note}`);
+  for (const o of outliers) console.log(`  ⚠ übersprungen: ${o.date} ${o.type.replace('HKWorkoutActivityType', '')} ${o.minutes} min (über 5 h, vermutlich nicht gestoppt)`);
   console.log(`Schlaf: ${sleepList.length} Nächte · Schritte: ${stepsList.length} Tage · Gewicht: ${weightList.length} · Ruhepuls: ${rhrList.length}`);
   if (DRY) { console.log('(Trockenlauf, nichts gespeichert)'); return; }
-  for (const w of newWorkouts) store.append('workouts', w);
+  const startDate = store.read('settings').startDate || null;
+  for (const w of newWorkouts) store.append('workouts', startDate && w.date < startDate ? Object.assign({}, w, { points: 0 }) : w);
   const health = store.read('health');
   const merge = (list, add) => { const byDate = new Map(list.filter((x) => !(String(x.source || '')).startsWith('apple-health')).map((x) => [x.date, x])); for (const x of add) if (!byDate.has(x.date)) byDate.set(x.date, x); for (const x of list) if (String(x.source || '').startsWith('apple-health') && !byDate.has(x.date)) byDate.set(x.date, x); return [...byDate.values()].sort((a, b) => a.date.localeCompare(b.date)); };
   health.sleep = merge(health.sleep, sleepList); health.steps = merge(health.steps, stepsList);

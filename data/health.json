@@ -8,6 +8,487 @@
       "note": "Angabe 88–90 kg"
     }
   ],
-  "steps": [],
+  "steps": [
+    {
+      "date": "2026-08-01",
+      "count": 15297,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-02",
+      "count": 7868,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-03",
+      "count": 5124,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-04",
+      "count": 10090,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-05",
+      "count": 16963,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-06",
+      "count": 14224,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-07",
+      "count": 7034,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-08",
+      "count": 22876,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-09",
+      "count": 6422,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-10",
+      "count": 8500,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-11",
+      "count": 8530,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-12",
+      "count": 14474,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-13",
+      "count": 10306,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-14",
+      "count": 11398,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-15",
+      "count": 13411,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-16",
+      "count": 8051,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-17",
+      "count": 5953,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-18",
+      "count": 12197,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-19",
+      "count": 7797,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-20",
+      "count": 17356,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-21",
+      "count": 8159,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-22",
+      "count": 22763,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-23",
+      "count": 8152,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-24",
+      "count": 6457,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-25",
+      "count": 17842,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-26",
+      "count": 10183,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-27",
+      "count": 18981,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-28",
+      "count": 9593,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-29",
+      "count": 26340,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-30",
+      "count": 6933,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-08-31",
+      "count": 12980,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-01",
+      "count": 13052,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-02",
+      "count": 13991,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-03",
+      "count": 9972,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-04",
+      "count": 10164,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-05",
+      "count": 19158,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-06",
+      "count": 3215,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-07",
+      "count": 7896,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-08",
+      "count": 8229,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-09",
+      "count": 2951,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-10",
+      "count": 7928,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-11",
+      "count": 17147,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-12",
+      "count": 15579,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-13",
+      "count": 12228,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-14",
+      "count": 24172,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-15",
+      "count": 12257,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-16",
+      "count": 13192,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-17",
+      "count": 21304,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-18",
+      "count": 11281,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-19",
+      "count": 12495,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-20",
+      "count": 20213,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-21",
+      "count": 7156,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-22",
+      "count": 15863,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-23",
+      "count": 9795,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-24",
+      "count": 3759,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-25",
+      "count": 4291,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-26",
+      "count": 25124,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-27",
+      "count": 16230,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-28",
+      "count": 12462,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-29",
+      "count": 1967,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-09-30",
+      "count": 10150,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-01",
+      "count": 6175,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-02",
+      "count": 8124,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-03",
+      "count": 10912,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-04",
+      "count": 13088,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-05",
+      "count": 11396,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-06",
+      "count": 3155,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-07",
+      "count": 11002,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-08",
+      "count": 7405,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-09",
+      "count": 8757,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-10",
+      "count": 7101,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-11",
+      "count": 12654,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-12",
+      "count": 7260,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-13",
+      "count": 22891,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-14",
+      "count": 10235,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-15",
+      "count": 7734,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-16",
+      "count": 20215,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-17",
+      "count": 4747,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-18",
+      "count": 4053,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-19",
+      "count": 7098,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-20",
+      "count": 6962,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-21",
+      "count": 6956,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-22",
+      "count": 10976,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-23",
+      "count": 15827,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-24",
+      "count": 23205,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-25",
+      "count": 2947,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-26",
+      "count": 189,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-27",
+      "count": 16396,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-28",
+      "count": 4635,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-29",
+      "count": 11148,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-30",
+      "count": 16086,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-10-31",
+      "count": 10122,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-11-01",
+      "count": 6795,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-11-02",
+      "count": 3700,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-11-03",
+      "count": 10992,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-11-04",
+      "count": 1127,
+      "source": "apple-health:🗿"
+    }
+  ],
   "restingHR": []
 }

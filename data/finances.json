@@ -7,7 +7,8 @@
       "amount": 150,
       "interval": "monthly",
       "day": null,
-      "note": "Wird noch manuell überwiesen, Lastschrift beantragen."
+      "note": "DAK. Wird noch manuell überwiesen, Lastschrift beantragen. Auf dem Auszug Okt: 315,80 + 20,00, 22.10.: 157,15 (Nachzahlung?).",
+      "match": "dak-gesundheit,dak gesundheit"
     },
     {
       "id": "mw1xo90yb0q0h",
@@ -15,7 +16,8 @@
       "name": "DBV Berufsunfähigkeit",
       "amount": 33.73,
       "interval": "monthly",
-      "day": 2
+      "day": 2,
+      "match": "dbv"
     },
     {
       "id": "mw1xo92ha5fgk",
@@ -23,7 +25,8 @@
       "name": "WWK",
       "amount": 5,
       "interval": "monthly",
-      "day": 2
+      "day": 2,
+      "match": "wwk"
     },
     {
       "id": "mw1xo93zlicpv",
@@ -31,15 +34,19 @@
       "name": "Internet",
       "amount": 31.98,
       "interval": "monthly",
-      "day": 2
+      "day": 2,
+      "match": "pyur",
+      "note": "PYUR"
     },
     {
       "id": "mw1xo95oqqzhk",
       "createdAt": "2026-11-04T09:47:49.980Z",
       "name": "Gym",
-      "amount": 10,
+      "amount": 9.9,
       "interval": "monthly",
-      "day": 3
+      "day": 3,
+      "match": "superfit",
+      "note": "SuperFit / East Bank Club, laut Auszug 9,90 €"
     },
     {
       "id": "mw1xo975snfr8",
@@ -47,7 +54,8 @@
       "name": "Gym Servicepauschale",
       "amount": 29.8,
       "interval": "quarterly",
-      "day": 3
+      "day": 3,
+      "match": "servicepauschale,east bank club the fitness factory gmbh"
     },
     {
       "id": "mw1xo98zhmpbq",
@@ -55,7 +63,9 @@
       "name": "MMA",
       "amount": 37.5,
       "interval": "monthly",
-      "day": 5
+      "day": 5,
+      "match": "schink",
+      "note": "Lastschrift Schink, Christian"
     },
     {
       "id": "mw1xo9ajm1npb",
@@ -63,7 +73,8 @@
       "name": "Ebase Depot (Sparen)",
       "amount": 35,
       "interval": "monthly",
-      "day": 6
+      "day": 6,
+      "match": "ebase"
     },
     {
       "id": "mw1xo9c8ut4vr",
@@ -71,7 +82,8 @@
       "name": "Fraenk SIM",
       "amount": 15,
       "interval": "monthly",
-      "day": 14
+      "day": 14,
+      "note": "Auf dem Auszug 10,00 (Aug) und 12,00 (Sep), 15,00 (Okt)"
     },
     {
       "id": "mw1xo9dmb8brk",
@@ -79,7 +91,8 @@
       "name": "Die Linke",
       "amount": 7.5,
       "interval": "quarterly",
-      "day": 14
+      "day": 14,
+      "match": "linke"
     },
     {
       "id": "mw1xo9f9q0dpb",
@@ -87,7 +100,9 @@
       "name": "Strom",
       "amount": 95,
       "interval": "monthly",
-      "day": 17
+      "day": 17,
+      "match": "energie und wasser potsdam",
+      "note": "EWP Abschlag"
     },
     {
       "id": "mw1xo9h7kkpqe",
@@ -95,7 +110,27 @@
       "name": "iCloud",
       "amount": 4,
       "interval": "monthly",
-      "day": 30
+      "day": 30,
+      "match": "apple services",
+      "note": "Auf dem Auszug 2,99 € (Apple Services via PayPal)"
+    },
+    {
+      "id": "mw21q8m38oz3x",
+      "name": "Rundfunkbeitrag",
+      "amount": 55.08,
+      "interval": "quarterly",
+      "day": 1,
+      "match": "rundfunk",
+      "note": "Aus Kontoauszug (01.10. für Okt–Dez)"
+    },
+    {
+      "id": "mw21q8m3dpzqv",
+      "name": "Kontoführung Sparkasse",
+      "amount": 9.9,
+      "interval": "monthly",
+      "day": 1,
+      "match": "entgeltabrechnung",
+      "note": "Aus Kontoauszug"
     }
   ],
   "income": [
@@ -105,7 +140,8 @@
       "name": "Oma",
       "amount": 150,
       "interval": "monthly",
-      "day": 20
+      "day": 20,
+      "match": "von oma"
     },
     {
       "id": "mw1xo9k4cef74",
@@ -114,12 +150,2314 @@
       "amount": 1310.82,
       "interval": "monthly",
       "day": 29,
-      "note": "Sept.: 95 h → 1.310,82 € (29.10.). Okt.: 85 h, Auszahlung Ende Nov. noch offen."
+      "note": "Arbeitgeber ViP Verkehrsbetrieb Potsdam. Auszahlungen: 27.08. 2.469,84 · 28.09. 1.941,92 · 29.10. 1.310,82 (Sept., 95 h). Okt.: 85 h, Auszahlung Ende Nov. offen.",
+      "match": "verkehrsbetrieb potsdam,vip lohn"
     }
   ],
-  "expenses": [],
+  "expenses": [
+    {
+      "id": "mw21r3ruzs3mx",
+      "date": "2026-11-04",
+      "amount": 14.69,
+      "category": "Sonstiges",
+      "note": "AMAZON PAYMENTS EUROPE S.C.A. · 306-5086990-3837961 AMZN Mktp DE 3GYQ3JBDAEAQ1NJI",
+      "source": "bank-csv",
+      "sourceId": "cdfc7b7630b2dbd3"
+    },
+    {
+      "id": "mw21r3ruh39zn",
+      "date": "2026-11-04",
+      "amount": 5.68,
+      "category": "Essen",
+      "note": "NAHKAUF RALF OELMANN/Badensche /Berlin Schoeneberg /DE · 2026-11-03T19:20 Debitk.14 2026-1",
+      "source": "bank-csv",
+      "sourceId": "26d040b952350816"
+    },
+    {
+      "id": "mw21r3rug6h7m",
+      "date": "2026-11-04",
+      "amount": 15.77,
+      "category": "Sonstiges",
+      "note": "AMAZON PAYMENTS EUROPE S.C.A. · 306-9750317-7323534 AMZN Mktp DE 1LV29DAUMU2ISVEL",
+      "source": "bank-csv",
+      "sourceId": "7d40bb1686242e67"
+    },
+    {
+      "id": "mw21r3rud3fxl",
+      "date": "2026-11-04",
+      "amount": 26.64,
+      "category": "Sonstiges",
+      "note": "AMAZON PAYMENTS EUROPE S.C.A. · 306-9750317-7323534 AMZN Mktp DE 3GMACUB4NTLY2QFZ",
+      "source": "bank-csv",
+      "sourceId": "8b4b4bd53978cac1"
+    },
+    {
+      "id": "mw21r3rupw4v1",
+      "date": "2026-11-03",
+      "amount": 40,
+      "category": "Bargeld",
+      "note": "GA NR00002383 BLZ16050000 1 · 03.11/16.06UHR BABELSBERG",
+      "source": "bank-csv",
+      "sourceId": "0259cc2f6744a736"
+    },
+    {
+      "id": "mw21r3ru2ouej",
+      "date": "2026-11-03",
+      "amount": 5,
+      "category": "Fitness",
+      "note": "East Bank Club the fitness factory//POTSDAM/DE · 2026-11-02T17:04 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "3336914b74d184e6"
+    },
+    {
+      "id": "mw21r3rus3jrp",
+      "date": "2026-11-03",
+      "amount": 29.9,
+      "category": "Freizeit",
+      "note": "HAVEL THERME WERDER/Zum Gro.en Zernsee 3/Werder (Havel)/DE · 2026-11-01T21:01 Debitk.14 20",
+      "source": "bank-csv",
+      "sourceId": "d165d283c38adc76"
+    },
+    {
+      "id": "mw21r3rv03271",
+      "date": "2026-11-03",
+      "amount": 23.33,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-11-02T18:31 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "6a71168b9afa2fc8"
+    },
+    {
+      "id": "mw21r3rvxdwda",
+      "date": "2026-11-03",
+      "amount": 22.9,
+      "category": "Essen",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1054135569551/PP.6098.PP/. Takeaway.com Payments B.V",
+      "source": "bank-csv",
+      "sourceId": "8ed6b2569b36f9bc"
+    },
+    {
+      "id": "mw21r3rvuavt0",
+      "date": "2026-11-02",
+      "amount": 8.53,
+      "category": "Essen",
+      "note": "01327 MCDONALDS//POTSDAM/DE · 2026-11-01T21:37 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "b923737d0cb69566"
+    },
+    {
+      "id": "mw21r3rwwap8b",
+      "date": "2026-11-02",
+      "amount": 35.04,
+      "category": "Essen",
+      "note": "FAMILA MARKT//GUESTROW 1/DE · 2026-10-30T18:46 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "4df4051f53f06775"
+    },
+    {
+      "id": "mw21r3rwmawmd",
+      "date": "2026-11-02",
+      "amount": 20,
+      "category": "Fitness",
+      "note": "East Bank Club the fitness factory//POTSDAM/DE · 2026-10-30T08:37 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "d153f8404f2826d7"
+    },
+    {
+      "id": "mw21r3rw7yt4h",
+      "date": "2026-11-02",
+      "amount": 14.1,
+      "category": "Essen",
+      "note": "Espresso house 21401/Bahnhofpassage Potsdam Babelsberger St/Postdam/DE · 2026-11-01T12:22 ",
+      "source": "bank-csv",
+      "sourceId": "4619001599f9b581"
+    },
+    {
+      "id": "mw21r3rwbig6t",
+      "date": "2026-10-30",
+      "amount": 7.87,
+      "category": "Essen",
+      "note": "Ullrich Fil. 4023//Berlin/DE · 2026-10-29T21:55 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "64cdd18158e08db8"
+    },
+    {
+      "id": "mw21r3rxb9tf1",
+      "date": "2026-10-30",
+      "amount": 5.65,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-10-29T10:59 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "567951dee86987fd"
+    },
+    {
+      "id": "mw21r3rxp9eu1",
+      "date": "2026-10-30",
+      "amount": 2.17,
+      "category": "Mobilität",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1054080696284/PP.6098.PP/. Voi Technology Germany Gm",
+      "source": "bank-csv",
+      "sourceId": "30fe0ba2c30efb0a"
+    },
+    {
+      "id": "mw21r3rx9x1v8",
+      "date": "2026-10-29",
+      "amount": 4.2,
+      "category": "Essen",
+      "note": "STEINECKE S HEIDEBROT FIL.//POTSDAM/DE · 2026-10-27T10:54 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "3216c5de9dff143f"
+    },
+    {
+      "id": "mw21r3rx0vm2s",
+      "date": "2026-10-29",
+      "amount": 23.42,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-10-28T16:08 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "416de09aecd40e34"
+    },
+    {
+      "id": "mw21r3rxp6ldl",
+      "date": "2026-10-29",
+      "amount": 3.13,
+      "category": "Mobilität",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1054037223615/PP.6098.PP/. Voi Technology Germany Gm",
+      "source": "bank-csv",
+      "sourceId": "a07ed8d7009fee13"
+    },
+    {
+      "id": "mw21r3rxen3hg",
+      "date": "2026-10-28",
+      "amount": 34.27,
+      "category": "Haushalt",
+      "note": "TOOM BM SAGT DANKE 13563408/Grossbeere/Potsdam-Babelsberg /DE · 2026-10-27T10:52 Debitk.14",
+      "source": "bank-csv",
+      "sourceId": "e4a692ec23042d07"
+    },
+    {
+      "id": "mw21r3rxms2c0",
+      "date": "2026-10-28",
+      "amount": 13.49,
+      "category": "Sonstiges",
+      "note": "SAHIL SINGH/BERLIN/DE · 2026-10-27T17:13 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "274414055093e973"
+    },
+    {
+      "id": "mw21r3ryijuh2",
+      "date": "2026-10-28",
+      "amount": 12.88,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-10-27T10:36 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "f6d78c44107b6013"
+    },
+    {
+      "id": "mw21r3ry9izgf",
+      "date": "2026-10-27",
+      "amount": 102.3,
+      "category": "Gesundheit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1054008997198/. DoktorABC, Ihr Einkauf bei DoktorABC",
+      "source": "bank-csv",
+      "sourceId": "c83fcb3244b799cb"
+    },
+    {
+      "id": "mw21r3ryl81av",
+      "date": "2026-10-27",
+      "amount": 40,
+      "category": "Haushalt",
+      "note": "PORTA 121 POTSDAM · PORTA 121 POTSDAM ELV66017748 24.10 18:35 ME4",
+      "source": "bank-csv",
+      "sourceId": "6bdbb9bdec79a7e4"
+    },
+    {
+      "id": "mw21r3ryio1z8",
+      "date": "2026-10-27",
+      "amount": 109.99,
+      "category": "Haushalt",
+      "note": "PORTA 121 POTSDAM · PORTA 121 POTSDAM ELV66017748 24.10 18:36 ME4",
+      "source": "bank-csv",
+      "sourceId": "8c16331ee8a79338"
+    },
+    {
+      "id": "mw21r3ry31so3",
+      "date": "2026-10-26",
+      "amount": 7.48,
+      "category": "Mobilität",
+      "note": "TOTAL Service Station//POTSDAM/DE · 2026-10-25T19:21 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "4a5b01dcc1bb58d1"
+    },
+    {
+      "id": "mw21r3ryspcq5",
+      "date": "2026-10-26",
+      "amount": 5,
+      "category": "Fitness",
+      "note": "East Bank Club the fitness factory//POTSDAM/DE · 2026-10-25T18:14 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "e1e1876057e0a613"
+    },
+    {
+      "id": "mw21r3rz9m4y2",
+      "date": "2026-10-26",
+      "amount": 5.01,
+      "category": "Essen",
+      "note": "NETTO MARKEN-DISCOU/STEPHENSONSTR. 11/POTSDAM/DE · 2026-10-23T16:26 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "c94874c2326254d8"
+    },
+    {
+      "id": "mw21r3rzqlv0r",
+      "date": "2026-10-26",
+      "amount": 27.77,
+      "category": "Kleidung",
+      "note": "tkmaxx-de/Peter-Mller-Str. 18,/Dsseldorf/DE · 2026-10-24T18:53 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "7a042a6cd2aed6eb"
+    },
+    {
+      "id": "mw21r3rzshdvv",
+      "date": "2026-10-26",
+      "amount": 24.02,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-10-23T13:14 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "ca8f7e00b7bd5a49"
+    },
+    {
+      "id": "mw21r3rz058b4",
+      "date": "2026-10-26",
+      "amount": 1.95,
+      "category": "Essen",
+      "note": "Backerei Schmidtke/Benzstr 11/Potsdam/DE/0 · 2026-10-22T11:54 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "e3f3a76bad40f479"
+    },
+    {
+      "id": "mw21r3rzh65eb",
+      "date": "2026-10-26",
+      "amount": 5.22,
+      "category": "Essen",
+      "note": "EDEKA GABLER, POTSDAM//POTSDAM/DE · 2026-10-23T21:17 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "61abc55c0989281d"
+    },
+    {
+      "id": "mw21r3rzf35l5",
+      "date": "2026-10-26",
+      "amount": 21.29,
+      "category": "Mobilität",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053931770427/. Uber, Ihr Einkauf bei Uber",
+      "source": "bank-csv",
+      "sourceId": "1df07afb5675d245"
+    },
+    {
+      "id": "mw21r3rz9e074",
+      "date": "2026-10-26",
+      "amount": 17.99,
+      "category": "Freizeit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053940401315/PP.6098.PP/. Microsoft Payments, Ihr E",
+      "source": "bank-csv",
+      "sourceId": "261fa5c9f3010aaf"
+    },
+    {
+      "id": "mw21r3rz3e61t",
+      "date": "2026-10-23",
+      "amount": 12.23,
+      "category": "Essen",
+      "note": "NETTO MARKEN-DISCOU/STEPHENSONSTR. 11/POTSDAM/DE · 2026-10-22T13:53 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "6c988c3888d6c400"
+    },
+    {
+      "id": "mw21r3rzn2p2u",
+      "date": "2026-10-23",
+      "amount": 60.1,
+      "category": "Gesundheit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053901168726/. DoktorABC, Ihr Einkauf bei DoktorABC",
+      "source": "bank-csv",
+      "sourceId": "1ab87183d5e7dc62"
+    },
+    {
+      "id": "mw21r3rzjvkqm",
+      "date": "2026-10-23",
+      "amount": 21.84,
+      "category": "Kleidung",
+      "note": "Klarna Bank AB · Purchase at Vinted",
+      "source": "bank-csv",
+      "sourceId": "ce6608326963c69d"
+    },
+    {
+      "id": "mw21r3s0ybofe",
+      "date": "2026-10-21",
+      "amount": 5.11,
+      "category": "Essen",
+      "note": "STEINECKE S HEIDEBROT FIL.//POTSDAM/DE · 2026-10-20T11:28 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "dc4ff9c515a38e3a"
+    },
+    {
+      "id": "mw21r3s0p4try",
+      "date": "2026-10-21",
+      "amount": 17.62,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-10-20T14:39 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "03166f25231cc4be"
+    },
+    {
+      "id": "mw21r3s0csrfq",
+      "date": "2026-10-21",
+      "amount": 22.8,
+      "category": "Kleidung",
+      "note": "Klarna Bank AB · Purchase at Vinted",
+      "source": "bank-csv",
+      "sourceId": "7a3feb8502fca0d6"
+    },
+    {
+      "id": "mw21r3s04yurz",
+      "date": "2026-10-20",
+      "amount": 4.99,
+      "category": "Essen",
+      "note": "NORDSEE GMBH Fil.3258 GIR 69118041//POTSDAM/DE · 2026-10-19T19:05 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "90bbca7da00490ba"
+    },
+    {
+      "id": "mw21r3s0uh3cd",
+      "date": "2026-10-20",
+      "amount": 12.78,
+      "category": "Haushalt",
+      "note": "McPaper AG/Nuthestr. 1/Potsdam/DE · 2026-10-19T18:05 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "b84a8fcae0736d3a"
+    },
+    {
+      "id": "mw21r3s0s1uik",
+      "date": "2026-10-20",
+      "amount": 31.26,
+      "category": "Essen",
+      "note": "E-Center 3450//POTSDAM/DE · 2026-10-19T18:42 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "473d3c0559925182"
+    },
+    {
+      "id": "mw21r3s0d43m4",
+      "date": "2026-10-20",
+      "amount": 24.7,
+      "category": "Haushalt",
+      "note": "Action 3381/Konrad-Wolf-Allee 1-3/Potsdam/DE · 2026-10-19T19:35 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "b4a9ba481b311bce"
+    },
+    {
+      "id": "mw21r3s221l3h",
+      "date": "2026-10-19",
+      "amount": 1.48,
+      "category": "Mobilität",
+      "note": "ARAL Potsdam GrossbeerenstraYe 121//Potsdam/DE · 2026-10-18T15:04 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "20f34d11e74ed1a1"
+    },
+    {
+      "id": "mw21r3s2529rq",
+      "date": "2026-10-19",
+      "amount": 3.87,
+      "category": "Essen",
+      "note": "STEINECKE S HEIDEBROT FIL.//POTSDAM/DE · 2026-10-16T09:47 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "dd7535e1063681c4"
+    },
+    {
+      "id": "mw21r3s2e12nq",
+      "date": "2026-10-19",
+      "amount": 36.98,
+      "category": "Kleidung",
+      "note": "NEWYORKER28078//POTSDAM/DE · 2026-10-16T14:12 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "7fb5cd50d5094cb0"
+    },
+    {
+      "id": "mw21r3s2cc0uu",
+      "date": "2026-10-19",
+      "amount": 48.49,
+      "category": "Essen",
+      "note": "Kaufland Potsdam//Potsdam/DE · 2026-10-17T14:12 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "d199110fb6d019c5"
+    },
+    {
+      "id": "mw21r3s2wnyaa",
+      "date": "2026-10-19",
+      "amount": 0.94,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 074//Potsdam/DE · 2026-10-16T12:21 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "bbadf344f041f95d"
+    },
+    {
+      "id": "mw21r3s2d4msm",
+      "date": "2026-10-19",
+      "amount": 16.52,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-10-16T09:45 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "16eabe5f43f633bb"
+    },
+    {
+      "id": "mw21r3s2ljovo",
+      "date": "2026-10-19",
+      "amount": 36.97,
+      "category": "Sonstiges",
+      "note": "Bahnhofspassagen/Babelsberger Strae 16/Potsdam/DE · 2026-10-17T13:25 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "db38be771d7f96f5"
+    },
+    {
+      "id": "mw21r3s3jc1jh",
+      "date": "2026-10-19",
+      "amount": 20.97,
+      "category": "Essen",
+      "note": "BurgerKing 15455 SOT//POTSDAM/DE · 2026-10-16T23:18 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "a9d5ded6ec3790a5"
+    },
+    {
+      "id": "mw21r3s36az17",
+      "date": "2026-10-19",
+      "amount": 4.87,
+      "category": "Essen",
+      "note": "EDEKA GABLER, POTSDAM//POTSDAM/DE · 2026-10-16T16:40 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "15043c89a72d10f3"
+    },
+    {
+      "id": "mw21r3s312u6p",
+      "date": "2026-10-16",
+      "amount": 8.04,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-10-15T14:42 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "fdf242679caa51e4"
+    },
+    {
+      "id": "mw21r3s392v9h",
+      "date": "2026-10-16",
+      "amount": 35.9,
+      "category": "Sonstiges",
+      "note": "PayPal-.Klickibunti Gm/Friedrich-Ebert-Str 51/Potsdam/DE/0 · 2026-10-14T16:18 Debitk.1 202",
+      "source": "bank-csv",
+      "sourceId": "d3a46b0a2f65a3da"
+    },
+    {
+      "id": "mw21r3s3r9ib7",
+      "date": "2026-10-16",
+      "amount": 4.5,
+      "category": "Fitness",
+      "note": "SPORT- UND FREIZEITBAD-BLU/Brauhausberg 1/Potsdam/DE · 2026-10-15T18:17 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "d9a279bf8e45c59a"
+    },
+    {
+      "id": "mw21r3s3i2s6o",
+      "date": "2026-10-16",
+      "amount": 1.69,
+      "category": "Mobilität",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053743919901/PP.6098.PP/. Voi Technology Germany Gm",
+      "source": "bank-csv",
+      "sourceId": "fb003669717d5e85"
+    },
+    {
+      "id": "mw21r3s30pz00",
+      "date": "2026-10-16",
+      "amount": 1.93,
+      "category": "Mobilität",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053745127239/PP.6098.PP/. Voi Technology Germany Gm",
+      "source": "bank-csv",
+      "sourceId": "28d4c2805cafea03"
+    },
+    {
+      "id": "mw21r3s3v26rc",
+      "date": "2026-10-15",
+      "amount": 60,
+      "category": "Bargeld",
+      "note": "GA NR00002032 BLZ16050000 1 · 15.10/17.39UHR BABELSBERG",
+      "source": "bank-csv",
+      "sourceId": "188d9e339820fc82"
+    },
+    {
+      "id": "mw21r3s3evdlw",
+      "date": "2026-10-15",
+      "amount": 19.98,
+      "category": "Sonstiges",
+      "note": "Bahnhofspassagen/Babelsberger Strae 16/Potsdam/DE · 2026-10-14T18:40 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "cf34f8a3e7caebb0"
+    },
+    {
+      "id": "mw21r3s3opidn",
+      "date": "2026-10-15",
+      "amount": 7.2,
+      "category": "Haushalt",
+      "note": "DM Drogerie/Babelsberger Strasse 16/Potsdam/DE · 2026-10-14T18:26 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "d07fe0de885cc755"
+    },
+    {
+      "id": "mw21r3s3x81mb",
+      "date": "2026-10-15",
+      "amount": 14.1,
+      "category": "Essen",
+      "note": "EDEKA KLAUSNER, POTSDAM//POTSDAM/DE · 2026-10-14T15:51 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "032f357c4d590f18"
+    },
+    {
+      "id": "mw21r3s3zl8sz",
+      "date": "2026-10-15",
+      "amount": 5.94,
+      "category": "Sonstiges",
+      "note": "Hetzner Online GmbH · Kundennummer: K0409955826 Rechnungsnummer: 081001243537",
+      "source": "bank-csv",
+      "sourceId": "d20e8b388b1283a7"
+    },
+    {
+      "id": "mw21r3s3ns0ut",
+      "date": "2026-10-14",
+      "amount": 2.18,
+      "category": "Essen",
+      "note": "NAHKAUF RALF OELMANN/Badensche /Berlin Schoeneberg /DE · 2026-10-13T19:26 Debitk.14 2026-1",
+      "source": "bank-csv",
+      "sourceId": "8a26840b300145d3"
+    },
+    {
+      "id": "mw21r3s388htk",
+      "date": "2026-10-14",
+      "amount": 5.35,
+      "category": "Essen",
+      "note": "STEINECKE S HEIDEBROT FIL.//POTSDAM/DE · 2026-10-13T11:37 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "3a442886f9563c22"
+    },
+    {
+      "id": "mw21r3s37uxon",
+      "date": "2026-10-14",
+      "amount": 6.43,
+      "category": "Essen",
+      "note": "REWE SAGT DANKE. 42655448/Arthur-Sch/Nuthetal Berghol /DE · 2026-10-12T17:23 Debitk.14 202",
+      "source": "bank-csv",
+      "sourceId": "1c1a5b6b04163d46"
+    },
+    {
+      "id": "mw21r3s3wx83u",
+      "date": "2026-10-14",
+      "amount": 5.05,
+      "category": "Mobilität",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053703061574/PP.6098.PP/. Voi Technology Germany Gm",
+      "source": "bank-csv",
+      "sourceId": "8b1c385bf78a4b81"
+    },
+    {
+      "id": "mw21r3s3dh23i",
+      "date": "2026-10-13",
+      "amount": 3.2,
+      "category": "Fitness",
+      "note": "Boulderhalle 7Aplus//POTSDAM/DE · 2026-10-11T11:33 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "fb7b1fe68383bfe2"
+    },
+    {
+      "id": "mw21r3s3o1g1v",
+      "date": "2026-10-13",
+      "amount": 13.9,
+      "category": "Fitness",
+      "note": "Boulderhalle 7Aplus//POTSDAM/DE · 2026-10-11T10:06 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "3cb3aaf39a05912f"
+    },
+    {
+      "id": "mw21r3s4xaw59",
+      "date": "2026-10-13",
+      "amount": 29.1,
+      "category": "Essen",
+      "note": "EDEKA GABLER, POTSDAM//POTSDAM/DE · 2026-10-12T19:39 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "2bc0bc45dd423334"
+    },
+    {
+      "id": "mw21r3s4zr8x5",
+      "date": "2026-10-13",
+      "amount": 101.8,
+      "category": "Gesundheit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053694750815/. DoktorABC, Ihr Einkauf bei DoktorABC",
+      "source": "bank-csv",
+      "sourceId": "1d280d0f2bc1c21c"
+    },
+    {
+      "id": "mw21r3s4kzm3t",
+      "date": "2026-10-13",
+      "amount": 8,
+      "category": "Freizeit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053678821815/PP.6098.PP/. SV Babelsberg 03 e.V., Ih",
+      "source": "bank-csv",
+      "sourceId": "d456778d5978ac57"
+    },
+    {
+      "id": "mw21r3s46k1pw",
+      "date": "2026-10-12",
+      "amount": 6.3,
+      "category": "Mobilität",
+      "note": "ARAL Potsdam GrossbeerenstraYe 121//Potsdam/DE · 2026-10-11T12:20 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "ecbc2b7964ed0cf2"
+    },
+    {
+      "id": "mw21r3s4b4d5f",
+      "date": "2026-10-09",
+      "amount": 6.77,
+      "category": "Essen",
+      "note": "NAHKAUF BADENSCHE STR./Badensche /Berlin Schoeneberg /DE · 2026-10-08T19:31 Debitk.14 2026",
+      "source": "bank-csv",
+      "sourceId": "1771da92445b52f1"
+    },
+    {
+      "id": "mw21r3s4q9ovp",
+      "date": "2026-10-09",
+      "amount": 36.44,
+      "category": "Haushalt",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053586319469/. OBI, Ihr Einkauf bei OBI",
+      "source": "bank-csv",
+      "sourceId": "724e7d890586ae35"
+    },
+    {
+      "id": "mw21r3s42xqe4",
+      "date": "2026-10-09",
+      "amount": 138.6,
+      "category": "Haushalt",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053586493037/PP.6098.PP/. De.Longhi Appliances srl,",
+      "source": "bank-csv",
+      "sourceId": "a0cd6622ea472bcc"
+    },
+    {
+      "id": "mw21r3s5920m4",
+      "date": "2026-10-09",
+      "amount": 45.93,
+      "category": "Haushalt",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053586339456/PP.6098.PP/. IKEA Deutschland GmbH . C",
+      "source": "bank-csv",
+      "sourceId": "b39d8801fcc329f6"
+    },
+    {
+      "id": "mw21r3s5ttf15",
+      "date": "2026-10-09",
+      "amount": 20.98,
+      "category": "Sonstiges",
+      "note": "AMAZON PAYMENTS EUROPE S.C.A. · 302-0478902-5875510 AMZN Mktp DE 1IVYAD1ZCC4MN1FH",
+      "source": "bank-csv",
+      "sourceId": "26039c2893381c02"
+    },
+    {
+      "id": "mw21r3s5d6ok0",
+      "date": "2026-10-08",
+      "amount": 40.7,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-10-07T16:01 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "751f0825f145812b"
+    },
+    {
+      "id": "mw21r3s5hx8cc",
+      "date": "2026-10-07",
+      "amount": 9.97,
+      "category": "Essen",
+      "note": "EDEKA GABLER, POTSDAM//POTSDAM/DE · 2026-10-06T12:09 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "5f25c09046bba540"
+    },
+    {
+      "id": "mw21r3s5n7egm",
+      "date": "2026-10-07",
+      "amount": 3.37,
+      "category": "Mobilität",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053541269142/PP.6098.PP/. Voi Technology Germany Gm",
+      "source": "bank-csv",
+      "sourceId": "b5bbba9c1486ab15"
+    },
+    {
+      "id": "mw21r3s5nzsjb",
+      "date": "2026-10-06",
+      "amount": 23.43,
+      "category": "Essen",
+      "note": "NETTO MARKEN-DISCOU/STEPHENSONSTR. 11/POTSDAM/DE · 2026-10-05T18:24 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "90cc01e19e977572"
+    },
+    {
+      "id": "mw21r3s5qqcn8",
+      "date": "2026-10-06",
+      "amount": 5.04,
+      "category": "Essen",
+      "note": "STEINECKE S HEIDEBROT FIL.//POTSDAM/DE · 2026-10-05T11:53 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "db4352e477d4e41f"
+    },
+    {
+      "id": "mw21r3s6mn9ou",
+      "date": "2026-10-06",
+      "amount": 4.99,
+      "category": "Essen",
+      "note": "NORDSEE GMBH FIL.8604 GIR 69077750//POTSDAM/DE · 2026-10-05T16:23 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "f8767f48107f096d"
+    },
+    {
+      "id": "mw21r3s65loy2",
+      "date": "2026-10-06",
+      "amount": 10,
+      "category": "Sonstiges",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053526187638/PP.6098.PP/. , Ihr Einkauf bei",
+      "source": "bank-csv",
+      "sourceId": "70182e11f3ade9ed"
+    },
+    {
+      "id": "mw21r3s6oc5g4",
+      "date": "2026-10-06",
+      "amount": 2.65,
+      "category": "Mobilität",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053514696300/PP.6098.PP/. Voi Technology Germany Gm",
+      "source": "bank-csv",
+      "sourceId": "e22aea2a29820b45"
+    },
+    {
+      "id": "mw21r3s66ih7v",
+      "date": "2026-10-06",
+      "amount": 2.17,
+      "category": "Mobilität",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053503358458/PP.6098.PP/. Voi Technology Germany Gm",
+      "source": "bank-csv",
+      "sourceId": "69ae387517241e8a"
+    },
+    {
+      "id": "mw21r3s6a7xl6",
+      "date": "2026-10-05",
+      "amount": 3.73,
+      "category": "Mobilität",
+      "note": "ARAL Potsdam GrossbeerenstraYe 121//Potsdam/DE · 2026-10-04T21:01 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "1aa974d917907ef0"
+    },
+    {
+      "id": "mw21r3s6ycxwd",
+      "date": "2026-10-05",
+      "amount": 5.69,
+      "category": "Essen",
+      "note": "BAECKEREI EXNER GIR 79964712//POTSDAM/DE · 2026-10-04T08:30 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "2eee9f5975b75428"
+    },
+    {
+      "id": "mw21r3s6ur1ww",
+      "date": "2026-10-05",
+      "amount": 6.5,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-10-02T15:17 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "3ccbfb07af7bdcbe"
+    },
+    {
+      "id": "mw21r3s6vqxit",
+      "date": "2026-10-05",
+      "amount": 5.68,
+      "category": "Essen",
+      "note": "EDEKA GABLER, POTSDAM//POTSDAM/DE · 2026-10-02T20:58 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "1d356b08c1682dc8"
+    },
+    {
+      "id": "mw21r3s7gokj4",
+      "date": "2026-10-05",
+      "amount": 88.53,
+      "category": "Freizeit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053466174926/PP.6098.PP/. Sky Marketing Ltd, Ihr Ei",
+      "source": "bank-csv",
+      "sourceId": "b315f5fc7e017213"
+    },
+    {
+      "id": "mw21r3s73dliu",
+      "date": "2026-10-05",
+      "amount": 9.24,
+      "category": "Kleidung",
+      "note": "Klarna Bank AB · Purchase at Vinted",
+      "source": "bank-csv",
+      "sourceId": "f1c72c01e0a87b2c"
+    },
+    {
+      "id": "mw21r3s7xrha0",
+      "date": "2026-10-05",
+      "amount": 18.68,
+      "category": "Sonstiges",
+      "note": "AMAZON EU S.A R.L., NIEDERLASSUNG DEUTSCHLAND · 306-8554051-0330764 Amazon.de 1RXWMZQFQ7CC",
+      "source": "bank-csv",
+      "sourceId": "54c8cdbee59077e0"
+    },
+    {
+      "id": "mw21r3s7n611d",
+      "date": "2026-10-02",
+      "amount": 0.31,
+      "category": "Essen",
+      "note": "EDEKA GABLER, POTSDAM//POTSDAM/DE · 2026-10-01T13:27 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "5345a36821a8cc8f"
+    },
+    {
+      "id": "mw21r3s7pk0bs",
+      "date": "2026-10-01",
+      "amount": 20,
+      "category": "Bargeld",
+      "note": "GA NR00002383 BLZ16050000 1 · 01.10/12.39UHR BABELSBERG",
+      "source": "bank-csv",
+      "sourceId": "945c50e92da7132c"
+    },
+    {
+      "id": "mw21r3s7viub7",
+      "date": "2026-10-01",
+      "amount": 2.9,
+      "category": "Haushalt",
+      "note": "DM Drogerie/Babelsberger Strasse 16/Potsdam/DE · 2026-09-30T17:59 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "76863c6c7942d9a0"
+    },
+    {
+      "id": "mw21r3s81zkyw",
+      "date": "2026-10-01",
+      "amount": 0.08,
+      "category": "Sonstiges",
+      "note": "· Abrechnung 30.09.2026 siehe Anlage",
+      "source": "bank-csv",
+      "sourceId": "0e8ebb8a85691ce8"
+    },
+    {
+      "id": "mw21r3s8tc8dz",
+      "date": "2026-09-30",
+      "amount": 32.9,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-09-29T12:23 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "d5a30daaebeaa2b7"
+    },
+    {
+      "id": "mw21r3s8692d6",
+      "date": "2026-09-29",
+      "amount": 8.21,
+      "category": "Essen",
+      "note": "REWE SAGT DANKE. 42400122/Uhlandstr./Berlin Charlotte /DE · 2026-09-28T16:11 Debitk.14 202",
+      "source": "bank-csv",
+      "sourceId": "8776ab4469cd548d"
+    },
+    {
+      "id": "mw21r3s8oxvmi",
+      "date": "2026-09-29",
+      "amount": 14.5,
+      "category": "Essen",
+      "note": "LS Goltz Kebap Charlot/Otto-Suhr-Allee 107/Berlin/DE · 2026-09-28T16:51 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "bf912dd3a3061367"
+    },
+    {
+      "id": "mw21r3s836et5",
+      "date": "2026-09-29",
+      "amount": 61.93,
+      "category": "Freizeit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053346209798/PP.6098.PP/. CTS Eventim AG . Co. KGaA",
+      "source": "bank-csv",
+      "sourceId": "533aef5af254d93a"
+    },
+    {
+      "id": "mw21r3s8vmz4x",
+      "date": "2026-09-29",
+      "amount": 135.24,
+      "category": "Kleidung",
+      "note": "Klarna Bank AB · Purchase at Vinted",
+      "source": "bank-csv",
+      "sourceId": "07f86cb0ce15937c"
+    },
+    {
+      "id": "mw21r3s8ogg48",
+      "date": "2026-09-29",
+      "amount": 22.85,
+      "category": "Kleidung",
+      "note": "Klarna Bank AB · Purchase at Vinted",
+      "source": "bank-csv",
+      "sourceId": "90f7c4fba8072012"
+    },
+    {
+      "id": "mw21r3s8gpm91",
+      "date": "2026-09-28",
+      "amount": 5.92,
+      "category": "Essen",
+      "note": "EDEKA KLAUSNER, POTSDAM//POTSDAM/DE · 2026-09-26T19:11 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "59d6a5974c004052"
+    },
+    {
+      "id": "mw21r3s8gcd4k",
+      "date": "2026-09-28",
+      "amount": 40,
+      "category": "Essen",
+      "note": "Wenbao GmbH/Jagerstrasse 19 Dada noodle/Potsdam/DEU · 2026-09-26T21:07 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "a89fb912e2d0729d"
+    },
+    {
+      "id": "mw21r3s9y6mv1",
+      "date": "2026-09-28",
+      "amount": 12.64,
+      "category": "Essen",
+      "note": "EDEKA GABLER, POTSDAM//POTSDAM/DE · 2026-09-25T09:08 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "0a1de747047d204e"
+    },
+    {
+      "id": "mw21r3s904von",
+      "date": "2026-09-28",
+      "amount": 1.18,
+      "category": "Essen",
+      "note": "EDEKA GABLER, POTSDAM//POTSDAM/DE · 2026-09-26T14:27 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "ccb737d312f79bf2"
+    },
+    {
+      "id": "mw21r3s9dflk8",
+      "date": "2026-09-28",
+      "amount": 107.6,
+      "category": "Freizeit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053278046739/PP.6098.PP/. Sky Marketing Ltd, Ihr Ei",
+      "source": "bank-csv",
+      "sourceId": "5acbc542875938a8"
+    },
+    {
+      "id": "mw21r3s9sq97b",
+      "date": "2026-09-28",
+      "amount": 4.99,
+      "category": "Mobilität",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053287860796/. Uber BV, Ihr Einkauf bei Uber BV",
+      "source": "bank-csv",
+      "sourceId": "88fbf987e9bada99"
+    },
+    {
+      "id": "mw21r3s951kmq",
+      "date": "2026-09-28",
+      "amount": 60,
+      "category": "Bargeld",
+      "note": "GA NR00002032 BLZ16050000 1 · 26.09/11.28UHR BABELSBERG",
+      "source": "bank-csv",
+      "sourceId": "2039ec78284757b1"
+    },
+    {
+      "id": "mw21r3s9qivlu",
+      "date": "2026-09-24",
+      "amount": 5.13,
+      "category": "Essen",
+      "note": "REWE SAGT DANKE. 42655363/Alte Potsd/Berlin Tiergarte /DE · 2026-09-23T14:39 Debitk.14 202",
+      "source": "bank-csv",
+      "sourceId": "a62dc855c39fd442"
+    },
+    {
+      "id": "mw21r3s9m6djm",
+      "date": "2026-09-24",
+      "amount": 0.59,
+      "category": "Essen",
+      "note": "REWE SAGT DANKE. 42655363/Alte Potsd/Berlin Tiergarte /DE · 2026-09-23T14:41 Debitk.14 202",
+      "source": "bank-csv",
+      "sourceId": "e8b399815840c486"
+    },
+    {
+      "id": "mw21r3s9spbxf",
+      "date": "2026-09-24",
+      "amount": 3.88,
+      "category": "Essen",
+      "note": "City Markt GmbH + Co KG//BERLIN/DE · 2026-09-23T18:40 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "e46c706c55fa8259"
+    },
+    {
+      "id": "mw21r3s9btsi7",
+      "date": "2026-09-24",
+      "amount": 20,
+      "category": "Bargeld",
+      "note": "193 896530//Berliner Sparkasse/DE · 2026-09-23T17:53 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "51ceda477b83d9ee"
+    },
+    {
+      "id": "mw21r3s9iac8q",
+      "date": "2026-09-24",
+      "amount": 17.99,
+      "category": "Freizeit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053255236576/PP.6098.PP/. Microsoft Payments, Ihr E",
+      "source": "bank-csv",
+      "sourceId": "611cc58004a46aac"
+    },
+    {
+      "id": "mw21r3s9vgwom",
+      "date": "2026-09-23",
+      "amount": 10.5,
+      "category": "Fitness",
+      "note": "Boulderhalle 7Aplus//POTSDAM/DE · 2026-09-21T19:35 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "c4ff0f598f02cb40"
+    },
+    {
+      "id": "mw21r3s92ufak",
+      "date": "2026-09-23",
+      "amount": 1.93,
+      "category": "Mobilität",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053214396352/PP.6098.PP/. Voi Technology Germany Gm",
+      "source": "bank-csv",
+      "sourceId": "1c02202e42457e5c"
+    },
+    {
+      "id": "mw21r3s9usbd2",
+      "date": "2026-09-22",
+      "amount": 6.59,
+      "category": "Essen",
+      "note": "EDEKA GABLER, POTSDAM//POTSDAM/DE · 2026-09-21T16:08 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "d26c04f6a57a3af2"
+    },
+    {
+      "id": "mw21r3s91ccyu",
+      "date": "2026-09-22",
+      "amount": 4,
+      "category": "Freizeit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053170189342/PP.6098.PP/. SV Babelsberg 03 e.V., Ih",
+      "source": "bank-csv",
+      "sourceId": "9a857ec5212795f9"
+    },
+    {
+      "id": "mw21r3sa0u7lq",
+      "date": "2026-09-22",
+      "amount": 36.7,
+      "category": "Essen",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053153848015/PP.6098.PP/. Takeaway.com Payments B.V",
+      "source": "bank-csv",
+      "sourceId": "a1dd9084469dc6ef"
+    },
+    {
+      "id": "mw21r3sbdrle3",
+      "date": "2026-09-21",
+      "amount": 5.31,
+      "category": "Essen",
+      "note": "BAECKEREI EXNER GIR 79964732//BEELITZ/DE · 2026-09-20T17:39 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "4a919036eb0cf3e1"
+    },
+    {
+      "id": "mw21r3sb0wfth",
+      "date": "2026-09-21",
+      "amount": 6.66,
+      "category": "Essen",
+      "note": "EDEKA KLAUSNER, POTSDAM//POTSDAM/DE · 2026-09-18T19:25 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "08e40a6c5c00633b"
+    },
+    {
+      "id": "mw21r3sbewjf3",
+      "date": "2026-09-21",
+      "amount": 57.74,
+      "category": "Essen",
+      "note": "Kaufland Potsdam//Potsdam/DE · 2026-09-19T16:54 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "07fd5da83b53683e"
+    },
+    {
+      "id": "mw21r3sbf3k2q",
+      "date": "2026-09-21",
+      "amount": 1.24,
+      "category": "Essen",
+      "note": "Kaufland Potsdam//Potsdam/DE · 2026-09-19T16:19 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "6c31905be3fed317"
+    },
+    {
+      "id": "mw21r3sba60tv",
+      "date": "2026-09-21",
+      "amount": 4.99,
+      "category": "Essen",
+      "note": "BAECKEREI EXNER GIR 79964712//POTSDAM/DE · 2026-09-17T15:31 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "7dc7f722307199dc"
+    },
+    {
+      "id": "mw21r3sbhykvl",
+      "date": "2026-09-21",
+      "amount": 5.71,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-09-19T11:26 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "f9ae7536f8652c73"
+    },
+    {
+      "id": "mw21r3sbuzc0p",
+      "date": "2026-09-21",
+      "amount": 15,
+      "category": "Bargeld",
+      "note": "GA NR00002008 BLZ1605000014 · 19.09/16.15UHR BAHNHOFSPA",
+      "source": "bank-csv",
+      "sourceId": "f2ed22b61ebd6f98"
+    },
+    {
+      "id": "mw21r3sb5zxnn",
+      "date": "2026-09-18",
+      "amount": 21.98,
+      "category": "Sonstiges",
+      "note": "Bahnhofspassagen/Babelsberger Strae 16/Potsdam/DE · 2026-09-17T14:51 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "d79467c001140633"
+    },
+    {
+      "id": "mw21r3sb9h2yc",
+      "date": "2026-09-18",
+      "amount": 3.75,
+      "category": "Essen",
+      "note": "Kaufland Potsdam//Potsdam/DE · 2026-09-17T15:17 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "2d51560ac2555c75"
+    },
+    {
+      "id": "mw21r3sbu16ix",
+      "date": "2026-09-18",
+      "amount": 23.7,
+      "category": "Essen",
+      "note": "Kaufland Potsdam//Potsdam/DE · 2026-09-17T15:10 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "b210582091d1f974"
+    },
+    {
+      "id": "mw21r3sbwsz3d",
+      "date": "2026-09-17",
+      "amount": 3.89,
+      "category": "Essen",
+      "note": "EDEKA GABLER, POTSDAM//POTSDAM/DE · 2026-09-16T17:39 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "2822c253b47fa177"
+    },
+    {
+      "id": "mw21r3sb40wkm",
+      "date": "2026-09-17",
+      "amount": 5,
+      "category": "Fitness",
+      "note": "East Bank Club the fitness factory//POTSDAM/DE · 2026-09-16T19:34 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "5967fa2115c7f981"
+    },
+    {
+      "id": "mw21r3sbqs9eq",
+      "date": "2026-09-17",
+      "amount": 133.18,
+      "category": "Kleidung",
+      "note": "SPORTSCHECK GMBH/SCHLOSSSTR. 7-10/BERLIN/DE · 2026-09-16T16:43 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "f4330687e1b28093"
+    },
+    {
+      "id": "mw21r3sbh76gn",
+      "date": "2026-09-17",
+      "amount": 4.59,
+      "category": "Bildung",
+      "note": "SPRINTOUT DIGITALDRUCK/Grunewaldstr. 18/Berlin/DE · 2026-09-16T15:08 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "31ff03fc47987ab0"
+    },
+    {
+      "id": "mw21r3scwi3u0",
+      "date": "2026-09-16",
+      "amount": 5,
+      "category": "Fitness",
+      "note": "East Bank Club the fitness factory//POTSDAM/DE · 2026-09-15T20:21 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "f9cf9ea9821fbd61"
+    },
+    {
+      "id": "mw21r3scx9e2j",
+      "date": "2026-09-16",
+      "amount": 20.8,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-09-15T13:23 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "94155c8a4b24c9c4"
+    },
+    {
+      "id": "mw21r3scvuuvz",
+      "date": "2026-09-16",
+      "amount": 22,
+      "category": "Essen",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053077064668/. Bistro 03 , Ihr Einkauf bei Bistro 0",
+      "source": "bank-csv",
+      "sourceId": "3be7bfa02abb7399"
+    },
+    {
+      "id": "mw21r3scerhnd",
+      "date": "2026-09-16",
+      "amount": 29.75,
+      "category": "Gesundheit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053057193328/. DoktorABC, Ihr Einkauf bei DoktorABC",
+      "source": "bank-csv",
+      "sourceId": "d664aadd55eae474"
+    },
+    {
+      "id": "mw21r3scw97c9",
+      "date": "2026-09-15",
+      "amount": 80.84,
+      "category": "Gesundheit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053020991840/. DoktorABC, Ihr Einkauf bei DoktorABC",
+      "source": "bank-csv",
+      "sourceId": "c030c456c4dfc2ab"
+    },
+    {
+      "id": "mw21r3scsommo",
+      "date": "2026-09-15",
+      "amount": 4,
+      "category": "Freizeit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053012827480/PP.6098.PP/. SV Babelsberg 03 e.V., Ih",
+      "source": "bank-csv",
+      "sourceId": "06873aa5fa643fc0"
+    },
+    {
+      "id": "mw21r3scbh3oc",
+      "date": "2026-09-14",
+      "amount": 9.89,
+      "category": "Essen",
+      "note": "E-Center 3450//POTSDAM/DE · 2026-09-11T15:20 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "649159c96dc663b9"
+    },
+    {
+      "id": "mw21r3scgck5i",
+      "date": "2026-09-14",
+      "amount": 3.92,
+      "category": "Essen",
+      "note": "BAECKEREI EXNER GIR 79964793//POTSDAM/DE · 2026-09-13T11:36 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "4587c7c54bdfca56"
+    },
+    {
+      "id": "mw21r3scjyzja",
+      "date": "2026-09-14",
+      "amount": 5,
+      "category": "Fitness",
+      "note": "East Bank Club the fitness factory//POTSDAM/DE · 2026-09-12T19:48 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "099b898a76fa02ab"
+    },
+    {
+      "id": "mw21r3sczjyor",
+      "date": "2026-09-14",
+      "amount": 19.75,
+      "category": "Essen",
+      "note": "Spati 44/Rudolf-Breitscheid-Str 44/Potsdam/DEU · 2026-09-13T00:06 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "9493cf280e6332b8"
+    },
+    {
+      "id": "mw21r3scephse",
+      "date": "2026-09-14",
+      "amount": 20.68,
+      "category": "Essen",
+      "note": "01155 MCDONALDS//POTSDAM/DE · 2026-09-13T22:51 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "cbd69a166d41b512"
+    },
+    {
+      "id": "mw21r3scluhk8",
+      "date": "2026-09-14",
+      "amount": 1.1,
+      "category": "Sonstiges",
+      "note": "POTSDAM AM STERNCEN/GERLACHSTR. 29/POTSDAM/DE · 2026-09-11T14:56 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "d405ea5383d05c80"
+    },
+    {
+      "id": "mw21r3scz1gii",
+      "date": "2026-09-14",
+      "amount": 32.7,
+      "category": "Essen",
+      "note": "NETTO MARKEN-DISCOU/STEPHENSONSTR. 11/POTSDAM/DE · 2026-09-12T17:26 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "cb596cd926dc1fd3"
+    },
+    {
+      "id": "mw21r3scw2hbu",
+      "date": "2026-09-14",
+      "amount": 219,
+      "category": "Haushalt",
+      "note": "M088-MEDIA MARKT/STERNCENTER 4/POTSDAM/DE · 2026-09-11T14:49 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "321f1ec1d0531556"
+    },
+    {
+      "id": "mw21r3scdxxdk",
+      "date": "2026-09-14",
+      "amount": 22.97,
+      "category": "Sonstiges",
+      "note": "AMAZON PAYMENTS EUROPE S.C.A. · 302-7479788-5837102 AMZN Mktp DE 4FDSU487C6TWBLMI",
+      "source": "bank-csv",
+      "sourceId": "a454e181ff67d6c4"
+    },
+    {
+      "id": "mw21r3scm8bho",
+      "date": "2026-09-11",
+      "amount": 3.95,
+      "category": "Essen",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052954608032/. KAUFLAND POTSDAM INNEN, Ihr Einkauf ",
+      "source": "bank-csv",
+      "sourceId": "32a1271d21713d08"
+    },
+    {
+      "id": "mw21r3sc6ozst",
+      "date": "2026-09-10",
+      "amount": 34.04,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-09-09T14:49 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "dfc1af6e5e9fc32a"
+    },
+    {
+      "id": "mw21r3sdumbyz",
+      "date": "2026-09-10",
+      "amount": 1.69,
+      "category": "Mobilität",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052921326487/PP.6098.PP/. Voi Technology Germany Gm",
+      "source": "bank-csv",
+      "sourceId": "537ca9145d70a45c"
+    },
+    {
+      "id": "mw21r3sdks03n",
+      "date": "2026-09-09",
+      "amount": 10.68,
+      "category": "Essen",
+      "note": "01155 MCDONALDS//POTSDAM/DE · 2026-09-08T17:01 Debitk.14 2026-12",
+      "source": "bank-csv",
+      "sourceId": "7efb8a4117b9ff5e"
+    },
+    {
+      "id": "mw21r3sdmzxdl",
+      "date": "2026-09-09",
+      "amount": 2.24,
+      "category": "Mobilität",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052914306955/. Aral Station 28738011 , Ihr Einkauf ",
+      "source": "bank-csv",
+      "sourceId": "fff73a117d1a53bc"
+    },
+    {
+      "id": "mw21r3sdqizv9",
+      "date": "2026-09-08",
+      "amount": 15,
+      "category": "Bargeld",
+      "note": "GA NR00002008 BLZ1605000014 · 08.09/13.24UHR BAHNHOFSPA",
+      "source": "bank-csv",
+      "sourceId": "9638d36c401e4dce"
+    },
+    {
+      "id": "mw21r3sd2fa87",
+      "date": "2026-09-08",
+      "amount": 64.99,
+      "category": "Haushalt",
+      "note": "S335-MEDIA MARKT/BABELSBERGER STR. 4-6/POTSDAM/DE · 2026-09-07T19:48 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "0dc346d647419452"
+    },
+    {
+      "id": "mw21r3sd7q78r",
+      "date": "2026-09-08",
+      "amount": 3.92,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-09-07T14:02 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "06de417edc641d79"
+    },
+    {
+      "id": "mw21r3sd5wrg7",
+      "date": "2026-09-08",
+      "amount": 8.71,
+      "category": "Essen",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052874076966/. REWE Markt GmbH-ZwNL O, Ihr Einkauf ",
+      "source": "bank-csv",
+      "sourceId": "bf454978a2691b93"
+    },
+    {
+      "id": "mw21r3sd7c7t8",
+      "date": "2026-09-08",
+      "amount": 14.99,
+      "category": "Sonstiges",
+      "note": "AMAZON PAYMENTS EUROPE S.C.A. · 306-0032398-7865928 AMZN Mktp DE 7EKFKYDDC95UCNBT",
+      "source": "bank-csv",
+      "sourceId": "d3982c2ea1e42c14"
+    },
+    {
+      "id": "mw21r3sdqoioc",
+      "date": "2026-09-07",
+      "amount": 20,
+      "category": "Bargeld",
+      "note": "ANGERMUENDE//SPARKASSE UCKERMARK/DE · 2026-09-05T13:37 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "d93a20b89ce5991f"
+    },
+    {
+      "id": "mw21r3sdslxwc",
+      "date": "2026-09-07",
+      "amount": 9.98,
+      "category": "Haushalt",
+      "note": "ROSSMANN/Rosenstr. 11/Angerm.nde/DE · 2026-09-05T14:50 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "03bc4d5590bc4356"
+    },
+    {
+      "id": "mw21r3sdwvdfw",
+      "date": "2026-09-07",
+      "amount": 3.99,
+      "category": "Haushalt",
+      "note": "ROSSMANN/Tuchmacher Str. 46/Potsdam/DE · 2026-09-04T14:41 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "f43d59f01b272df0"
+    },
+    {
+      "id": "mw21r3sdboad8",
+      "date": "2026-09-04",
+      "amount": 59,
+      "category": "Kleidung",
+      "note": "adidas FO Berlin-Wustermark Des/ADI-DASSLER-STRASSE /HERZOGENAURACH/DE · 2026-09-03T20:02 ",
+      "source": "bank-csv",
+      "sourceId": "c52d8cbce1b4133d"
+    },
+    {
+      "id": "mw21r3sd08p5n",
+      "date": "2026-09-04",
+      "amount": 47.98,
+      "category": "Kleidung",
+      "note": "Under Armour/Alter Spandauer Weg 1 Unit 10-11/Wustermark/DE · 2026-09-03T19:52 Debitk.1 20",
+      "source": "bank-csv",
+      "sourceId": "53b0d137eb35c2a2"
+    },
+    {
+      "id": "mw21r3se97oxu",
+      "date": "2026-09-04",
+      "amount": 8.62,
+      "category": "Essen",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052806020850/. ALDI Nord , Ihr Einkauf bei ALDI Nor",
+      "source": "bank-csv",
+      "sourceId": "9812068c0b2c2c68"
+    },
+    {
+      "id": "mw21r3see44yl",
+      "date": "2026-09-04",
+      "amount": 11.88,
+      "category": "Sonstiges",
+      "note": "Hetzner Online GmbH · Kundennummer: K0409955826 Rechnungsnummer: 088001129113",
+      "source": "bank-csv",
+      "sourceId": "fe17a60d96f2d95f"
+    },
+    {
+      "id": "mw21r3sen1ab3",
+      "date": "2026-09-03",
+      "amount": 3.99,
+      "category": "Kleidung",
+      "note": "DECATHLON Berlin Mitte/Rathausstrae 5/Berlin Mitte/DE · 2026-09-02T19:46 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "0ac714353bbd0eda"
+    },
+    {
+      "id": "mw21r3se0jref",
+      "date": "2026-09-03",
+      "amount": 70,
+      "category": "Kleidung",
+      "note": "adidas OCS Berlin Muenzstrasse/ADI-DASSLER-STRASSE /HERZOGENAURACH/DE · 2026-09-02T19:04 D",
+      "source": "bank-csv",
+      "sourceId": "71f5cd88a4df9cb3"
+    },
+    {
+      "id": "mw21r3set47ha",
+      "date": "2026-09-03",
+      "amount": 30,
+      "category": "Bargeld",
+      "note": "651 897824//Berliner Sparkasse/DE · 2026-09-02T20:05 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "ab5e871420a34dfe"
+    },
+    {
+      "id": "mw21r3secytbo",
+      "date": "2026-09-03",
+      "amount": 16,
+      "category": "Sonstiges",
+      "note": "Qonto ..Nori GmbH/Jagerallee 13,/Potsdam/DE/0 · 2026-09-01T20:33 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "4f7be942f135f5ce"
+    },
+    {
+      "id": "mw21r3sechojo",
+      "date": "2026-09-03",
+      "amount": 79.07,
+      "category": "Gesundheit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052780550653/. DoktorABC, Ihr Einkauf bei DoktorABC",
+      "source": "bank-csv",
+      "sourceId": "a8b7af8ea78c9732"
+    },
+    {
+      "id": "mw21r3sem21es",
+      "date": "2026-09-03",
+      "amount": 6.3,
+      "category": "Mobilität",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052782111335/. TOTAL Service Station , Ihr Einkauf ",
+      "source": "bank-csv",
+      "sourceId": "8c4dbf895ee07121"
+    },
+    {
+      "id": "mw21r3seh0xg3",
+      "date": "2026-09-02",
+      "amount": 34.74,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-09-01T15:32 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "f9c7290011ce517a"
+    },
+    {
+      "id": "mw21r3se0lovo",
+      "date": "2026-09-02",
+      "amount": 15,
+      "category": "Sonstiges",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052752463054/. Presseshop im S-Bahnho, Ihr Einkauf ",
+      "source": "bank-csv",
+      "sourceId": "566172ca1208ef3e"
+    },
+    {
+      "id": "mw21r3sefnub7",
+      "date": "2026-09-02",
+      "amount": 9.6,
+      "category": "Essen",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052752013326/. Die Eisfrau GSS , Ihr Einkauf bei Di",
+      "source": "bank-csv",
+      "sourceId": "098a8f16933e1395"
+    },
+    {
+      "id": "mw21r3se0jkhh",
+      "date": "2026-09-02",
+      "amount": 8.13,
+      "category": "Essen",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052754481492/. Netto Marken-Discount , Ihr Einkauf ",
+      "source": "bank-csv",
+      "sourceId": "3b5120a017fdab96"
+    },
+    {
+      "id": "mw21r3se0k19k",
+      "date": "2026-09-01",
+      "amount": 2,
+      "category": "Essen",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052713707211/. NYA.Cash Markt , Ihr Einkauf bei NYA",
+      "source": "bank-csv",
+      "sourceId": "65dd3127a1725608"
+    },
+    {
+      "id": "mw21r3se8p2z3",
+      "date": "2026-09-01",
+      "amount": 2.3,
+      "category": "Essen",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052713679735/. NYA.Cash Markt , Ihr Einkauf bei NYA",
+      "source": "bank-csv",
+      "sourceId": "f8cba6bf82005474"
+    },
+    {
+      "id": "mw21r3sedm69z",
+      "date": "2026-09-01",
+      "amount": 2.02,
+      "category": "Essen",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052664505880/. Ullrich Fil. 4023 , Ihr Einkauf bei ",
+      "source": "bank-csv",
+      "sourceId": "f8c43d304c7e32cb"
+    },
+    {
+      "id": "mw21r3sf523na",
+      "date": "2026-09-01",
+      "amount": 14,
+      "category": "Freizeit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052710761832/PP.6098.PP/. kinoheld GmbH, Ihr Einkau",
+      "source": "bank-csv",
+      "sourceId": "d9f23ab2d5d28b69"
+    },
+    {
+      "id": "mw21r3sfh36av",
+      "date": "2026-09-01",
+      "amount": 5.77,
+      "category": "Essen",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052730585608/. Ullrich Fil. 4023 , Ihr Einkauf bei ",
+      "source": "bank-csv",
+      "sourceId": "382d6b48728c6ecb"
+    },
+    {
+      "id": "mw21r3sftis4l",
+      "date": "2026-08-31",
+      "amount": 13.4,
+      "category": "Essen",
+      "note": "LS Mmaah Eat Korean Po/Babelsberger Strae 16/Potsdam/DE · 2026-08-28T12:01 Debitk.1 2026-1",
+      "source": "bank-csv",
+      "sourceId": "a8998fdf8f2e7ec6"
+    },
+    {
+      "id": "mw21r3sf1zkuc",
+      "date": "2026-08-31",
+      "amount": 10,
+      "category": "Konsum",
+      "note": "Tabakwaren Union GmbH + Co. KG//NOERTEN-HARDENBE/DE · 2026-08-29T20:39 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "90f8edbffc0ac7f1"
+    },
+    {
+      "id": "mw21r3sf1v2rm",
+      "date": "2026-08-31",
+      "amount": 3.28,
+      "category": "Essen",
+      "note": "BAECKEREI EXNER GIR 79964712//POTSDAM/DE · 2026-08-27T09:04 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "ca3764c46d757f6a"
+    },
+    {
+      "id": "mw21r3sftgc73",
+      "date": "2026-08-31",
+      "amount": 6.66,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 26 057//Magdeburg/DE · 2026-08-28T16:13 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "30c22d3e94c2ca93"
+    },
+    {
+      "id": "mw21r3sfehq4y",
+      "date": "2026-08-31",
+      "amount": 58.85,
+      "category": "Gesundheit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052641522228/. DoktorABC, Ihr Einkauf bei DoktorABC",
+      "source": "bank-csv",
+      "sourceId": "9c14e576884f10c6"
+    },
+    {
+      "id": "mw21r3sfa0u6u",
+      "date": "2026-08-28",
+      "amount": 0.69,
+      "category": "Essen",
+      "note": "REWE SAGT DANKE. 42400125/Kurfuerste/Berlin Halensee /DE · 2026-08-27T21:19 Debitk.1 2026-",
+      "source": "bank-csv",
+      "sourceId": "0f2680dafa054933"
+    },
+    {
+      "id": "mw21r3sfgm0es",
+      "date": "2026-08-28",
+      "amount": 4.18,
+      "category": "Essen",
+      "note": "NETTO MARKEN-DISCOU/STEPHENSONSTR. 11/POTSDAM/DE · 2026-08-27T09:16 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "411eed6748b7382a"
+    },
+    {
+      "id": "mw21r3sf6fufb",
+      "date": "2026-08-28",
+      "amount": 10,
+      "category": "Sonstiges",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052629131956/PP.6098.PP/. , Ihr Einkauf bei",
+      "source": "bank-csv",
+      "sourceId": "4343dc6d5064c957"
+    },
+    {
+      "id": "mw21r3sfnec59",
+      "date": "2026-08-28",
+      "amount": 5.06,
+      "category": "Essen",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052639868007/. REWE Toni Zach oHG , Ihr Einkauf bei",
+      "source": "bank-csv",
+      "sourceId": "4c5aff38e92b8e9e"
+    },
+    {
+      "id": "mw21r3sfhg6m0",
+      "date": "2026-08-28",
+      "amount": 35.44,
+      "category": "Haushalt",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052639633427/. toom BM Potsdam/Ba , Ihr Einkauf bei",
+      "source": "bank-csv",
+      "sourceId": "93a03d8c9f737f0a"
+    },
+    {
+      "id": "mw21r3sf8jm0v",
+      "date": "2026-08-27",
+      "amount": 7.9,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-08-26T15:44 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "62f211086d538640"
+    },
+    {
+      "id": "mw21r3sf8areh",
+      "date": "2026-08-27",
+      "amount": 7.5,
+      "category": "Sonstiges",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052601081571/PP.6098.PP/. , Ihr Einkauf bei",
+      "source": "bank-csv",
+      "sourceId": "92b141a31bab0667"
+    },
+    {
+      "id": "mw21r3sgtz7bg",
+      "date": "2026-08-26",
+      "amount": 2.84,
+      "category": "Essen",
+      "note": "EDEKA KLAUSNER, POTSDAM//POTSDAM/DE · 2026-08-25T20:16 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "a3cbd59ce299de07"
+    },
+    {
+      "id": "mw21r3sgaheps",
+      "date": "2026-08-26",
+      "amount": 10,
+      "category": "Essen",
+      "note": "LS Bashis Kebab/Brandenburger Strae 27/Potsdam/DE · 2026-08-25T20:20 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "2096e242f4f5bec6"
+    },
+    {
+      "id": "mw21r3sgcq88k",
+      "date": "2026-08-26",
+      "amount": 4.99,
+      "category": "Mobilität",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052585629648/. Uber BV, Ihr Einkauf bei Uber BV",
+      "source": "bank-csv",
+      "sourceId": "1f75bc15d287b805"
+    },
+    {
+      "id": "mw21r3sguobt6",
+      "date": "2026-08-25",
+      "amount": 5.91,
+      "category": "Essen",
+      "note": "EDEKA GABLER, POTSDAM//POTSDAM/DE · 2026-08-24T16:00 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "829fe4f457be88ce"
+    },
+    {
+      "id": "mw21r3sgi031q",
+      "date": "2026-08-25",
+      "amount": 5,
+      "category": "Fitness",
+      "note": "East Bank Club the fitness factory//POTSDAM/DE · 2026-08-24T19:00 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "f46da0f034b6e418"
+    },
+    {
+      "id": "mw21r3sgsetu0",
+      "date": "2026-08-24",
+      "amount": 9,
+      "category": "Fitness",
+      "note": "Boulderhalle 7Aplus//POTSDAM/DE · 2026-08-21T16:35 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "1f69d0a51c3514f6"
+    },
+    {
+      "id": "mw21r3sgzoz1f",
+      "date": "2026-08-24",
+      "amount": 10,
+      "category": "Konsum",
+      "note": "HALL Tabakwaren sagt DANKE//GROSSBEEREN/DE · 2026-08-21T21:52 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "9d93d97a0bc41a00"
+    },
+    {
+      "id": "mw21r3sgdjouj",
+      "date": "2026-08-24",
+      "amount": 9.99,
+      "category": "Essen",
+      "note": "KFC BERLIN 4 GMBH + CO. KG//ELMENHORST/DE · 2026-08-22T00:18 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "f22c6e3ed3f577b0"
+    },
+    {
+      "id": "mw21r3sgv4j5r",
+      "date": "2026-08-20",
+      "amount": 11,
+      "category": "Konsum",
+      "note": "BlackMarket//Potsdam/DE · 2026-08-19T18:46 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "1b8474681a1275dc"
+    },
+    {
+      "id": "mw21r3sgsu0qs",
+      "date": "2026-08-20",
+      "amount": 1.74,
+      "category": "Haushalt",
+      "note": "Getranke Hoffmann Gruppe KG/Heinrich-Mann-Allee 3A/Potsdam/DE · 2026-08-19T19:05 Debitk.1 ",
+      "source": "bank-csv",
+      "sourceId": "d7903d39172ec376"
+    },
+    {
+      "id": "mw21r3sg5p1bj",
+      "date": "2026-08-18",
+      "amount": 6.3,
+      "category": "Mobilität",
+      "note": "TOTAL Service Station//POTSDAM/DE · 2026-08-17T19:22 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "31abd556e96f07d3"
+    },
+    {
+      "id": "mw21r3sgauvj3",
+      "date": "2026-08-18",
+      "amount": 5,
+      "category": "Fitness",
+      "note": "East Bank Club the fitness factory//POTSDAM/DE · 2026-08-17T17:08 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "7e706778fb35df4c"
+    },
+    {
+      "id": "mw21r3shfm0rb",
+      "date": "2026-08-18",
+      "amount": 3.99,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-08-17T19:31 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "90361dfb337a10b7"
+    },
+    {
+      "id": "mw21r3sh8h4ug",
+      "date": "2026-08-18",
+      "amount": 2.53,
+      "category": "Sonstiges",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052404822052/PP.6098.PP/. , Ihr Einkauf bei",
+      "source": "bank-csv",
+      "sourceId": "ac30f4fa683ae398"
+    },
+    {
+      "id": "mw21r3shvuaip",
+      "date": "2026-08-17",
+      "amount": 3.8,
+      "category": "Fitness",
+      "note": "Boulderhalle 7Aplus//POTSDAM/DE · 2026-08-15T11:26 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "cebde5acd37980fe"
+    },
+    {
+      "id": "mw21r3shn3w8w",
+      "date": "2026-08-17",
+      "amount": 9,
+      "category": "Fitness",
+      "note": "Boulderhalle 7Aplus//POTSDAM/DE · 2026-08-15T11:19 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "1a7d82d5dd53febf"
+    },
+    {
+      "id": "mw21r3shpvetg",
+      "date": "2026-08-17",
+      "amount": 155.24,
+      "category": "Sonstiges",
+      "note": "ProPotsdam GmbH · 53030-0077-03 / Fensterreperatur",
+      "source": "bank-csv",
+      "sourceId": "362df94b7d04f576"
+    },
+    {
+      "id": "mw21r3sh4xn9i",
+      "date": "2026-08-17",
+      "amount": 26.27,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-08-15T15:10 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "f1c141a297d714e2"
+    },
+    {
+      "id": "mw21r3sh4ytlj",
+      "date": "2026-08-17",
+      "amount": 1.7,
+      "category": "Essen",
+      "note": "REWE SAGT DANKE. 42656779/Wilmersdor/Berlin Wilmersdo /DE · 2026-08-14T17:48 Debitk.1 2026",
+      "source": "bank-csv",
+      "sourceId": "7e28fc484b76fedc"
+    },
+    {
+      "id": "mw21r3shjcub3",
+      "date": "2026-08-17",
+      "amount": 12.99,
+      "category": "Sonstiges",
+      "note": "AMAZON PAYMENTS EUROPE S.C.A. · 306-0622836-3574743 AMZN Mktp DE 2LB6ZRSP5ZH8XFM0",
+      "source": "bank-csv",
+      "sourceId": "b29a01ec274c2ca9"
+    },
+    {
+      "id": "mw21r3shkoxmq",
+      "date": "2026-08-14",
+      "amount": 20.02,
+      "category": "Essen",
+      "note": "Kaufland Potsdam//Potsdam/DE · 2026-08-13T20:32 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "889fef876293e478"
+    },
+    {
+      "id": "mw21r3sh3uboe",
+      "date": "2026-08-14",
+      "amount": 22.64,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-08-13T14:52 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "c9d711adc7e01aa2"
+    },
+    {
+      "id": "mw21r3shs7idn",
+      "date": "2026-08-14",
+      "amount": 10.99,
+      "category": "Sonstiges",
+      "note": "AMAZON PAYMENTS EUROPE S.C.A. · 028-3590165-8079517 AMZN Mktp DE 3JF4HQQT5Z25PYN6",
+      "source": "bank-csv",
+      "sourceId": "d2adf2affe0cae84"
+    },
+    {
+      "id": "mw21r3shgltse",
+      "date": "2026-08-13",
+      "amount": 20,
+      "category": "Freizeit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052297676644/PP.6098.PP/. CTS EVENTIM Sports GmbH, ",
+      "source": "bank-csv",
+      "sourceId": "8070bf2eb72af25f"
+    },
+    {
+      "id": "mw21r3shme3px",
+      "date": "2026-08-13",
+      "amount": 2.18,
+      "category": "Sonstiges",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052293822447/PP.6098.PP/. LimeBike Germany GmbH, Ih",
+      "source": "bank-csv",
+      "sourceId": "ef881d6700d5f06f"
+    },
+    {
+      "id": "mw21r3sh75y37",
+      "date": "2026-08-13",
+      "amount": 20,
+      "category": "Freizeit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052297772241/PP.6098.PP/. CTS EVENTIM Sports GmbH, ",
+      "source": "bank-csv",
+      "sourceId": "bd6c160fd8456592"
+    },
+    {
+      "id": "mw21r3shjqtf1",
+      "date": "2026-08-12",
+      "amount": 12.57,
+      "category": "Essen",
+      "note": "01539 MCDONALDS//BERLIN/DE · 2026-08-10T23:15 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "cf496c78dee06235"
+    },
+    {
+      "id": "mw21r3shksocl",
+      "date": "2026-08-12",
+      "amount": 8.47,
+      "category": "Essen",
+      "note": "Kaufland Potsdam//Potsdam/DE · 2026-08-11T15:13 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "67d8f9a9205e0d7a"
+    },
+    {
+      "id": "mw21r3sirzu8r",
+      "date": "2026-08-12",
+      "amount": 19,
+      "category": "Freizeit",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052274074975/PP.6098.PP/. mars kinotickets.online G",
+      "source": "bank-csv",
+      "sourceId": "e1956854ed3e7120"
+    },
+    {
+      "id": "mw21r3sibj6f3",
+      "date": "2026-08-11",
+      "amount": 15.13,
+      "category": "Essen",
+      "note": "REWE SAGT DANKE. 42655829/Kurt-Schum/Berlin Reinicken /DE · 2026-08-10T20:16 Debitk.1 2026",
+      "source": "bank-csv",
+      "sourceId": "5204b02a57764f95"
+    },
+    {
+      "id": "mw21r3siplxpg",
+      "date": "2026-08-11",
+      "amount": 54.29,
+      "category": "Sonstiges",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052205886562/. Gamerow FZCO, Ihr Einkauf bei Gamero",
+      "source": "bank-csv",
+      "sourceId": "9f338c2ffd6da233"
+    },
+    {
+      "id": "mw21r3siphs4t",
+      "date": "2026-08-11",
+      "amount": 4.44,
+      "category": "Sonstiges",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052247751836/PP.6098.PP/. , Ihr Einkauf bei",
+      "source": "bank-csv",
+      "sourceId": "9badd322344c4b31"
+    },
+    {
+      "id": "mw21r3siorrmv",
+      "date": "2026-08-11",
+      "amount": 4.75,
+      "category": "Essen",
+      "note": "Steinecke sagt vielen Dank 3418 · ELV54158449 08.08 10.53 ME1",
+      "source": "bank-csv",
+      "sourceId": "c85d56f5faf2d346"
+    },
+    {
+      "id": "mw21r3si3p744",
+      "date": "2026-08-10",
+      "amount": 0.25,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-08-08T11:02 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "7a01fafa2e736a3e"
+    },
+    {
+      "id": "mw21r3si3fc2m",
+      "date": "2026-08-10",
+      "amount": 11.74,
+      "category": "Essen",
+      "note": "ALDI SAGT DANKE 20 060//Potsdam/DE · 2026-08-08T11:00 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "40acfa38e61a0745"
+    },
+    {
+      "id": "mw21r3sicns2p",
+      "date": "2026-08-10",
+      "amount": 20.08,
+      "category": "Sonstiges",
+      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052187384260/PP.6098.PP/. Joybuy, Ihr Einkauf bei J",
+      "source": "bank-csv",
+      "sourceId": "89f3b575891c1c68"
+    },
+    {
+      "id": "mw21r3sidknii",
+      "date": "2026-08-07",
+      "amount": 12.03,
+      "category": "Essen",
+      "note": "EDEKA GABLER, POTSDAM//POTSDAM/DE · 2026-08-06T21:39 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "893d97f5b66a6d10"
+    },
+    {
+      "id": "mw21r3sis34iz",
+      "date": "2026-08-07",
+      "amount": 2.12,
+      "category": "Essen",
+      "note": "REWE SAGT DANKE. 42406602/Ackerstr. /Berlin Mitte /DE · 2026-08-06T19:07 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "ad6010495019373c"
+    },
+    {
+      "id": "mw21r3sirs9y0",
+      "date": "2026-08-07",
+      "amount": 89.98,
+      "category": "Sonstiges",
+      "note": "NIEMEIER SICHERHEIT/CHARLOTTENSTR. 101/POTSDAM/DE · 2026-08-06T14:04 Debitk.1 2026-12",
+      "source": "bank-csv",
+      "sourceId": "f32c0e7493555c23"
+    }
+  ],
   "savings": {
     "target": 0,
     "current": 0
-  }
+  },
+  "transferMatch": [
+    "vincent mingramm"
+  ],
+  "payments": [
+    {
+      "date": "2026-11-04",
+      "amount": 35,
+      "fixedCostId": "mw1xo9ajm1npb",
+      "sourceId": "b9360ca21763ad86"
+    },
+    {
+      "date": "2026-11-03",
+      "amount": 9.9,
+      "fixedCostId": "mw1xo95oqqzhk",
+      "sourceId": "1f35d09028a3db59"
+    },
+    {
+      "date": "2026-11-03",
+      "amount": 37.5,
+      "fixedCostId": "mw1xo98zhmpbq",
+      "sourceId": "1298590eb7887d75"
+    },
+    {
+      "date": "2026-11-02",
+      "amount": 31.98,
+      "fixedCostId": "mw1xo93zlicpv",
+      "sourceId": "549c35a608699995"
+    },
+    {
+      "date": "2026-11-02",
+      "amount": 5,
+      "fixedCostId": "mw1xo92ha5fgk",
+      "sourceId": "bf3bd5a6c0bd9df8"
+    },
+    {
+      "date": "2026-11-02",
+      "amount": 33.73,
+      "fixedCostId": "mw1xo90yb0q0h",
+      "sourceId": "2027448df164bcc5"
+    },
+    {
+      "date": "2026-11-02",
+      "amount": 9.9,
+      "fixedCostId": "mw21q8m3dpzqv",
+      "sourceId": "1006ad1d9af14edb"
+    },
+    {
+      "date": "2026-10-29",
+      "amount": 2.99,
+      "fixedCostId": "mw1xo9h7kkpqe",
+      "sourceId": "ede6df8e3dd9a577"
+    },
+    {
+      "date": "2026-10-22",
+      "amount": 157.15,
+      "fixedCostId": "mw1xo8wxp0tqp",
+      "sourceId": "16078a4643d9eed0"
+    },
+    {
+      "date": "2026-10-14",
+      "amount": 15,
+      "fixedCostId": "mw1xo9c8ut4vr",
+      "sourceId": "3fa30062f3725900"
+    },
+    {
+      "date": "2026-10-09",
+      "amount": 7.5,
+      "fixedCostId": "mw1xo9dmb8brk",
+      "sourceId": "ef382a3e11ef07c9"
+    },
+    {
+      "date": "2026-10-08",
+      "amount": 20,
+      "fixedCostId": "mw1xo8wxp0tqp",
+      "sourceId": "c79990327de2f038"
+    },
+    {
+      "date": "2026-10-08",
+      "amount": 315.8,
+      "fixedCostId": "mw1xo8wxp0tqp",
+      "sourceId": "964eb456ebcfce28"
+    },
+    {
+      "date": "2026-10-06",
+      "amount": 35,
+      "fixedCostId": "mw1xo9ajm1npb",
+      "sourceId": "75df41ff0dd0c2c0"
+    },
+    {
+      "date": "2026-10-05",
+      "amount": 37.5,
+      "fixedCostId": "mw1xo98zhmpbq",
+      "sourceId": "bae8ac97b5a10f51"
+    },
+    {
+      "date": "2026-10-02",
+      "amount": 29.8,
+      "fixedCostId": "mw1xo975snfr8",
+      "sourceId": "2626e09932995fd0"
+    },
+    {
+      "date": "2026-10-01",
+      "amount": 31.98,
+      "fixedCostId": "mw1xo93zlicpv",
+      "sourceId": "6201b5e465f33937"
+    },
+    {
+      "date": "2026-10-01",
+      "amount": 55.08,
+      "fixedCostId": "mw21q8m38oz3x",
+      "sourceId": "9c66422869f434c3"
+    },
+    {
+      "date": "2026-10-01",
+      "amount": 5,
+      "fixedCostId": "mw1xo92ha5fgk",
+      "sourceId": "aceaec49b90a2d2c"
+    },
+    {
+      "date": "2026-10-01",
+      "amount": 33.73,
+      "fixedCostId": "mw1xo90yb0q0h",
+      "sourceId": "ae33518f5d5e3968"
+    },
+    {
+      "date": "2026-10-01",
+      "amount": 9.9,
+      "fixedCostId": "mw21q8m3dpzqv",
+      "sourceId": "fa33def9206351b0"
+    },
+    {
+      "date": "2026-09-15",
+      "amount": 95,
+      "fixedCostId": "mw1xo9f9q0dpb",
+      "sourceId": "8e1ce2604c9e24a9"
+    },
+    {
+      "date": "2026-09-15",
+      "amount": 12,
+      "fixedCostId": "mw1xo9c8ut4vr",
+      "sourceId": "2ace2231f6707d69"
+    },
+    {
+      "date": "2026-09-07",
+      "amount": 35,
+      "fixedCostId": "mw1xo9ajm1npb",
+      "sourceId": "a1020b4c52ad5d2c"
+    },
+    {
+      "date": "2026-09-02",
+      "amount": 37.5,
+      "fixedCostId": "mw1xo98zhmpbq",
+      "sourceId": "aece75b30a3276ba"
+    },
+    {
+      "date": "2026-09-02",
+      "amount": 9.9,
+      "fixedCostId": "mw1xo95oqqzhk",
+      "sourceId": "14fa8ed842ee578c"
+    },
+    {
+      "date": "2026-09-01",
+      "amount": 5,
+      "fixedCostId": "mw1xo92ha5fgk",
+      "sourceId": "722e7639cac86565"
+    },
+    {
+      "date": "2026-09-01",
+      "amount": 33.73,
+      "fixedCostId": "mw1xo90yb0q0h",
+      "sourceId": "e08ca9d99d38cf89"
+    },
+    {
+      "date": "2026-09-01",
+      "amount": 31.98,
+      "fixedCostId": "mw1xo93zlicpv",
+      "sourceId": "e0647db7f08f91eb"
+    },
+    {
+      "date": "2026-09-01",
+      "amount": 9.9,
+      "fixedCostId": "mw21q8m3dpzqv",
+      "sourceId": "8f446665d8af6d48"
+    },
+    {
+      "date": "2026-08-31",
+      "amount": 2.99,
+      "fixedCostId": "mw1xo9h7kkpqe",
+      "sourceId": "616248add5406101"
+    },
+    {
+      "date": "2026-08-17",
+      "amount": 95,
+      "fixedCostId": "mw1xo9f9q0dpb",
+      "sourceId": "b41f4d512a5fbfce"
+    },
+    {
+      "date": "2026-08-13",
+      "amount": 10,
+      "fixedCostId": "mw1xo9c8ut4vr",
+      "sourceId": "6049d67143592d3f"
+    }
+  ]
 }

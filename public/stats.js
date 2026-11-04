@@ -51,7 +51,7 @@
   };
   const INTERVALS = { monthly: 'monatlich', quarterly: 'vierteljährlich', yearly: 'jährlich', weekly: 'wöchentlich' };
   const WORKOUT_TYPES = ['Kraft', 'Cardio', 'Laufen', 'Rad', 'Schwimmen', 'Mobility', 'Sport', 'Sonstiges'];
-  const EXPENSE_CATEGORIES = ['Essen', 'Freizeit', 'Mobilität', 'Kleidung', 'Gesundheit', 'Bildung', 'Sonstiges'];
+  const EXPENSE_CATEGORIES = ['Essen', 'Haushalt', 'Freizeit', 'Fitness', 'Mobilität', 'Kleidung', 'Gesundheit', 'Bildung', 'Konsum', 'Bargeld', 'Sonstiges'];
 
   // ---------- Punkte & Level ----------
   const LEVELS = [
@@ -61,7 +61,7 @@
     { min: 4600, name: 'Legende' }, { min: 6000, name: 'Unaufhaltsam' },
   ];
 
-  function workoutPoints(w) { return 10 + Math.min(30, Math.round((Number(w.minutes) || 0) / 5)); }
+  function workoutPoints(w) { if (w.points !== undefined && w.points !== null && Number.isFinite(Number(w.points))) return Number(w.points); return 10 + Math.min(30, Math.round((Number(w.minutes) || 0) / 5)); }
   function checkinPoints(c, settings) { return 5 + (eatingScore(c, settings) >= 7 ? 3 : 0); }
   function milestonePoints(m) {
     if (!m.done) return 0;

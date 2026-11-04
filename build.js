@@ -8,7 +8,7 @@ const read = (f) => fs.readFileSync(path.join(pub, f), 'utf8');
 const safe = (js) => js.replace(/<\/script/gi, '<\\/script');
 let html = read('index.html');
 html = html.replace('<link rel="stylesheet" href="style.css">', () => `<style>\n${read('style.css')}\n</style>`);
-const build = crypto.createHash('sha1').update(html).digest('hex').slice(0, 10);
+const build = crypto.createHash('sha1').update(html + read('stats.js') + read('app.js')).digest('hex').slice(0, 10); // ändert sich bei jeder Änderung an HTML, CSS, stats.js oder app.js
 const loader = `<script>window.__BUILD__ = '${build}';
 /* Selbstaktualisierung: Liegt im Repo eine neuere Version, wird die Seite aus public/ neu aufgebaut. Sonst läuft die eingebaute. */
 (function () {

@@ -28,6 +28,7 @@ node tracker.js summary
 ## Entwicklung
 
 - `npm test` vor jedem Commit (Auswertungslogik in `public/stats.js`).
-- Frontend bleibt ohne Build-Schritt und ohne externe Abhängigkeiten.
+- Frontend bleibt ohne Build-Schritt und ohne externe Abhängigkeiten. Nach Änderungen in `public/` immer `npm run build` ausführen und `dist/erfolgstracker.html` mitcommitten (der Nutzer benutzt die Einzeldatei auf einem PC ohne Node).
+- Der Nutzer speichert über die GitHub-API direkt in `data/*.json`. Vor eigenen Einträgen immer `git pull`, damit keine Änderungen überschrieben werden.
 - Punkte-/Level-Regeln nur in `public/stats.js` ändern, nie doppelt im Frontend.
 - Daten in `data/*.json` nie löschen oder umstrukturieren, ohne dass der Nutzer es verlangt.

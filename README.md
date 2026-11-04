@@ -6,7 +6,25 @@ Persönlicher Erfolgstracker als eigenes Programm: Workouts, schnelle Essens-Che
 - **Daten gehören dir.** Alles liegt als lesbare JSON-Dateien in `data/`. Jedes Tool (oder du per Hand) kann sie bearbeiten.
 - **Aktualisiert sich aus Sessions.** Claude-Sessions tragen Erfolge über das CLI ein und committen sie; beim nächsten `git pull` ist das Dashboard aktuell.
 
-## Einrichtung (einmalig)
+## Ohne Installation (Arbeits-PC, Handy, überall)
+
+Du brauchst nur einen Browser und ein GitHub-Token. Nichts wird installiert.
+
+1. Datei `dist/erfolgstracker.html` auf GitHub öffnen, oben rechts „Download raw file“ (Pfeil-Symbol), irgendwo speichern (Desktop reicht) und per Doppelklick im Browser öffnen.
+2. Token anlegen: https://github.com/settings/personal-access-tokens/new → „Only select repositories“ → dieses Repo → Repository permissions → **Contents: Read and write**. Ablauf z. B. 1 Jahr. Token kopieren.
+3. In der App: ⚙︎ Einstellungen → GitHub-Sync → Repository `marktgaertner/Motivationstracker`, Branch (leer = Standard-Branch), Token einfügen → „Verbinden & laden“.
+
+Ab dann liest und schreibt die App die Dateien in `data/` direkt im Repo. Jede Änderung ist ein Commit. Claude-Sessions schreiben über das CLI in dieselben Dateien, beim nächsten Öffnen oder Neuladen ist alles da. Das Token bleibt nur im Browser (localStorage) und lässt sich jederzeit unter „Trennen“ entfernen oder auf GitHub widerrufen.
+
+Ohne Token funktioniert die App nur lesend (bei öffentlichem Repo) oder nur mit Speicherung im Browser.
+
+Alternativ per GitHub Pages: Settings → Pages → Branch wählen, Ordner `/ (root)`. Die App ist dann unter `https://<nutzer>.github.io/Motivationstracker/` erreichbar und verbindet sich automatisch lesend mit dem Repo; Token wie oben eintragen. Bei privaten Repos braucht Pages einen bezahlten GitHub-Plan, die Einzeldatei nicht.
+
+**Datenschutz:** Fixkosten, Noten und Gewohnheiten sind persönlich. Ist das Repo öffentlich, kann jeder `data/` lesen. Umstellen: GitHub → Settings → General → Danger Zone → „Change repository visibility“ → Private. Die Einzeldatei mit Token funktioniert mit privaten Repos genauso.
+
+## Mit lokalem Server (eigener Rechner)
+
+### Einrichtung (einmalig)
 
 1. **Node.js installieren** (falls `node -v` im Terminal nichts ausgibt):
    - Windows: `winget install OpenJS.NodeJS.LTS` in der Eingabeaufforderung, oder Installer von https://nodejs.org/ (LTS). Danach ein neues Terminal öffnen.
@@ -18,7 +36,7 @@ Persönlicher Erfolgstracker als eigenes Programm: Workouts, schnelle Essens-Che
    ```
    Ohne Git: auf GitHub „Code → Download ZIP“, entpacken, Terminal im entpackten Ordner öffnen.
 
-## Start
+### Start
 
 Windows: Doppelklick auf `start.bat` (prüft Node, startet den Server, öffnet den Browser).
 
@@ -102,6 +120,9 @@ lib/store.js     Dateispeicher (wird von Server und CLI geteilt)
 public/          Frontend ohne Build: index.html, app.js, style.css
 public/stats.js  Auswertungslogik, gemeinsam für Browser und Node
 test.js          Tests der Auswertungslogik: npm test
+build.js         baut dist/erfolgstracker.html (Einzeldatei, npm run build)
+dist/            fertige Einzeldatei zum Herunterladen
+index.html       Weiterleitung nach public/ für GitHub Pages
 ```
 
 ## Mögliche nächste Schritte

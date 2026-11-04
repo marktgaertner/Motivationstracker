@@ -163,7 +163,7 @@ pre { background: var(--surface-2); padding: 12px; border-radius: 10px; overflow
 @media (max-width: 640px) {
   .top { padding: 8px 12px; gap: 8px; }
   nav a { padding: 6px 9px; font-size: .9rem; }
-  .mode { display: none; }
+  .mode { font-size: .7rem; }
   .view { padding: 14px 12px 50px; }
   .kpi { font-size: 1.7rem; }
   .feed li { grid-template-columns: 48px 1fr auto; }

@@ -16,7 +16,7 @@
     sessions: [],
   };
 
-  const state = { data: null, mode: 'api', view: 'dashboard', survey: null, filter: {} };
+  const state = { data: null, mode: 'api', view: 'dashboard', survey: null, filter: {}, gh: null, ghError: null };
 
   // ---------- Speicher ----------
   function clone(v) { return JSON.parse(JSON.stringify(v)); }
@@ -32,13 +32,79 @@
     if (!out.finances.savings) out.finances.savings = { target: 0, current: 0 };
     return out;
   }
+  // ---------- GitHub-Sync (läuft ohne Installation direkt im Browser) ----------
+  const GH_KEY = 'erfolgstracker.github';
+  function ghConfig() { try { return JSON.parse(localStorage.getItem(GH_KEY) || 'null'); } catch (e) { return null; } }
+  function ghSave(cfg) { try { if (cfg) localStorage.setItem(GH_KEY, JSON.stringify(cfg)); else localStorage.removeItem(GH_KEY); } catch (e) { /* ignorieren */ } }
+  function ghDefaults() {
+    let repo = 'marktgaertner/Motivationstracker';
+    const m = location.hostname.match(/^([^.]+)\.github\.io$/);
+    if (m) { const seg = location.pathname.split('/').filter(Boolean)[0]; if (seg) repo = `${m[1]}/${seg}`; }
+    return { repo, branch: '', token: '' };
+  }
+  function b64(str) {
+    const bytes = new TextEncoder().encode(str); let bin = '';
+    for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    return btoa(bin);
+  }
+  const GH = {
+    headers(cfg, raw) {
+      const hd = { Accept: raw ? 'application/vnd.github.raw+json' : 'application/vnd.github+json', 'X-GitHub-Api-Version': '2022-11-28' };
+      if (cfg.token) hd.Authorization = 'Bearer ' + cfg.token;
+      return hd;
+    },
+    async request(cfg, path, init = {}, raw = false) {
+      const r = await fetch('https://api.github.com' + path, Object.assign({ cache: 'no-store' }, init, { headers: Object.assign(this.headers(cfg, raw), init.headers || {}) }));
+      if (r.status === 404 && raw) return null;
+      if (!r.ok) { let msg = r.status + ' ' + r.statusText; try { msg = (await r.json()).message || msg; } catch (e) { /* kein JSON */ } throw new Error('GitHub: ' + msg); }
+      return raw ? r.text() : r.json();
+    },
+    async defaultBranch(cfg) { return (await this.request(cfg, `/repos/${cfg.repo}`)).default_branch; },
+    async loadAll(cfg) {
+      const out = {};
+      await Promise.all(Object.keys(DEFAULTS).map(async (k) => {
+        const txt = await this.request(cfg, `/repos/${cfg.repo}/contents/data/${k}.json?ref=${encodeURIComponent(cfg.branch)}`, {}, true);
+        if (txt !== null) out[k] = JSON.parse(txt);
+      }));
+      return out;
+    },
+    async save(cfg, k, value, attempt = 0) {
+      if (!cfg.token) throw new Error('Nur Lesezugriff. Zum Speichern im Repo ein GitHub-Token unter Einstellungen hinterlegen.');
+      const path = `/repos/${cfg.repo}/contents/data/${k}.json`;
+      let sha;
+      try { sha = (await this.request(cfg, `${path}?ref=${encodeURIComponent(cfg.branch)}`)).sha; } catch (e) { sha = undefined; }
+      const body = { message: `Tracker: ${k} aktualisiert`, content: b64(JSON.stringify(value, null, 2) + '\n'), branch: cfg.branch };
+      if (sha) body.sha = sha;
+      try {
+        await this.request(cfg, path, { method: 'PUT', body: JSON.stringify(body), headers: { 'Content-Type': 'application/json' } });
+      } catch (e) {
+        if (attempt < 1 && /409|422|sha/i.test(e.message)) return this.save(cfg, k, value, attempt + 1);
+        throw e;
+      }
+    },
+  };
+
   async function load() {
+    state.ghError = null;
+    // 1) Lokaler Server (npm start)
     if (location.protocol !== 'file:') {
       try {
         const r = await fetch('/api/data', { cache: 'no-store' });
         if (r.ok) { state.data = withDefaults(await r.json()); state.mode = 'api'; return; }
       } catch (e) { /* kein Server */ }
     }
+    // 2) GitHub-Sync (konfiguriert oder automatisch auf github.io)
+    let cfg = ghConfig();
+    if (!cfg && /\.github\.io$/.test(location.hostname)) cfg = ghDefaults();
+    if (cfg && cfg.repo) {
+      try {
+        if (!cfg.branch) { cfg.branch = await GH.defaultBranch(cfg); ghSave(cfg); }
+        const d = await GH.loadAll(cfg);
+        if (!Object.keys(d).length) throw new Error(`GitHub: keine data/*.json in ${cfg.repo}@${cfg.branch} gefunden`);
+        state.data = withDefaults(d); state.mode = 'github'; state.gh = cfg; return;
+      } catch (e) { state.ghError = e.message; }
+    }
+    // 3) Nur Browser (localStorage)
     state.mode = 'local';
     let saved = null;
     try { saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) { saved = null; }
@@ -48,6 +114,8 @@
     if (state.mode === 'api') {
       const r = await fetch('/api/' + collection, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.data[collection]) });
       if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || 'Speichern fehlgeschlagen');
+    } else if (state.mode === 'github') {
+      await GH.save(state.gh, collection, state.data[collection]);
     } else {
       try { localStorage.setItem(LS_KEY, JSON.stringify(state.data)); } catch (e) { throw new Error('localStorage nicht verfügbar'); }
     }
@@ -164,6 +232,7 @@
             <a class="btn ${s.eating.todayDone ? '' : 'primary'}" href="#essen">${s.eating.todayDone ? 'Check-in ✔' : 'Essens-Check-in'}</a>
             <a class="btn" href="#sessions">+ Erfolg</a>
           </div></div>
+        ${state.mode === 'local' ? '<div class="hint" style="margin-bottom:14px">Daten liegen nur in diesem Browser. Für Sync mit deinen Sessions: <a href="#einstellungen" style="text-decoration:underline">Einstellungen → GitHub-Sync</a>.</div>' : ''}
         <div class="grid">
           <div class="card"><h3>Punkte</h3><div class="kpi">${s.points.total} <small>P.</small></div>
             <div class="sub">${s.level.next ? `${s.level.next - s.points.total} bis Level ${s.level.number + 1}` : 'Höchstes Level erreicht'}</div>
@@ -359,8 +428,21 @@
 
     einstellungen() {
       const st = settings();
+      const cfg = ghConfig() || ghDefaults();
+      const where = state.mode === 'api' ? 'als JSON-Dateien im Ordner <code>data/</code> (lokaler Server)' : state.mode === 'github' ? `im GitHub-Repo <code>${h(state.gh.repo)}</code>, Branch <code>${h(state.gh.branch)}</code>${state.gh.token ? '' : ' (nur lesen)'}` : 'nur in diesem Browser (localStorage)';
       return `
-        <div class="page-head"><div><h2>Einstellungen</h2><p class="muted">Daten liegen ${state.mode === 'api' ? 'als JSON-Dateien im Ordner <code>data/</code>' : 'nur in diesem Browser (localStorage)'}.</p></div></div>
+        <div class="page-head"><div><h2>Einstellungen</h2><p class="muted">Daten liegen ${where}.</p></div></div>
+        <div class="card" style="margin-bottom:14px"><h3>GitHub-Sync · ohne Installation</h3>
+          <p class="small muted">Die App liest und schreibt <code>data/*.json</code> direkt im Repo. Zum Schreiben ein <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener" style="text-decoration:underline">fein abgestuftes Token</a> anlegen: nur dieses Repository, Berechtigung „Contents: Read and write“. Das Token bleibt in diesem Browser.</p>
+          <form class="inline" data-form="github">
+            <label>Repository<input name="repo" value="${h(cfg.repo)}" placeholder="besitzer/repo" required></label>
+            <label>Branch<input name="branch" value="${h(cfg.branch)}" placeholder="leer = Standard-Branch"></label>
+            <label class="full">Token<input type="password" name="token" value="${h(cfg.token)}" placeholder="github_pat_… (optional, ohne Token nur lesen)" autocomplete="off"></label>
+            <div class="row"><button class="primary" type="submit">Verbinden & laden</button><button type="button" data-action="gh-disconnect">Trennen</button></div>
+          </form>
+          ${state.ghError ? `<p class="small" style="color:var(--danger);margin-bottom:0">${h(state.ghError)}</p>` : ''}
+          ${state.mode === 'api' ? '<p class="small muted" style="margin-bottom:0">Hinweis: Solange der lokale Server läuft, hat er Vorrang vor GitHub.</p>' : ''}
+        </div>
         <div class="grid two">
           <div class="card"><h3>Ziele</h3>
             <form class="inline" data-form="settings">
@@ -414,6 +496,13 @@
     savings(fd) {
       return mutate('finances', (f) => { f.savings = { target: Number(fd.get('target')) || 0, current: Number(fd.get('current')) || 0 }; }, 'Sparziel gespeichert');
     },
+    async github(fd) {
+      const cfg = { repo: fd.get('repo').trim().replace(/^https?:\/\/github\.com\//, '').replace(/\.git$/, ''), branch: fd.get('branch').trim(), token: fd.get('token').trim() };
+      ghSave(cfg);
+      toast('Verbinde mit GitHub…');
+      await load(); render();
+      toast(state.mode === 'github' ? `Verbunden: ${state.gh.repo}@${state.gh.branch}` : (state.ghError || 'Verbindung fehlgeschlagen'), state.mode !== 'github');
+    },
     settings(fd) {
       return mutate('settings', (s) => Object.assign(s, { name: fd.get('name').trim(), weeklyWorkoutGoal: Number(fd.get('weeklyWorkoutGoal')) || 0, dailyWaterGoal: Number(fd.get('dailyWaterGoal')) || 0, currency: fd.get('currency').trim() || '€' }), 'Einstellungen gespeichert');
     },
@@ -451,6 +540,10 @@
       state.survey = null;
       return mutate('checkins', (l) => [...l.filter((x) => x.date !== c.date), c], `Check-in gespeichert · ${S.eatingScore(c, settings())}/10 · +${pts} P.`);
     },
+    async 'gh-disconnect'() {
+      ghSave(null); state.gh = null;
+      await load(); render(); toast('GitHub getrennt');
+    },
     export() {
       const blob = new Blob([JSON.stringify(state.data, null, 2)], { type: 'application/json' });
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `erfolgstracker-${today()}.json`; a.click();
@@ -475,8 +568,8 @@
     if (state.view !== 'essen') state.survey = null;
     $view.innerHTML = views[state.view]();
     for (const a of $nav.querySelectorAll('a')) a.classList.toggle('active', a.dataset.view === state.view);
-    $mode.textContent = state.mode === 'api' ? 'data/*.json' : 'nur Browser';
-    $mode.classList.toggle('local', state.mode !== 'api');
+    $mode.textContent = state.mode === 'api' ? 'data/*.json' : state.mode === 'github' ? `GitHub ${state.gh.repo.split('/')[1]}@${state.gh.branch}${state.gh.token ? '' : ' (lesen)'}` : 'nur Browser';
+    $mode.classList.toggle('local', state.mode === 'local' || (state.mode === 'github' && !state.gh.token));
     document.title = `Erfolgstracker · ${$nav.querySelector('a.active')?.textContent || ''}`;
   }
   window.addEventListener('hashchange', () => { window.scrollTo(0, 0); render(); });

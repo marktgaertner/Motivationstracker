@@ -828,6 +828,20 @@
     document.title = `Erfolgstracker · ${$nav.querySelector('a.active')?.textContent || ''}`;
     loadPhotos();
   }
+  // Update-Hinweis für die Einzeldatei: Build-Kennung der Datei gegen dist/version.json im Repo vergleichen
+  async function checkUpdate() {
+    if (!window.__BUILD__ || state.mode !== 'github') return;
+    try {
+      const txt = await GH.request(state.gh, `/repos/${state.gh.repo}/contents/dist/version.json?ref=${encodeURIComponent(state.gh.branch)}`, {}, true);
+      const v = txt ? JSON.parse(txt) : null;
+      if (v && v.build && v.build !== window.__BUILD__) {
+        const link = `https://github.com/${state.gh.repo}/raw/${encodeURIComponent(state.gh.branch)}/dist/erfolgstracker.html`;
+        const bar = document.createElement('div'); bar.className = 'hint'; bar.style.cssText = 'margin:10px 16px 0;';
+        bar.innerHTML = `Neue Version der App vom ${S.fmtDate(String(v.builtAt).slice(0, 10))} verfügbar. <a href="${link}" style="text-decoration:underline">Datei herunterladen</a> und die alte ersetzen. Deine Daten sind davon nicht betroffen.`;
+        document.querySelector('header.top').insertAdjacentElement('afterend', bar);
+      }
+    } catch (e) { /* kein Hinweis möglich */ }
+  }
   window.addEventListener('hashchange', () => { window.scrollTo(0, 0); render(); });
   $view.addEventListener('click', (e) => {
     const el = e.target.closest('[data-action]');
@@ -853,5 +867,5 @@
     if (map[e.key]) location.hash = map[e.key];
   });
 
-  load().then(render).catch((e) => { $view.innerHTML = `<div class="empty">Fehler beim Laden: ${h(e.message)}</div>`; });
+  load().then(() => { render(); checkUpdate(); }).catch((e) => { $view.innerHTML = `<div class="empty">Fehler beim Laden: ${h(e.message)}</div>`; });
 })();

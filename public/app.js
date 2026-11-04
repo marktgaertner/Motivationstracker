@@ -11,11 +11,11 @@
 
   const DEFAULTS = {
     settings: { name: '', weeklyWorkoutGoal: 3, dailyWaterGoal: 6, currency: '€', heightCm: null, birthYear: null, targetEcts: 210, vapeGoalPerDay: 4, alcoholFreeSince: null, consumptionSharePct: 100,
-    goals: { kmPerWeek: null, eatingScoreMin: 7, checkinDaysPerWeek: 6, smokePerWeek: 0, vapeTempMax: 230, variableBudget: null, stepsPerDay: null, weightTarget: null } },
+    goals: { kmPerWeek: null, eatingScoreMin: 7, checkinDaysPerWeek: 6, smokePerWeek: 0, vapeTempMax: 230, variableBudget: null, stepsPerDay: null, weightTarget: null, lift: null } },
     workouts: [], checkins: [], milestones: [],
     finances: { fixedCosts: [], income: [], expenses: [], savings: { target: 0, current: 0 } },
     sessions: [], reviews: [], consumption: [],
-    health: { sleep: [], weight: [], steps: [], restingHR: [] },
+    health: { sleep: [], weight: [], steps: [], restingHR: [], lifts: [] },
   };
 
   const state = { data: null, mode: 'api', view: 'dashboard', survey: null, filter: {}, gh: null, ghError: null };
@@ -31,7 +31,7 @@
       }
     }
     for (const k of ['fixedCosts', 'income', 'expenses']) if (!Array.isArray(out.finances[k])) out.finances[k] = [];
-    for (const k of ['sleep', 'weight', 'steps', 'restingHR']) if (!Array.isArray(out.health[k])) out.health[k] = [];
+    for (const k of ['sleep', 'weight', 'steps', 'restingHR', 'lifts']) if (!Array.isArray(out.health[k])) out.health[k] = [];
     if (!out.finances.savings) out.finances.savings = { target: 0, current: 0 };
     return out;
   }
@@ -338,7 +338,16 @@
             <label>Foto<input type="file" name="photo" accept="image/*"></label>
             <div><button class="primary" type="submit">Speichern</button></div>
           </form></div>
-        <div class="card" style="margin-top:14px"><h3>Pro Woche</h3>${barChart(s.workouts.series, s.workouts.goal)}</div>
+        <div class="grid two" style="margin-top:14px">
+          <div class="card"><h3>Pro Woche</h3>${barChart(s.workouts.series, s.workouts.goal)}</div>
+          <div class="card"><h3>Kraftwert eintragen</h3>
+            <form class="inline" data-form="lift">
+              <label>Übung<input name="exercise" value="${h((settings().goals || {}).lift ? settings().goals.lift.exercise : 'Klimmzug')}" required></label>
+              <label>Zusatz kg<input type="number" name="kg" step="0.5" min="0" value="0" required></label>
+              <label>Wdh<input type="number" name="reps" min="1" max="50" value="5" required></label>
+              <div><button class="primary sm" type="submit">+</button></div></form>
+            ${(() => { const lp = S.liftProgress(d.health, (settings().goals || {}).lift, (S.healthSummary(d.health, t, settings()).weight || {}).kg || 0); if (!lp) return '<p class="sub">Kraftziel unter ⚙︎ Einstellungen setzen.</p>'; return `<div class="sub" style="margin-top:8px">Ziel: ${h(lp.exercise)} ${lp.target.reps}× mit +${lp.target.kg} kg${lp.target.due ? ' bis ' + S.fmtDate(lp.target.due) : ''}</div>${lp.latest ? `<div class="progress"><i style="width:${Math.round(lp.score * 100)}%"></i></div><div class="sub">${Math.round(lp.score * 100)} % der Ziel-Last · Bestwert geschätztes 1RM ${Math.round(lp.bestE1rm)} kg, Ziel ${Math.round(lp.targetE1rm)} kg (inkl. Körpergewicht)</div>` : '<div class="sub">noch kein Wert</div>'}<ul class="feed" style="margin-top:8px">${[...(d.health.lifts || [])].filter((l) => l.exercise === lp.exercise).sort((a, b) => b.date.localeCompare(a.date)).slice(0, 6).map((l) => `<li><span class="date">${S.fmtDateShort(l.date)}</span><span>${l.reps}× mit +${h(l.kg)} kg${l.note ? ` <span class="muted small">– ${h(l.note)}</span>` : ''}</span><span class="small muted">e1RM ${Math.round(S.e1rm(((S.healthSummary(d.health, t, settings()).weight || {}).kg || 0) + Number(l.kg), l.reps))}</span></li>`).join('')}</ul>`; })()}</div>
+        </div>
         <div class="card" style="margin-top:14px"><h3>Verlauf</h3>
           ${list.length ? `<div class="table-wrap"><table><thead><tr><th>Datum</th><th>Typ</th><th class="num">Min</th><th>Int.</th><th>Notiz</th><th class="num">P.</th><th></th></tr></thead><tbody>
           ${list.slice(0, 100).map((w) => `<tr><td>${S.fmtDate(w.date)}</td><td>${h(w.type)}</td><td class="num">${h(w.minutes)}</td><td>${['', 'locker', 'normal', 'hart'][w.intensity] || ''}</td><td class="muted">${h(w.note)} ${photoTag(w.photo)}</td><td class="num">+${S.workoutPoints(w)}</td><td><button class="ghost sm" data-action="del" data-col="workouts" data-id="${h(w.id)}" title="Löschen">✕</button></td></tr>`).join('')}
@@ -658,6 +667,10 @@
               <label>Ziel: variables Budget / Monat<input type="number" name="g_variableBudget" min="0" value="${h((st.goals || {}).variableBudget ?? '')}" placeholder="leer = Break-even"></label>
               <label>Ziel: Schritte pro Tag<input type="number" name="g_stepsPerDay" min="0" value="${h((st.goals || {}).stepsPerDay ?? '')}" placeholder="optional"></label>
               <label>Ziel: Gewicht (kg)<input type="number" name="g_weightTarget" min="30" max="300" step="0.5" value="${h((st.goals || {}).weightTarget ?? '')}" placeholder="optional"></label>
+              <label>Kraftziel: Übung<input name="g_liftExercise" value="${h(((st.goals || {}).lift || {}).exercise || '')}" placeholder="Klimmzug"></label>
+              <label>Kraftziel: Zusatz kg<input type="number" name="g_liftKg" step="0.5" min="0" value="${h(((st.goals || {}).lift || {}).kg ?? '')}"></label>
+              <label>Kraftziel: Wdh<input type="number" name="g_liftReps" min="1" value="${h(((st.goals || {}).lift || {}).reps ?? '')}"></label>
+              <label>Kraftziel: bis<input type="date" name="g_liftDue" value="${h(((st.goals || {}).lift || {}).due || '')}"></label>
               <div><button class="primary" type="submit">Speichern</button></div>
             </form></div>
           <div class="card"><h3>Daten</h3>
@@ -725,9 +738,13 @@
       try { localStorage.setItem(CLD_KEY, JSON.stringify({ cloud: fd.get('cloud').trim(), preset: fd.get('preset').trim() })); toast('Cloudinary gespeichert'); } catch (e) { toast('localStorage nicht verfügbar', true); }
       render();
     },
+    lift(fd) {
+      const l = { id: newId(), date: today(), exercise: fd.get('exercise').trim(), kg: Number(fd.get('kg')) || 0, reps: Number(fd.get('reps')) || 1, note: '' };
+      return mutate('health', (hh) => { hh.lifts = hh.lifts || []; hh.lifts.push(l); }, `Kraftwert gespeichert: ${l.exercise} ${l.reps}× +${l.kg} kg`);
+    },
     settings(fd) {
       const numOrNull = (k) => (fd.get(k) === '' || fd.get(k) === null ? null : Number(fd.get(k)));
-      return mutate('settings', (s) => Object.assign(s, { name: fd.get('name').trim(), weeklyWorkoutGoal: Number(fd.get('weeklyWorkoutGoal')) || 0, dailyWaterGoal: Number(fd.get('dailyWaterGoal')) || 0, currency: fd.get('currency').trim() || '€', vapeGoalPerDay: numOrNull('vapeGoalPerDay'), heightCm: numOrNull('heightCm'), birthYear: numOrNull('birthYear'), targetEcts: numOrNull('targetEcts'), alcoholFreeSince: fd.get('alcoholFreeSince') || null, consumptionSharePct: numOrNull('consumptionSharePct') ?? 100, goals: Object.assign({}, s.goals || {}, { kmPerWeek: numOrNull('g_kmPerWeek'), eatingScoreMin: numOrNull('g_eatingScoreMin') ?? 7, checkinDaysPerWeek: numOrNull('g_checkinDaysPerWeek') ?? 6, smokePerWeek: 0, vapeTempMax: numOrNull('g_vapeTempMax'), variableBudget: numOrNull('g_variableBudget'), stepsPerDay: numOrNull('g_stepsPerDay'), weightTarget: numOrNull('g_weightTarget') }) }), 'Einstellungen gespeichert');
+      return mutate('settings', (s) => Object.assign(s, { name: fd.get('name').trim(), weeklyWorkoutGoal: Number(fd.get('weeklyWorkoutGoal')) || 0, dailyWaterGoal: Number(fd.get('dailyWaterGoal')) || 0, currency: fd.get('currency').trim() || '€', vapeGoalPerDay: numOrNull('vapeGoalPerDay'), heightCm: numOrNull('heightCm'), birthYear: numOrNull('birthYear'), targetEcts: numOrNull('targetEcts'), alcoholFreeSince: fd.get('alcoholFreeSince') || null, consumptionSharePct: numOrNull('consumptionSharePct') ?? 100, goals: Object.assign({}, s.goals || {}, { kmPerWeek: numOrNull('g_kmPerWeek'), eatingScoreMin: numOrNull('g_eatingScoreMin') ?? 7, checkinDaysPerWeek: numOrNull('g_checkinDaysPerWeek') ?? 6, smokePerWeek: 0, vapeTempMax: numOrNull('g_vapeTempMax'), variableBudget: numOrNull('g_variableBudget'), stepsPerDay: numOrNull('g_stepsPerDay'), weightTarget: numOrNull('g_weightTarget'), lift: fd.get('g_liftExercise').trim() ? { exercise: fd.get('g_liftExercise').trim(), kg: numOrNull('g_liftKg') ?? 0, reps: numOrNull('g_liftReps') ?? 5, due: fd.get('g_liftDue') || null, bodyweight: true } : null }) }), 'Einstellungen gespeichert');
     },
   };
 

@@ -88,6 +88,15 @@ const commands = {
     const saved = existing ? store.update('consumption', existing.id, entry) : store.append('consumption', entry);
     out(`✔ Konsum ${S.fmtDate(today)}: ${saved.vape}× verdampft${saved.temp ? ' bei ' + saved.temp + ' °C' : ''}, ${saved.smoke}× Bong/Tabak · Belastung ${S.loadScore(saved)} (+${S.consumptionPoints(saved)} Punkte)`);
   },
+  lift() {
+    const [exercise, kg, reps, ...note] = pos;
+    if (!exercise || kg === undefined || reps === undefined) fail('Nutzung: lift <Übung> <Zusatz-kg> <Wdh> [Notiz]   z. B. lift Klimmzug 20 5');
+    const h = store.read('health'); h.lifts = h.lifts || [];
+    const e = { id: store.newId(), date: today, exercise, kg: num(kg, 0), reps: num(reps, 1), note: note.join(' ') };
+    h.lifts.push(e); store.write('health', h);
+    const w = (h.weight || []).slice().sort((a, b) => a.date.localeCompare(b.date)).pop();
+    out(`✔ Kraftwert: ${e.exercise} ${e.reps}× mit +${e.kg} kg${w ? ` · geschätztes 1RM ${Math.round(S.e1rm(Number(w.kg) + e.kg, e.reps))} kg inkl. Körpergewicht` : ''}`);
+  },
   review() {
     const weekStart = S.startOfWeek(opts.week || today);
     const list = store.read('reviews');
@@ -185,6 +194,7 @@ const commands = {
   milestone done <id|Titelteil> [--grade 1.7 --ects 5]
   session <Titel> [Zusammenfassung] [--points 15]
   konsum --vape N [--temp 320] --smoke N [Notiz]   (ein Eintrag pro Tag, überschreibt)
+  lift <Übung> <Zusatz-kg> <Wdh> [Notiz]            Kraftwert (z. B. Klimmzug 20 5)
   review --week YYYY-MM-DD --energy 1-5 --sleep 1-5 --stress 1-5 --adherence 1-5 [--weight 78.5] --wins "…" --obstacles "…" --learned "…" --focus "…" [--coach "…"]
   fixed [add <Name> <Betrag> [monthly|quarterly|yearly|weekly] [--day 15]]
   income [add <Name> <Betrag> [Intervall] [--day 29]]

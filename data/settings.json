@@ -17,7 +17,14 @@
     "vapeTempMax": 230,
     "variableBudget": null,
     "stepsPerDay": null,
-    "weightTarget": null
+    "weightTarget": null,
+    "lift": {
+      "exercise": "Klimmzug",
+      "kg": 30,
+      "reps": 5,
+      "due": "2027-02-28",
+      "bodyweight": true
+    }
   },
   "startDate": "2026-11-04"
 }

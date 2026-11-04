@@ -271,6 +271,17 @@
       sleepWeek: inWeek(h.sleep, week), stepsWeek: inWeek(h.steps, week),
     };
   }
+  // Geschätztes 1RM nach Epley; bei Klimmzügen zählt Körpergewicht + Zusatz
+  function e1rm(totalKg, reps) { const r = Number(reps) || 1; return (Number(totalKg) || 0) * (1 + r / 30); }
+  function liftProgress(health, goalLift, bodyKg) {
+    if (!goalLift || !goalLift.exercise) return null;
+    const lifts = ((health && health.lifts) || []).filter((l) => l.exercise === goalLift.exercise).sort((a, b) => a.date.localeCompare(b.date));
+    if (!lifts.length) return { exercise: goalLift.exercise, latest: null, score: null, target: goalLift };
+    const bw = goalLift.bodyweight ? Number(bodyKg) || 0 : 0;
+    const best = lifts.reduce((m, l) => Math.max(m, e1rm(bw + (Number(l.kg) || 0), l.reps)), 0);
+    const target = e1rm(bw + (Number(goalLift.kg) || 0), goalLift.reps);
+    return { exercise: goalLift.exercise, latest: lifts[lifts.length - 1], bestE1rm: best, targetE1rm: target, score: target ? Math.max(0, Math.min(1, best / target)) : null, target: goalLift };
+  }
   function consumptionSeriesDates(today, days) { const out = []; for (let i = days - 1; i >= 0; i--) out.push(addDays(today, -i)); return out; }
 
   // ---------- Finanzen ----------
@@ -420,8 +431,10 @@
     const bParts = [];
     if (g.stepsPerDay && hs.stepsAvg7 !== null) bParts.push(ratioUp(hs.stepsAvg7, g.stepsPerDay));
     if (g.weightTarget && hs.weight) { const diff = Math.abs(Number(hs.weight.kg) - g.weightTarget); bParts.push(clamp01(1 - diff / 10)); }
+    const lp = liftProgress(data.health, g.lift, hs.weight ? hs.weight.kg : 0);
+    if (lp && lp.score !== null) bParts.push(lp.score);
     const bNow = bParts.length ? average(bParts) : null;
-    goals.push({ key: 'koerper', title: 'Körper', target: [g.stepsPerDay ? `${g.stepsPerDay.toLocaleString('de-DE')} Schritte/Tag` : null, g.weightTarget ? `${g.weightTarget} kg` : null].filter(Boolean).join(' · ') || 'kein Ziel gesetzt', actual: [hs.stepsAvg7 !== null ? `Ø ${Math.round(hs.stepsAvg7).toLocaleString('de-DE')} Schritte` : null, hs.weight ? `${hs.weight.kg} kg` : null].filter(Boolean).join(' · ') || 'keine Daten', score: bNow, trend: null, detail: 'Schritte (Apple Health), Gewicht' });
+    goals.push({ key: 'koerper', title: 'Körper & Kraft', target: [g.stepsPerDay ? `${g.stepsPerDay.toLocaleString('de-DE')} Schritte/Tag` : null, g.weightTarget ? `${g.weightTarget} kg` : null, lp ? `${lp.exercise} ${lp.target.reps}× mit +${lp.target.kg} kg${lp.target.due ? ' bis ' + fmtDateShort(lp.target.due) : ''}` : null].filter(Boolean).join(' · ') || 'kein Ziel gesetzt', actual: [hs.stepsAvg7 !== null ? `Ø ${Math.round(hs.stepsAvg7).toLocaleString('de-DE')} Schritte` : null, hs.weight ? `${hs.weight.kg} kg` : null, lp && lp.latest ? `${lp.exercise} zuletzt ${lp.latest.reps}× +${lp.latest.kg} kg (${Math.round(lp.score * 100)} % der Ziel-Last)` : lp ? `${lp.exercise}: noch kein Wert` : null].filter(Boolean).join(' · ') || 'keine Daten', score: bNow, trend: null, detail: 'Schritte, Gewicht, Kraftziel über geschätztes 1RM (Epley)', lift: lp });
 
     // Wochen-Check
     const rs = reviewStatus(data.reviews, today);
@@ -485,6 +498,6 @@
     workoutsInWeek, weeklyGoalStreak, weeklyWorkoutSeries,
     eatingScore, dayStreak, checkinSeries, average,
     uniAverage, ectsProgress, openMilestones, monthlyAmount, financeSummary, upcoming,
-    CONSUMPTION_WEIGHTS, vapeWeight, loadScore, consumptionPoints, consumptionSeries, smokeFreeStreak, weeklyConsumption, consumptionSummary, consumptionSpend, healthSummary, goalScores, goalLabel, activityByDay, feed, summary,
+    CONSUMPTION_WEIGHTS, vapeWeight, loadScore, consumptionPoints, consumptionSeries, smokeFreeStreak, weeklyConsumption, consumptionSummary, consumptionSpend, healthSummary, goalScores, goalLabel, e1rm, liftProgress, activityByDay, feed, summary,
   };
 });

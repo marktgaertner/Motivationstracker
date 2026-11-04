@@ -1535,5 +1535,15 @@
       "source": "apple-health:🗿"
     }
   ],
-  "restingHR": []
+  "restingHR": [],
+  "lifts": [
+    {
+      "id": "mw2lzd9k6p981",
+      "date": "2026-11-04",
+      "exercise": "Klimmzug",
+      "kg": 0,
+      "reps": 14,
+      "note": "Schätzung des Nutzers: 13–15 ausgeruht, paralleler Griff, nie mit Zusatzgewicht"
+    }
+  ]
 }

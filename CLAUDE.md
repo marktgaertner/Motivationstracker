@@ -38,6 +38,7 @@ Lädt der Nutzer hier ein Foto hoch, gehört es in den Tracker:
 ## Konsum (Cannabis), Körper, Importe
 
 - Nennt der Nutzer seinen Konsum („heute 4× gedampft bei 300, 1× Bong“): `node tracker.js konsum --vape 4 --temp 300 --smoke 1`. Ein Eintrag pro Tag, erneuter Aufruf überschreibt. Ziel des Nutzers: weg von Bong + Tabak, weniger und kühler verdampfen. Nicht moralisieren, Fortschritt an den Zahlen festmachen (Tage ohne Tabak, Belastung pro Woche).
+- Kraftwerte: `node tracker.js lift Klimmzug 20 5` (Zusatz-kg, Wiederholungen). Kraftziel steht in settings.goals.lift.
 - Gewicht: in `data/health.json` unter `weight` mit `{date, kg, source: "manuell"}` eintragen (oder im Wochen-Check).
 - Apple-Health-Export (`export.zip`) hochgeladen: `node import-health.js <datei> --dry`, Vorschau zeigen, dann ohne `--dry` speichern.
 - Kontoauszug-CSV hochgeladen: `node import-bank.js <datei>`, Vorschau zeigen, Kategorien mit dem Nutzer klären, dann `--apply`.

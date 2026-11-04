@@ -272,7 +272,8 @@
     };
   }
   // Geschätztes 1RM nach Epley; bei Klimmzügen zählt Körpergewicht + Zusatz
-  function e1rm(totalKg, reps) { const r = Number(reps) || 1; return (Number(totalKg) || 0) * (1 + r / 30); }
+  // Geschätztes 1RM nach Epley; über 10 Wiederholungen wird die Formel unzuverlässig, daher bei 10 gedeckelt
+  function e1rm(totalKg, reps) { const r = Math.min(10, Number(reps) || 1); return (Number(totalKg) || 0) * (1 + r / 30); }
   function liftProgress(health, goalLift, bodyKg) {
     if (!goalLift || !goalLift.exercise) return null;
     const lifts = ((health && health.lifts) || []).filter((l) => l.exercise === goalLift.exercise).sort((a, b) => a.date.localeCompare(b.date));

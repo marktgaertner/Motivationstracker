@@ -109,9 +109,9 @@ assert.strictEqual(byKey.koerper.score, null);
 assert.strictEqual(S.goalLabel(0.95), 'im Ziel');
 
 // Kraft
-assert.strictEqual(Math.round(S.e1rm(89, 14)), 131);
+assert.strictEqual(Math.round(S.e1rm(89, 14)), 119); // gedeckelt bei 10 Wdh
 const lp = S.liftProgress({ lifts: [{ date: '2026-11-04', exercise: 'Klimmzug', kg: 0, reps: 14 }] }, { exercise: 'Klimmzug', kg: 30, reps: 5, bodyweight: true }, 89);
-assert.strictEqual(Math.round(lp.score * 100), 94);
+assert.strictEqual(Math.round(lp.score * 100), 85);
 assert.strictEqual(S.liftProgress({ lifts: [] }, { exercise: 'Klimmzug', kg: 30, reps: 5, bodyweight: true }, 89).score, null);
 
 console.log('✔ alle Tests bestanden');

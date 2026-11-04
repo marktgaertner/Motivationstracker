@@ -96,11 +96,11 @@ const commands = {
     if (sub === 'add') {
       const [name, amount, interval] = args;
       if (!name || amount === undefined) fail('Nutzung: fixed add <Name> <Betrag> [monthly|quarterly|yearly|weekly]');
-      const e = store.append('finances', { name, amount: num(amount, 0), interval: interval || 'monthly' }, 'fixedCosts');
-      out(`✔ Fixkosten angelegt: ${e.name} ${S.fmtMoney(e.amount)} ${S.INTERVALS[e.interval]}`);
+      const e = store.append('finances', { name, amount: num(amount, 0), interval: interval || 'monthly', day: opts.day ? num(opts.day, null) : null }, 'fixedCosts');
+      out(`✔ Fixkosten angelegt: ${e.name} ${S.fmtMoney(e.amount)} ${S.INTERVALS[e.interval]}${e.day ? ' am ' + e.day + '.' : ''}`);
     } else {
       const f = store.read('finances');
-      for (const c of f.fixedCosts) out(`${c.name.padEnd(24)} ${S.fmtMoney(c.amount).padStart(12)}  ${S.INTERVALS[c.interval] || c.interval}  (${c.id})`);
+      for (const c of f.fixedCosts) out(`${c.name.padEnd(28)} ${S.fmtMoney(c.amount).padStart(12)}  ${(S.INTERVALS[c.interval] || c.interval).padEnd(15)} ${c.day ? ('am ' + c.day + '.').padEnd(7) : ''.padEnd(7)} (${c.id})`);
       out(`Summe pro Monat: ${S.fmtMoney(f.fixedCosts.reduce((a, c) => a + S.monthlyAmount(c.amount, c.interval), 0))}`);
     }
   },
@@ -109,11 +109,11 @@ const commands = {
     if (sub === 'add') {
       const [name, amount, interval] = args;
       if (!name || amount === undefined) fail('Nutzung: income add <Name> <Betrag> [monthly|quarterly|yearly|weekly]');
-      const e = store.append('finances', { name, amount: num(amount, 0), interval: interval || 'monthly' }, 'income');
-      out(`✔ Einnahme angelegt: ${e.name} ${S.fmtMoney(e.amount)} ${S.INTERVALS[e.interval]}`);
+      const e = store.append('finances', { name, amount: num(amount, 0), interval: interval || 'monthly', day: opts.day ? num(opts.day, null) : null }, 'income');
+      out(`✔ Einnahme angelegt: ${e.name} ${S.fmtMoney(e.amount)} ${S.INTERVALS[e.interval]}${e.day ? ' am ' + e.day + '.' : ''}`);
     } else {
       const f = store.read('finances');
-      for (const c of f.income) out(`${c.name.padEnd(24)} ${S.fmtMoney(c.amount).padStart(12)}  ${S.INTERVALS[c.interval] || c.interval}  (${c.id})`);
+      for (const c of f.income) out(`${c.name.padEnd(28)} ${S.fmtMoney(c.amount).padStart(12)}  ${(S.INTERVALS[c.interval] || c.interval).padEnd(15)} ${c.day ? ('am ' + c.day + '.').padEnd(7) : ''.padEnd(7)} (${c.id})`);
     }
   },
   expense() {
@@ -151,6 +151,7 @@ const commands = {
     const f = s.finance;
     out(`  FINANZEN   Einnahmen ${S.fmtMoney(f.incomeMonthly, cur)} · Fixkosten ${S.fmtMoney(f.fixedMonthly, cur)} · variabel ${f.month} ${S.fmtMoney(f.variableMonth, cur)} → frei ${S.fmtMoney(f.free, cur)}`);
     if (f.savingsPct !== null) out(`             Sparziel ${Math.round(f.savingsPct * 100)} %`);
+    for (const u of f.upcoming.slice(0, 5)) out(`             ${S.fmtDateShort(u.date)} ${u.kind === 'income' ? '+' : '−'}${S.fmtMoney(u.amount, cur).padStart(11)}  ${u.name}`);
     out('\n  LETZTE ERFOLGE');
     for (const e of s.feed.slice(0, 6)) out(`    ${S.fmtDateShort(e.date)}  +${String(e.points).padStart(3)}  ${e.title}${e.detail ? ' – ' + e.detail : ''}`);
     out('');
@@ -164,8 +165,8 @@ const commands = {
   milestone done <id|Titelteil> [--grade 1.7 --ects 5]
   session <Titel> [Zusammenfassung] [--points 15]
   review --week YYYY-MM-DD --energy 1-5 --sleep 1-5 --stress 1-5 --adherence 1-5 [--weight 78.5] --wins "…" --obstacles "…" --learned "…" --focus "…" [--coach "…"]
-  fixed [add <Name> <Betrag> [monthly|quarterly|yearly|weekly]]
-  income [add <Name> <Betrag> [Intervall]]
+  fixed [add <Name> <Betrag> [monthly|quarterly|yearly|weekly] [--day 15]]
+  income [add <Name> <Betrag> [Intervall] [--day 29]]
   expense <Betrag> [Kategorie] [Notiz]
   list <Sammlung>  ·  remove <Sammlung> <id> [--sub ...]
   summary

@@ -201,7 +201,27 @@
     const savingsPct = Number(savings.target) > 0 ? Math.min(1, (Number(savings.current) || 0) / Number(savings.target)) : null;
     const byCategory = {};
     for (const e of expensesMonth) byCategory[e.category || 'Sonstiges'] = (byCategory[e.category || 'Sonstiges'] || 0) + (Number(e.amount) || 0);
-    return { month, fixedMonthly, incomeMonthly, variableMonth, free, savingsPct, byCategory, expensesMonth };
+    return { month, fixedMonthly, incomeMonthly, variableMonth, free, savingsPct, byCategory, expensesMonth, upcoming: upcoming(f, today, 14) };
+  }
+  // Nächste Abbuchungen/Eingänge in den kommenden Tagen (Feld day = Tag im Monat; quarterly/yearly zählen wie monatlich, wenn kein Startmonat bekannt ist)
+  function upcoming(finances, today, days = 14) {
+    const out = [];
+    const t = parse(today);
+    const push = (item, kind) => {
+      const day = Number(item.day);
+      if (!day || day < 1 || day > 31) return;
+      for (let m = 0; m <= 1; m++) {
+        const d = new Date(t.getFullYear(), t.getMonth() + m, 1);
+        const last = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
+        d.setDate(Math.min(day, last));
+        const ds = localDate(d);
+        const diff = daysBetween(today, ds);
+        if (diff >= 0 && diff <= days) out.push({ name: item.name, amount: Number(item.amount) || 0, date: ds, inDays: diff, kind, interval: item.interval });
+      }
+    };
+    for (const c of (finances && finances.fixedCosts) || []) push(c, 'cost');
+    for (const c of (finances && finances.income) || []) push(c, 'income');
+    return out.sort((a, b) => a.date.localeCompare(b.date) || a.name.localeCompare(b.name));
   }
   function fmtMoney(n, currency = '€') {
     const v = Number(n) || 0;
@@ -280,6 +300,6 @@
     workoutPoints, checkinPoints, milestonePoints, sessionPoints, reviewPoints, points, level, isoWeek, reviewStatus,
     workoutsInWeek, weeklyGoalStreak, weeklyWorkoutSeries,
     eatingScore, dayStreak, checkinSeries, average,
-    uniAverage, openMilestones, monthlyAmount, financeSummary, activityByDay, feed, summary,
+    uniAverage, openMilestones, monthlyAmount, financeSummary, upcoming, activityByDay, feed, summary,
   };
 });

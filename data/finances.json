@@ -1,6 +1,120 @@
 {
-  "fixedCosts": [],
-  "income": [],
+  "fixedCosts": [
+    {
+      "id": "mw1xo8wxp0tqp",
+      "createdAt": "2026-11-04T09:47:49.665Z",
+      "name": "Krankenversicherung",
+      "amount": 150,
+      "interval": "monthly",
+      "day": null
+    },
+    {
+      "id": "mw1xo90yb0q0h",
+      "createdAt": "2026-11-04T09:47:49.810Z",
+      "name": "DBV Berufsunfähigkeit",
+      "amount": 33.73,
+      "interval": "monthly",
+      "day": 2
+    },
+    {
+      "id": "mw1xo92ha5fgk",
+      "createdAt": "2026-11-04T09:47:49.865Z",
+      "name": "WWK",
+      "amount": 5,
+      "interval": "monthly",
+      "day": 2
+    },
+    {
+      "id": "mw1xo93zlicpv",
+      "createdAt": "2026-11-04T09:47:49.919Z",
+      "name": "Internet",
+      "amount": 31.98,
+      "interval": "monthly",
+      "day": 2
+    },
+    {
+      "id": "mw1xo95oqqzhk",
+      "createdAt": "2026-11-04T09:47:49.980Z",
+      "name": "Gym",
+      "amount": 10,
+      "interval": "monthly",
+      "day": 3
+    },
+    {
+      "id": "mw1xo975snfr8",
+      "createdAt": "2026-11-04T09:47:50.033Z",
+      "name": "Gym Servicepauschale",
+      "amount": 29.8,
+      "interval": "quarterly",
+      "day": 3
+    },
+    {
+      "id": "mw1xo98zhmpbq",
+      "createdAt": "2026-11-04T09:47:50.099Z",
+      "name": "MMA",
+      "amount": 37.5,
+      "interval": "monthly",
+      "day": 5
+    },
+    {
+      "id": "mw1xo9ajm1npb",
+      "createdAt": "2026-11-04T09:47:50.155Z",
+      "name": "Ebase Depot (Sparen)",
+      "amount": 35,
+      "interval": "monthly",
+      "day": 6
+    },
+    {
+      "id": "mw1xo9c8ut4vr",
+      "createdAt": "2026-11-04T09:47:50.216Z",
+      "name": "Fraenk SIM",
+      "amount": 15,
+      "interval": "monthly",
+      "day": 14
+    },
+    {
+      "id": "mw1xo9dmb8brk",
+      "createdAt": "2026-11-04T09:47:50.266Z",
+      "name": "Die Linke",
+      "amount": 7.5,
+      "interval": "quarterly",
+      "day": 14
+    },
+    {
+      "id": "mw1xo9f9q0dpb",
+      "createdAt": "2026-11-04T09:47:50.325Z",
+      "name": "Strom",
+      "amount": 95,
+      "interval": "monthly",
+      "day": 17
+    },
+    {
+      "id": "mw1xo9h7kkpqe",
+      "createdAt": "2026-11-04T09:47:50.395Z",
+      "name": "iCloud",
+      "amount": 4,
+      "interval": "monthly",
+      "day": 30
+    }
+  ],
+  "income": [
+    {
+      "id": "mw1xo9ij0kc70",
+      "createdAt": "2026-11-04T09:47:50.443Z",
+      "name": "Oma",
+      "amount": 150,
+      "interval": "monthly",
+      "day": 20
+    },
+    {
+      "id": "mw1xo9k4cef74",
+      "createdAt": "2026-11-04T09:47:50.500Z",
+      "name": "Werkstudent (netto, Vormonat; Sept.: 95 h)",
+      "amount": 1310.82,
+      "interval": "monthly",
+      "day": 29
+    }
+  ],
   "expenses": [],
   "savings": {
     "target": 0,

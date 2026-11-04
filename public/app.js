@@ -269,6 +269,7 @@
             <div class="progress"><i style="width:${Math.round(((s.eating.avg7 || 0) / 10) * 100)}%"></i></div></div>
           <div class="card"><h3>Frei im Monat</h3><div class="kpi" style="color:${f.free < 0 ? 'var(--danger)' : 'inherit'}">${h(money(f.free))}</div>
             <div class="sub">Einnahmen ${h(money(f.incomeMonthly))} − Fixkosten ${h(money(f.fixedMonthly))} − variabel ${h(money(f.variableMonth))}</div>
+            ${f.upcoming.length ? `<div class="sub">Nächste: ${f.upcoming.slice(0, 2).map((u) => `${S.fmtDateShort(u.date)} ${u.kind === 'income' ? '+' : '−'}${h(money(u.amount))} ${h(u.name)}`).join(' · ')}</div>` : ''}
             ${f.savingsPct !== null ? `<div class="progress"><i style="width:${Math.round(f.savingsPct * 100)}%"></i></div><div class="sub">Sparziel ${Math.round(f.savingsPct * 100)} %</div>` : ''}</div>
         </div>
         <div class="grid two" style="margin-top:14px">
@@ -386,7 +387,7 @@
       const fixedItems = [...f.fixedCosts].map((c) => ({ label: c.name, value: S.monthlyAmount(c.amount, c.interval) })).sort((a, b) => b.value - a.value);
       const catItems = Object.entries(s.byCategory).map(([label, value]) => ({ label, value })).sort((a, b) => b.value - a.value);
       const expenses = [...f.expenses].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 40);
-      const listTable = (rows, sub) => rows.length ? `<table><tbody>${rows.map((c) => `<tr><td>${h(c.name)}</td><td class="muted small">${S.INTERVALS[c.interval] || c.interval}</td><td class="num">${h(money(c.amount))}</td><td class="num muted small">${h(money(S.monthlyAmount(c.amount, c.interval)))}/Mon.</td><td><button class="ghost sm" data-action="del" data-col="finances" data-sub="${sub}" data-id="${h(c.id)}">✕</button></td></tr>`).join('')}</tbody></table>` : `<div class="empty">Noch nichts eingetragen.</div>`;
+      const listTable = (rows, sub) => rows.length ? `<table><tbody>${[...rows].sort((a, b) => (Number(a.day) || 99) - (Number(b.day) || 99)).map((c) => `<tr><td>${h(c.name)}</td><td class="muted small">${c.day ? `am ${h(c.day)}. · ` : ''}${S.INTERVALS[c.interval] || c.interval}</td><td class="num">${h(money(c.amount))}</td><td class="num muted small">${h(money(S.monthlyAmount(c.amount, c.interval)))}/Mon.</td><td><button class="ghost sm" data-action="del" data-col="finances" data-sub="${sub}" data-id="${h(c.id)}">✕</button></td></tr>`).join('')}</tbody></table>` : `<div class="empty">Noch nichts eingetragen.</div>`;
       const intervalOpts = opts(Object.keys(S.INTERVALS), 'monthly', S.INTERVALS);
       return `
         <div class="page-head"><div><h2>Finanzen</h2><p class="muted">${s.month} · frei ${h(money(s.free))} pro Monat</p></div></div>
@@ -407,6 +408,7 @@
               <label>Name<input name="name" required placeholder="Miete, Handy, Versicherung…"></label>
               <label>Betrag<input type="number" name="amount" step="0.01" min="0" required></label>
               <label>Intervall<select name="interval">${intervalOpts}</select></label>
+              <label>Tag<input type="number" name="day" min="1" max="31" placeholder="z. B. 2"></label>
               <div><button class="primary sm" type="submit">+</button></div></form>
             ${listTable(f.fixedCosts, 'fixedCosts')}
             ${fixedItems.length ? `<div style="margin-top:12px">${hbars(fixedItems.slice(0, 10))}</div>` : ''}</div>
@@ -415,8 +417,10 @@
               <label>Quelle<input name="name" required placeholder="Gehalt, BAföG, Sidehustle…"></label>
               <label>Betrag<input type="number" name="amount" step="0.01" min="0" required></label>
               <label>Intervall<select name="interval">${intervalOpts}</select></label>
+              <label>Tag<input type="number" name="day" min="1" max="31" placeholder="z. B. 29"></label>
               <div><button class="primary sm" type="submit">+</button></div></form>
-            ${listTable(f.income, 'income')}</div>
+            ${listTable(f.income, 'income')}
+            ${s.upcoming.length ? `<h3 style="margin-top:16px">Nächste 14 Tage</h3><ul class="feed">${s.upcoming.map((u) => `<li><span class="date">${S.fmtDateShort(u.date)}</span><span>${h(u.name)} <span class="muted small">${u.inDays === 0 ? 'heute' : u.inDays === 1 ? 'morgen' : 'in ' + u.inDays + ' T.'}</span></span><span class="pts" style="color:${u.kind === 'income' ? 'var(--accent)' : 'var(--danger)'}">${u.kind === 'income' ? '+' : '−'}${h(money(u.amount))}</span></li>`).join('')}</ul>` : ''}</div>
         </div>
         <div class="grid two" style="margin-top:14px">
           <div class="card"><h3>Ausgabe erfassen</h3>
@@ -552,11 +556,11 @@
       return mutate('sessions', (l) => [...l, s], `Erfolg gespeichert · +${S.sessionPoints(s)} P.`);
     },
     fixed(fd) {
-      const c = { id: newId(), name: fd.get('name').trim(), amount: Number(fd.get('amount')) || 0, interval: fd.get('interval') };
+      const c = { id: newId(), name: fd.get('name').trim(), amount: Number(fd.get('amount')) || 0, interval: fd.get('interval'), day: fd.get('day') ? Number(fd.get('day')) : null };
       return mutate('finances', (f) => { f.fixedCosts.push(c); }, 'Fixkosten gespeichert');
     },
     income(fd) {
-      const c = { id: newId(), name: fd.get('name').trim(), amount: Number(fd.get('amount')) || 0, interval: fd.get('interval') };
+      const c = { id: newId(), name: fd.get('name').trim(), amount: Number(fd.get('amount')) || 0, interval: fd.get('interval'), day: fd.get('day') ? Number(fd.get('day')) : null };
       return mutate('finances', (f) => { f.income.push(c); }, 'Einnahme gespeichert');
     },
     expense(fd) {

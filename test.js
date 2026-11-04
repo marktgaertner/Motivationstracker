@@ -77,4 +77,10 @@ assert.strictEqual(S.reviewStatus([{ weekStart: '2026-10-19', date: '2026-10-25'
 assert.strictEqual(S.reviewStatus([{ weekStart: '2026-10-26', date: '2026-11-01' }], '2026-11-04').due, null);
 assert.strictEqual(S.points({ reviews: [{}, { points: 5 }] }).by.reviews, 25);
 
+// Abbuchungen
+const up = S.upcoming({ fixedCosts: [{ name: 'Strom', amount: 95, day: 17 }, { name: 'iCloud', amount: 4, day: 30 }, { name: 'KV', amount: 150 }], income: [{ name: 'Oma', amount: 150, day: 20 }] }, '2026-11-04', 14);
+assert.deepStrictEqual(up.map((u) => u.name), ['Strom']);
+assert.strictEqual(up[0].inDays, 13);
+assert.deepStrictEqual(S.upcoming({ fixedCosts: [{ name: 'iCloud', amount: 4, day: 30 }], income: [] }, '2026-02-20', 14)[0].date, '2026-02-28');
+
 console.log('✔ alle Tests bestanden');

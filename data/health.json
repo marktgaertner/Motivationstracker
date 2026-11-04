@@ -10,6 +10,1051 @@
   ],
   "steps": [
     {
+      "date": "2026-01-01",
+      "count": 955,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-02",
+      "count": 2386,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-03",
+      "count": 5964,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-04",
+      "count": 4802,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-05",
+      "count": 3862,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-06",
+      "count": 2126,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-07",
+      "count": 16089,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-08",
+      "count": 11181,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-09",
+      "count": 4464,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-10",
+      "count": 23069,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-11",
+      "count": 6377,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-12",
+      "count": 5122,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-13",
+      "count": 1939,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-14",
+      "count": 12216,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-15",
+      "count": 7944,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-16",
+      "count": 7622,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-17",
+      "count": 11082,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-18",
+      "count": 7600,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-19",
+      "count": 4229,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-20",
+      "count": 7086,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-21",
+      "count": 3919,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-22",
+      "count": 4912,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-23",
+      "count": 14257,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-24",
+      "count": 8559,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-25",
+      "count": 152,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-26",
+      "count": 4636,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-27",
+      "count": 2299,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-28",
+      "count": 13566,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-29",
+      "count": 12564,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-30",
+      "count": 8375,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-01-31",
+      "count": 4867,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-01",
+      "count": 3420,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-02",
+      "count": 8970,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-03",
+      "count": 20085,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-04",
+      "count": 2459,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-05",
+      "count": 8781,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-06",
+      "count": 22400,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-07",
+      "count": 29673,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-08",
+      "count": 3882,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-09",
+      "count": 7971,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-10",
+      "count": 4489,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-11",
+      "count": 5449,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-12",
+      "count": 2882,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-13",
+      "count": 226,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-14",
+      "count": 6250,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-15",
+      "count": 10062,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-16",
+      "count": 265,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-17",
+      "count": 24190,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-18",
+      "count": 23629,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-19",
+      "count": 22536,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-20",
+      "count": 5943,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-21",
+      "count": 21962,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-22",
+      "count": 6390,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-23",
+      "count": 5936,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-24",
+      "count": 8026,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-25",
+      "count": 14890,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-26",
+      "count": 8266,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-27",
+      "count": 16367,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-02-28",
+      "count": 11559,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-01",
+      "count": 18166,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-02",
+      "count": 22348,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-03",
+      "count": 17451,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-04",
+      "count": 29613,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-05",
+      "count": 28723,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-06",
+      "count": 13272,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-07",
+      "count": 15556,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-08",
+      "count": 5111,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-09",
+      "count": 2692,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-10",
+      "count": 2566,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-11",
+      "count": 4250,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-12",
+      "count": 17068,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-13",
+      "count": 7001,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-14",
+      "count": 4938,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-15",
+      "count": 7234,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-16",
+      "count": 8727,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-17",
+      "count": 11027,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-18",
+      "count": 9585,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-19",
+      "count": 14282,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-20",
+      "count": 10333,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-21",
+      "count": 12019,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-22",
+      "count": 9222,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-23",
+      "count": 5575,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-24",
+      "count": 3712,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-25",
+      "count": 12803,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-26",
+      "count": 5290,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-27",
+      "count": 1890,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-28",
+      "count": 2141,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-29",
+      "count": 137,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-30",
+      "count": 121,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-03-31",
+      "count": 8219,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-01",
+      "count": 11992,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-02",
+      "count": 13411,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-03",
+      "count": 19813,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-04",
+      "count": 6513,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-05",
+      "count": 15932,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-06",
+      "count": 11054,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-07",
+      "count": 3117,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-08",
+      "count": 8390,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-09",
+      "count": 7876,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-10",
+      "count": 4185,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-11",
+      "count": 9161,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-12",
+      "count": 12191,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-13",
+      "count": 6123,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-14",
+      "count": 5507,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-15",
+      "count": 8440,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-16",
+      "count": 7923,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-17",
+      "count": 13587,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-18",
+      "count": 8758,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-19",
+      "count": 3548,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-20",
+      "count": 4770,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-21",
+      "count": 6557,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-22",
+      "count": 7949,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-23",
+      "count": 12883,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-24",
+      "count": 6067,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-25",
+      "count": 14276,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-26",
+      "count": 21436,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-27",
+      "count": 16604,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-28",
+      "count": 23540,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-29",
+      "count": 10886,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-04-30",
+      "count": 12755,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-01",
+      "count": 7814,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-02",
+      "count": 10931,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-03",
+      "count": 22765,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-04",
+      "count": 7852,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-05",
+      "count": 6417,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-06",
+      "count": 8538,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-07",
+      "count": 5248,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-08",
+      "count": 10095,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-09",
+      "count": 8584,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-10",
+      "count": 20604,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-11",
+      "count": 15790,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-12",
+      "count": 7280,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-13",
+      "count": 4657,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-14",
+      "count": 4753,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-15",
+      "count": 8240,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-16",
+      "count": 12911,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-17",
+      "count": 9493,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-18",
+      "count": 5286,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-19",
+      "count": 15420,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-20",
+      "count": 14514,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-21",
+      "count": 11028,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-22",
+      "count": 5017,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-23",
+      "count": 25980,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-24",
+      "count": 330,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-25",
+      "count": 10442,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-26",
+      "count": 7160,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-27",
+      "count": 11210,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-28",
+      "count": 6683,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-29",
+      "count": 13368,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-30",
+      "count": 9199,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-05-31",
+      "count": 16180,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-01",
+      "count": 4397,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-02",
+      "count": 9742,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-03",
+      "count": 9050,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-04",
+      "count": 11732,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-05",
+      "count": 14432,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-06",
+      "count": 7015,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-07",
+      "count": 22324,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-08",
+      "count": 10473,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-09",
+      "count": 6702,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-10",
+      "count": 12948,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-11",
+      "count": 7236,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-12",
+      "count": 17702,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-13",
+      "count": 18419,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-14",
+      "count": 16666,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-15",
+      "count": 8981,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-16",
+      "count": 18404,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-17",
+      "count": 4060,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-18",
+      "count": 13235,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-19",
+      "count": 22987,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-20",
+      "count": 21567,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-21",
+      "count": 15531,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-22",
+      "count": 10711,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-23",
+      "count": 8746,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-24",
+      "count": 10094,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-25",
+      "count": 22441,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-26",
+      "count": 12099,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-27",
+      "count": 6998,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-28",
+      "count": 11521,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-29",
+      "count": 9594,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-06-30",
+      "count": 24811,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-01",
+      "count": 7194,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-02",
+      "count": 9868,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-03",
+      "count": 16092,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-04",
+      "count": 7395,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-05",
+      "count": 19800,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-06",
+      "count": 5572,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-07",
+      "count": 12559,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-08",
+      "count": 15185,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-09",
+      "count": 14641,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-10",
+      "count": 7572,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-11",
+      "count": 25997,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-12",
+      "count": 15952,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-13",
+      "count": 17298,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-14",
+      "count": 5974,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-15",
+      "count": 16706,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-16",
+      "count": 7012,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-17",
+      "count": 15493,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-18",
+      "count": 8901,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-19",
+      "count": 14757,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-20",
+      "count": 5895,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-21",
+      "count": 18829,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-22",
+      "count": 8789,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-23",
+      "count": 4273,
+      "source": "apple-health:iPhone von Vincent"
+    },
+    {
+      "date": "2026-07-27",
+      "count": 13155,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-07-28",
+      "count": 6799,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-07-29",
+      "count": 11139,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-07-30",
+      "count": 13409,
+      "source": "apple-health:🗿"
+    },
+    {
+      "date": "2026-07-31",
+      "count": 9074,
+      "source": "apple-health:🗿"
+    },
+    {
       "date": "2026-08-01",
       "count": 15297,
       "source": "apple-health:🗿"
@@ -486,7 +1531,7 @@
     },
     {
       "date": "2026-11-04",
-      "count": 1127,
+      "count": 1493,
       "source": "apple-health:🗿"
     }
   ],

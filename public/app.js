@@ -831,6 +831,8 @@
   // Update-Hinweis für die Einzeldatei: Build-Kennung der Datei gegen dist/version.json im Repo vergleichen
   async function checkUpdate() {
     if (!window.__BUILD__ || state.mode !== 'github') return;
+    if (window.__LIVE__ === true) return;
+    if (window.__LIVE__ && typeof window.__LIVE__.then === 'function' && (await window.__LIVE__)) return;
     try {
       const txt = await GH.request(state.gh, `/repos/${state.gh.repo}/contents/dist/version.json?ref=${encodeURIComponent(state.gh.branch)}`, {}, true);
       const v = txt ? JSON.parse(txt) : null;
@@ -867,5 +869,8 @@
     if (map[e.key]) location.hash = map[e.key];
   });
 
-  load().then(() => { render(); checkUpdate(); }).catch((e) => { $view.innerHTML = `<div class="empty">Fehler beim Laden: ${h(e.message)}</div>`; });
+  const boot = () => load().then(() => { render(); checkUpdate(); }).catch((e) => { $view.innerHTML = `<div class="empty">Fehler beim Laden: ${h(e.message)}</div>`; });
+  // Wenn der Loader der Einzeldatei gerade eine neuere Version holt, nicht doppelt starten
+  if (window.__LIVE__ && typeof window.__LIVE__.then === 'function') window.__LIVE__.then((swapped) => { if (!swapped) boot(); });
+  else boot();
 })();

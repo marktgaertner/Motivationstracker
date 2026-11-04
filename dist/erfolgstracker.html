@@ -212,7 +212,30 @@ pre { background: var(--surface-2); padding: 12px; border-radius: 10px; overflow
   </header>
   <main id="view" class="view"><p class="muted">Lade…</p></main>
   <div id="toast" class="toast" hidden></div>
-  <script>window.__BUILD__ = '390257f2b9';</script>
+  <script>window.__BUILD__ = '390257f2b9';
+/* Selbstaktualisierung: Liegt im Repo eine neuere Version, wird die Seite aus public/ neu aufgebaut. Sonst läuft die eingebaute. */
+(function () {
+  let cfg = null; try { cfg = JSON.parse(localStorage.getItem('erfolgstracker.github') || 'null'); } catch (e) { cfg = null; }
+  if (!cfg || !cfg.repo) return;
+  const branch = cfg.branch || 'main';
+  const hdr = { Accept: 'application/vnd.github.raw+json', 'X-GitHub-Api-Version': '2022-11-28' };
+  if (cfg.token) hdr.Authorization = 'Bearer ' + cfg.token;
+  const get = (p) => fetch('https://api.github.com/repos/' + cfg.repo + '/contents/' + p + '?ref=' + encodeURIComponent(branch), { headers: hdr, cache: 'no-store' }).then((r) => (r.ok ? r.text() : Promise.reject(new Error('HTTP ' + r.status))));
+  const esc = (js) => js.replace(/<\/script/gi, '<\\/script');
+  window.__LIVE__ = get('dist/version.json').then((v) => {
+    const remote = JSON.parse(v).build;
+    if (!remote || remote === window.__BUILD__) return false;
+    return Promise.all([get('public/index.html'), get('public/style.css'), get('public/stats.js'), get('public/app.js')]).then(([html, css, stats, app]) => {
+      const page = html
+        .replace('<link rel="stylesheet" href="style.css">', () => '<style>\n' + css + '\n</style>')
+        .replace('<script src="stats.js"><\/script>', () => '<script>window.__BUILD__ = ' + JSON.stringify(remote) + '; window.__LIVE__ = true;<\/script>\n<script>\n' + esc(stats) + '\n<\/script>')
+        .replace('<script src="app.js"><\/script>', () => '<script>\n' + esc(app) + '\n<\/script>');
+      document.open(); document.write(page); document.close();
+      return true;
+    });
+  }).catch(() => false);
+})();
+</script>
 <script>
 /* Gemeinsame Auswertungslogik für Browser (window.Stats) und Node (require).
    Keine Abhängigkeiten. Alle Datumswerte sind lokale Strings "YYYY-MM-DD". */
@@ -1554,6 +1577,8 @@ pre { background: var(--surface-2); padding: 12px; border-radius: 10px; overflow
   // Update-Hinweis für die Einzeldatei: Build-Kennung der Datei gegen dist/version.json im Repo vergleichen
   async function checkUpdate() {
     if (!window.__BUILD__ || state.mode !== 'github') return;
+    if (window.__LIVE__ === true) return;
+    if (window.__LIVE__ && typeof window.__LIVE__.then === 'function' && (await window.__LIVE__)) return;
     try {
       const txt = await GH.request(state.gh, `/repos/${state.gh.repo}/contents/dist/version.json?ref=${encodeURIComponent(state.gh.branch)}`, {}, true);
       const v = txt ? JSON.parse(txt) : null;
@@ -1590,7 +1615,10 @@ pre { background: var(--surface-2); padding: 12px; border-radius: 10px; overflow
     if (map[e.key]) location.hash = map[e.key];
   });
 
-  load().then(() => { render(); checkUpdate(); }).catch((e) => { $view.innerHTML = `<div class="empty">Fehler beim Laden: ${h(e.message)}</div>`; });
+  const boot = () => load().then(() => { render(); checkUpdate(); }).catch((e) => { $view.innerHTML = `<div class="empty">Fehler beim Laden: ${h(e.message)}</div>`; });
+  // Wenn der Loader der Einzeldatei gerade eine neuere Version holt, nicht doppelt starten
+  if (window.__LIVE__ && typeof window.__LIVE__.then === 'function') window.__LIVE__.then((swapped) => { if (!swapped) boot(); });
+  else boot();
 })();
 
 </script>

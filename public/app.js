@@ -153,8 +153,31 @@
   function badge(kind, text) { return `<span class="badge ${h(kind)}">${h(text)}</span>`; }
   // Fotos: lokaler Server liefert /data/photos/…, im GitHub-Modus werden sie per API geladen (auch bei privatem Repo).
   const photoCache = {};
+  const CLD_KEY = 'erfolgstracker.cloudinary';
+  const CLD_DEFAULT = { cloud: 'dhi0djnrs', preset: 'erfolgstracker' };
+  function cldConfig() { try { return Object.assign({}, CLD_DEFAULT, JSON.parse(localStorage.getItem(CLD_KEY) || '{}')); } catch (e) { return Object.assign({}, CLD_DEFAULT); } }
+  function thumbUrl(url) { return /res\.cloudinary\.com\/.+\/upload\//.test(url) ? url.replace('/upload/', '/upload/c_fill,w_160,h_160,q_auto,f_auto/') : url; }
+  async function uploadPhoto(file, kind) {
+    const cfg = cldConfig();
+    if (!cfg.cloud || !cfg.preset) throw new Error('Foto-Upload nicht eingerichtet: Einstellungen → Fotos (Cloudinary).');
+    toast('Lade Foto hoch…');
+    const fd = new FormData();
+    fd.append('file', file); fd.append('upload_preset', cfg.preset);
+    fd.append('folder', 'erfolgstracker/' + today().slice(0, 7));
+    fd.append('tags', 'erfolgstracker,' + kind);
+    const r = await fetch(`https://api.cloudinary.com/v1_1/${encodeURIComponent(cfg.cloud)}/image/upload`, { method: 'POST', body: fd });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error('Cloudinary: ' + ((j.error && j.error.message) || r.status));
+    return j.secure_url;
+  }
+  async function photoFromForm(fd, kind) {
+    const file = fd.get('photo');
+    if (!file || typeof file === 'string' || !file.size) return undefined;
+    return uploadPhoto(file, kind);
+  }
   function photoTag(photo, cls = 'thumb') {
     if (!photo) return '';
+    if (/^https?:\/\//.test(photo)) return `<a href="${h(photo)}" target="_blank" rel="noopener"><img class="${cls}" src="${h(thumbUrl(photo))}" alt="Foto" loading="lazy"></a>`;
     if (state.mode === 'api') return `<a href="/data/${h(photo)}" target="_blank" rel="noopener"><img class="${cls}" src="/data/${h(photo)}" alt="Foto" loading="lazy"></a>`;
     if (state.mode === 'github') return `<a href="#" data-action="photo-open" data-photo="${h(photo)}"><img class="${cls}" data-photo="${h(photo)}" src="${photoCache[photo] || ''}" alt="Foto"></a>`;
     return `<span class="badge" title="${h(photo)}">📷</span>`;
@@ -304,6 +327,7 @@
             <label>Minuten<input type="number" name="minutes" min="1" max="600" value="45" required></label>
             <label>Intensität<select name="intensity">${opts(['1', '2', '3'], '2', { 1: 'locker', 2: 'normal', 3: 'hart' })}</select></label>
             <label class="full">Notiz<input name="note" placeholder="z. B. Push Tag, 5×5 Kniebeuge 80 kg"></label>
+            <label>Foto<input type="file" name="photo" accept="image/*"></label>
             <div><button class="primary" type="submit">Speichern</button></div>
           </form></div>
         <div class="card" style="margin-top:14px"><h3>Pro Woche</h3>${barChart(s.workouts.series, s.workouts.goal)}</div>
@@ -336,6 +360,7 @@
               <div class="q"><span class="lbl">Alkohol?</span>${choice('alcohol', [false, true], ['Nein', 'Ja'])}</div>
               <div class="q"><span class="lbl">Stimmung</span>${choice('mood', [1, 2, 3, 4, 5], ['😞', '😕', '😐', '🙂', '😄'])}</div>
               <div class="q"><input placeholder="Notiz (optional)" value="${h(sv.note)}" data-action="survey-note"></div>
+              <div class="q"><label>Foto vom Essen (optional)<input type="file" accept="image/*" data-action="survey-photo"></label>${sv.file ? `<span class="small muted">📷 ${h(sv.file.name)}</span>` : ''}</div>
               <div class="row between"><span class="muted small">Vorschau: <b>${S.eatingScore({ meals: sv.meals, veggies: sv.veggies, snacks: sv.snacks, water: sv.water, alcohol: sv.alcohol }, settings())}/10</b></span>
                 <button class="primary" data-action="survey-save" ${sv.meals === null || sv.veggies === null || sv.snacks === null || sv.alcohol === null ? 'disabled' : ''}>Check-in speichern</button></div>
             </div></div>
@@ -447,6 +472,7 @@
             <label class="full">Titel<input name="title" required placeholder="z. B. Landingpage für Sidehustle live"></label>
             <label class="full">Was genau?<textarea name="summary" placeholder="Kurz: was wurde erreicht, was ist der nächste Schritt?"></textarea></label>
             <label>Punkte<input type="number" name="points" min="0" max="500" value="15"></label>
+            <label>Foto<input type="file" name="photo" accept="image/*"></label>
             <div><button class="primary" type="submit">Speichern</button></div>
           </form>
           <p class="sub">Aus einer Claude-Session heraus: <code>node tracker.js session "Titel" "Zusammenfassung" --points 20</code></p></div>
@@ -517,6 +543,13 @@
           ${state.ghError ? `<p class="small" style="color:var(--danger);margin-bottom:0">${h(state.ghError)}</p>` : ''}
           ${state.mode === 'api' ? '<p class="small muted" style="margin-bottom:0">Hinweis: Solange der lokale Server läuft, hat er Vorrang vor GitHub.</p>' : ''}
         </div>
+        <div class="card" style="margin-bottom:14px"><h3>Fotos · Cloudinary</h3>
+          <p class="small muted">Fotos aus der App (auch vom Handy) gehen direkt nach Cloudinary, im Tracker steht nur die URL. Einmalig in der Cloudinary-Konsole anlegen: Settings → Upload → Upload presets → „Add upload preset“, Signing mode <b>Unsigned</b>, Name wie unten. Ohne Preset gehen Fotos weiterhin über Claude-Sessions.</p>
+          <form class="inline" data-form="cloudinary">
+            <label>Cloud-Name<input name="cloud" value="${h(cldConfig().cloud)}" required></label>
+            <label>Upload-Preset (unsigned)<input name="preset" value="${h(cldConfig().preset)}" placeholder="erfolgstracker"></label>
+            <div><button class="primary sm" type="submit">Speichern</button></div>
+          </form></div>
         <div class="grid two">
           <div class="card"><h3>Ziele</h3>
             <form class="inline" data-form="settings">
@@ -542,8 +575,9 @@
 
   // ---------- Formulare ----------
   const forms = {
-    workout(fd) {
+    async workout(fd) {
       const w = { id: newId(), createdAt: new Date().toISOString(), date: fd.get('date'), type: fd.get('type'), minutes: Number(fd.get('minutes')) || 0, intensity: Number(fd.get('intensity')) || 2, note: fd.get('note').trim() };
+      try { const url = await photoFromForm(fd, 'training'); if (url) w.photo = url; } catch (e) { return toast(e.message, true); }
       return mutate('workouts', (l) => [...l, w], `Workout gespeichert · +${S.workoutPoints(w)} P.`);
     },
     milestone(fd) {
@@ -551,8 +585,9 @@
       if (fd.get('ects')) m.ects = Number(fd.get('ects'));
       return mutate('milestones', (l) => [...l, m], 'Meilenstein angelegt');
     },
-    session(fd) {
+    async session(fd) {
       const s = { id: newId(), createdAt: new Date().toISOString(), date: fd.get('date'), title: fd.get('title').trim(), summary: fd.get('summary').trim(), points: Number(fd.get('points')) || 0 };
+      try { const url = await photoFromForm(fd, 'erfolg'); if (url) s.photo = url; } catch (e) { return toast(e.message, true); }
       return mutate('sessions', (l) => [...l, s], `Erfolg gespeichert · +${S.sessionPoints(s)} P.`);
     },
     fixed(fd) {
@@ -585,6 +620,10 @@
         wins: fd.get('wins').trim(), obstacles: fd.get('obstacles').trim(), learned: fd.get('learned').trim(), focus: fd.get('focus').trim(), points: 20 };
       return mutate('reviews', (l) => { const old = l.find((x) => x.weekStart === weekStart); if (old) Object.assign(r, { id: old.id, coach: old.coach, createdAt: old.createdAt }); return [...l.filter((x) => x.weekStart !== weekStart), r]; }, `Wochen-Check KW ${S.isoWeek(weekStart)} gespeichert · +20 P.`);
     },
+    cloudinary(fd) {
+      try { localStorage.setItem(CLD_KEY, JSON.stringify({ cloud: fd.get('cloud').trim(), preset: fd.get('preset').trim() })); toast('Cloudinary gespeichert'); } catch (e) { toast('localStorage nicht verfügbar', true); }
+      render();
+    },
     settings(fd) {
       return mutate('settings', (s) => Object.assign(s, { name: fd.get('name').trim(), weeklyWorkoutGoal: Number(fd.get('weeklyWorkoutGoal')) || 0, dailyWaterGoal: Number(fd.get('dailyWaterGoal')) || 0, currency: fd.get('currency').trim() || '€' }), 'Einstellungen gespeichert');
     },
@@ -615,9 +654,11 @@
     'survey-step'(el) { state.survey.water = Math.max(0, state.survey.water + Number(el.dataset.delta)); render(); },
     'survey-date'(el) { state.survey.date = el.value || today(); render(); },
     'survey-note'(el) { state.survey.note = el.value; },
-    'survey-save'() {
+    'survey-photo'(el) { state.survey.file = el.files && el.files[0] ? el.files[0] : null; render(); },
+    async 'survey-save'() {
       const sv = state.survey;
       const c = { id: newId(), createdAt: new Date().toISOString(), date: sv.date, meals: sv.meals, veggies: sv.veggies, snacks: sv.snacks, water: sv.water, alcohol: sv.alcohol, mood: sv.mood || 3, note: sv.note.trim() };
+      if (sv.file) { try { c.photo = await uploadPhoto(sv.file, 'essen'); } catch (e) { return toast(e.message, true); } }
       const pts = S.checkinPoints(c, settings());
       state.survey = null;
       return mutate('checkins', (l) => [...l.filter((x) => x.date !== c.date), c], `Check-in gespeichert · ${S.eatingScore(c, settings())}/10 · +${pts} P.`);

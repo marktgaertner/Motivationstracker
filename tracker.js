@@ -29,7 +29,8 @@ function fail(msg) { console.error('Fehler: ' + msg); process.exit(1); }
 
 const { pos, opts } = parseArgs(rest);
 const today = opts.date || store.localDate();
-const photo = opts.photo ? store.storePhoto(String(opts.photo), today) : undefined;
+// --photo akzeptiert eine Cloudinary-/HTTPS-URL (bevorzugt) oder einen lokalen Pfad (wird nach data/photos/ kopiert).
+const photo = opts.photo ? (/^https?:\/\//.test(String(opts.photo)) ? String(opts.photo) : store.storePhoto(String(opts.photo), today)) : undefined;
 
 const commands = {
   workout() {
@@ -171,7 +172,7 @@ const commands = {
   list <Sammlung>  ·  remove <Sammlung> <id> [--sub ...]
   summary
 Alle Befehle akzeptieren --date YYYY-MM-DD für Nachträge.
-workout, checkin und session akzeptieren --photo <Pfad> (Bild wird nach data/photos/ kopiert).`);
+workout, checkin und session akzeptieren --photo <URL oder Pfad> (URL = Cloudinary, Pfad = Kopie nach data/photos/).`);
   },
 };
 

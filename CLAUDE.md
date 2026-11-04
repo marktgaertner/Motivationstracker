@@ -31,7 +31,7 @@ Lädt der Nutzer hier ein Foto hoch, gehört es in den Tracker:
 
 1. Bild ansehen und einordnen: Mahlzeit → `checkin`, Training/Fitness-App/Uhr → `workout`, Notenübersicht/Zeugnis → `milestone done --grade`, Kassenzettel → `expense`, alles andere Erreichte → `session`.
 2. Nur eintragen, was im Bild erkennbar ist. Für Essen: Mahlzeitenqualität 1–5 und Gemüse ja/nein lassen sich schätzen; Snacks, Wasser, Alkohol und Stimmung nicht. Wenn der Nutzer sie nicht nennt, in **einer** kurzen Nachricht nachfragen (z. B. „Snacks heute: keine/etwas/viel? Wasser? Alkohol?“), nicht raten. Mehrere Essensfotos am selben Tag: ein Check-in pro Tag, das Bild der Hauptmahlzeit anhängen, die anderen in der Notiz erwähnen.
-3. Eintragen mit `--photo <Pfad der hochgeladenen Datei>`; das Bild wird nach `data/photos/` kopiert. Datum mit `--date` setzen, wenn das Foto nicht von heute ist.
+3. Bild nach Cloudinary hochladen (nicht ins Repo): MCP-Tool `sign-upload` mit `folder: "erfolgstracker/<JJJJ-MM>"`, `tags: ["erfolgstracker", "<essen|training|uni|finanzen|erfolg>"]`, `context: "alt=<kurze Beschreibung>"`, dann mit `curl` an `https://api.cloudinary.com/v1_1/<cloud_name>/image/upload` posten (alle `upload_params` als Formularfelder, Pfad als `-F 'file=@"<pfad>"'`). Die `secure_url` aus der Antwort als `--photo <URL>` eintragen. Datum mit `--date` setzen, wenn das Foto nicht von heute ist. Fallback ohne Cloudinary: `--photo <lokaler Pfad>` kopiert nach `data/photos/`.
 4. Kurz bestätigen, was eingetragen wurde (Punkte nennen), dann `git add data && git commit && git push`.
 
 ## Wöchentlicher Coach (geplanter Task, sonntags)

@@ -69,7 +69,7 @@ Tastatur: `1`–`7` wechseln die Bereiche.
 
 ## Fotos und wöchentlicher Coach
 
-**Fotos:** Ein Foto vom Essen, Training, einer Notenübersicht oder einem Kassenzettel in einer Claude-Session hochladen. Claude ordnet es ein, fragt nur nach, was im Bild nicht erkennbar ist, und trägt es mit Bild ein (`--photo`). Die Bilder liegen in `data/photos/` und erscheinen als Vorschau in den Listen. Per CLI: `node tracker.js workout Kraft 50 "Bankdrücken" --photo bild.jpg`.
+**Fotos:** Zwei Wege. (1) In der App (auch Handy): Foto beim Workout, Check-in oder Erfolg anhängen, es geht direkt nach Cloudinary, im Tracker steht nur die URL. Dafür einmalig in der Cloudinary-Konsole ein Upload-Preset mit Signing mode „Unsigned“ anlegen (Name `erfolgstracker`) und unter ⚙︎ → Fotos eintragen. (2) In einer Claude-Session hochladen: Claude ordnet das Foto ein, fragt nur nach, was nicht erkennbar ist, lädt es nach Cloudinary und trägt es ein. Per CLI: `node tracker.js workout Kraft 50 "Bankdrücken" --photo https://res.cloudinary.com/…`. Cloudinary-URLs sind öffentlich, aber nicht erratbar.
 
 **Wochen-Check:** Jeden Sonntag startet ein geplanter Task eine Claude-Session, die deine Woche aus den Daten zusammenfasst (Workouts gegen Ziel, Essens-Score, Lücken, fällige Meilensteine, Ausgaben) und dir die Coach-Fragen stellt. Du antwortest in einer Nachricht, Claude trägt es ein und gibt eine Empfehlung für die nächste Woche mit. Der gleiche Fragebogen steht auch in der App unter „Woche“, ab Freitag erinnert die Übersicht daran.
 

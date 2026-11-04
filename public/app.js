@@ -13,7 +13,7 @@
     settings: { name: '', weeklyWorkoutGoal: 3, dailyWaterGoal: 6, currency: '€' },
     workouts: [], checkins: [], milestones: [],
     finances: { fixedCosts: [], income: [], expenses: [], savings: { target: 0, current: 0 } },
-    sessions: [],
+    sessions: [], reviews: [],
   };
 
   const state = { data: null, mode: 'api', view: 'dashboard', survey: null, filter: {}, gh: null, ghError: null };
@@ -151,7 +151,30 @@
     return list.map((v) => `<option value="${h(v)}" ${v === selected ? 'selected' : ''}>${h(labels ? labels[v] : v)}</option>`).join('');
   }
   function badge(kind, text) { return `<span class="badge ${h(kind)}">${h(text)}</span>`; }
-  const KIND_LABEL = { workout: 'Workout', checkin: 'Essen', milestone: 'Meilenstein', session: 'Session' };
+  // Fotos: lokaler Server liefert /data/photos/…, im GitHub-Modus werden sie per API geladen (auch bei privatem Repo).
+  const photoCache = {};
+  function photoTag(photo, cls = 'thumb') {
+    if (!photo) return '';
+    if (state.mode === 'api') return `<a href="/data/${h(photo)}" target="_blank" rel="noopener"><img class="${cls}" src="/data/${h(photo)}" alt="Foto" loading="lazy"></a>`;
+    if (state.mode === 'github') return `<a href="#" data-action="photo-open" data-photo="${h(photo)}"><img class="${cls}" data-photo="${h(photo)}" src="${photoCache[photo] || ''}" alt="Foto"></a>`;
+    return `<span class="badge" title="${h(photo)}">📷</span>`;
+  }
+  async function photoUrl(photo) {
+    if (photoCache[photo]) return photoCache[photo];
+    const cfg = state.gh;
+    const r = await fetch(`https://api.github.com/repos/${cfg.repo}/contents/data/${photo.split('/').map(encodeURIComponent).join('/')}?ref=${encodeURIComponent(cfg.branch)}`, { headers: GH.headers(cfg, true) });
+    if (!r.ok) throw new Error('Foto nicht ladbar');
+    photoCache[photo] = URL.createObjectURL(await r.blob());
+    return photoCache[photo];
+  }
+  function loadPhotos() {
+    if (state.mode !== 'github') return;
+    for (const img of $view.querySelectorAll('img[data-photo]')) {
+      if (img.getAttribute('src')) continue;
+      photoUrl(img.dataset.photo).then((u) => { img.src = u; }).catch(() => { img.alt = '📷'; });
+    }
+  }
+  const KIND_LABEL = { workout: 'Workout', checkin: 'Essen', milestone: 'Meilenstein', session: 'Session', review: 'Wochen-Check' };
 
   // ---------- Diagramme (inline SVG) ----------
   function barChart(series, goal) {
@@ -232,6 +255,7 @@
             <a class="btn ${s.eating.todayDone ? '' : 'primary'}" href="#essen">${s.eating.todayDone ? 'Check-in ✔' : 'Essens-Check-in'}</a>
             <a class="btn" href="#sessions">+ Erfolg</a>
           </div></div>
+        ${s.review.due ? `<div class="hint" style="margin-bottom:14px">🗓 Wochen-Check für KW ${S.isoWeek(s.review.due)} ist fällig. <a href="#woche" style="text-decoration:underline">Jetzt ausfüllen</a> (5 Fragen, ~2 Minuten, +20 Punkte).</div>` : ''}
         ${state.mode === 'local' ? '<div class="hint" style="margin-bottom:14px">Daten liegen nur in diesem Browser. Für Sync mit deinen Sessions: <a href="#einstellungen" style="text-decoration:underline">Einstellungen → GitHub-Sync</a>.</div>' : ''}
         <div class="grid">
           <div class="card"><h3>Punkte</h3><div class="kpi">${s.points.total} <small>P.</small></div>
@@ -262,7 +286,7 @@
             }).join('')}</ul>` : '<div class="empty">Keine offenen Meilensteine. Lege Uni-Prüfungen, Praktikumsziele oder Sidehustle-Schritte an.</div>'}
             ${s.milestones.uni ? `<p class="sub">Uni-Schnitt: <b>${s.milestones.uni.average.toFixed(2)}</b> über ${s.milestones.uni.ects} ECTS</p>` : ''}</div>
           <div class="card"><h3>Letzte Erfolge</h3>
-            ${s.feed.length ? `<ul class="feed">${s.feed.slice(0, 8).map((e) => `<li><span class="date">${S.fmtDateShort(e.date)}</span><span>${badge(e.kind, KIND_LABEL[e.kind])} ${h(e.title)}${e.detail ? ` <span class="muted small">– ${h(e.detail)}</span>` : ''}</span><span class="pts">+${e.points}</span></li>`).join('')}</ul>` : '<div class="empty">Noch nichts eingetragen. Der erste Eintrag zählt am meisten.</div>'}</div>
+            ${s.feed.length ? `<ul class="feed">${s.feed.slice(0, 8).map((e) => `<li><span class="date">${S.fmtDateShort(e.date)}</span><span>${badge(e.kind, KIND_LABEL[e.kind])} ${h(e.title)}${e.detail ? ` <span class="muted small">– ${h(e.detail)}</span>` : ''}${e.photo ? ' ' + photoTag(e.photo, 'thumb sm') : ''}</span><span class="pts">+${e.points}</span></li>`).join('')}</ul>` : '<div class="empty">Noch nichts eingetragen. Der erste Eintrag zählt am meisten.</div>'}</div>
         </div>`;
     },
 
@@ -284,7 +308,7 @@
         <div class="card" style="margin-top:14px"><h3>Pro Woche</h3>${barChart(s.workouts.series, s.workouts.goal)}</div>
         <div class="card" style="margin-top:14px"><h3>Verlauf</h3>
           ${list.length ? `<div class="table-wrap"><table><thead><tr><th>Datum</th><th>Typ</th><th class="num">Min</th><th>Int.</th><th>Notiz</th><th class="num">P.</th><th></th></tr></thead><tbody>
-          ${list.slice(0, 100).map((w) => `<tr><td>${S.fmtDate(w.date)}</td><td>${h(w.type)}</td><td class="num">${h(w.minutes)}</td><td>${['', 'locker', 'normal', 'hart'][w.intensity] || ''}</td><td class="muted">${h(w.note)}</td><td class="num">+${S.workoutPoints(w)}</td><td><button class="ghost sm" data-action="del" data-col="workouts" data-id="${h(w.id)}" title="Löschen">✕</button></td></tr>`).join('')}
+          ${list.slice(0, 100).map((w) => `<tr><td>${S.fmtDate(w.date)}</td><td>${h(w.type)}</td><td class="num">${h(w.minutes)}</td><td>${['', 'locker', 'normal', 'hart'][w.intensity] || ''}</td><td class="muted">${h(w.note)} ${photoTag(w.photo)}</td><td class="num">+${S.workoutPoints(w)}</td><td><button class="ghost sm" data-action="del" data-col="workouts" data-id="${h(w.id)}" title="Löschen">✕</button></td></tr>`).join('')}
           </tbody></table></div>` : '<div class="empty">Noch kein Workout. Trag das erste ein – auch 20 Minuten zählen.</div>'}</div>`;
     },
 
@@ -319,7 +343,7 @@
         </div>
         <div class="card" style="margin-top:14px"><h3>Verlauf</h3>
           ${list.length ? `<div class="table-wrap"><table><thead><tr><th>Datum</th><th class="num">Score</th><th>Mahlz.</th><th>Gemüse</th><th>Snacks</th><th class="num">Wasser</th><th>Alk.</th><th>Stimmung</th><th>Notiz</th><th></th></tr></thead><tbody>
-          ${list.map((c) => `<tr><td>${S.fmtDate(c.date)}</td><td class="num"><b>${S.eatingScore(c, settings())}</b></td><td>${h(c.meals)}/5</td><td>${c.veggies ? '✔' : '–'}</td><td>${['keine', 'etwas', 'viel'][c.snacks] || ''}</td><td class="num">${h(c.water)}</td><td>${c.alcohol ? 'ja' : '–'}</td><td>${['', '😞', '😕', '😐', '🙂', '😄'][c.mood] || ''}</td><td class="muted">${h(c.note)}</td><td><button class="ghost sm" data-action="del" data-col="checkins" data-id="${h(c.id)}">✕</button></td></tr>`).join('')}
+          ${list.map((c) => `<tr><td>${S.fmtDate(c.date)}</td><td class="num"><b>${S.eatingScore(c, settings())}</b></td><td>${h(c.meals)}/5</td><td>${c.veggies ? '✔' : '–'}</td><td>${['keine', 'etwas', 'viel'][c.snacks] || ''}</td><td class="num">${h(c.water)}</td><td>${c.alcohol ? 'ja' : '–'}</td><td>${['', '😞', '😕', '😐', '🙂', '😄'][c.mood] || ''}</td><td class="muted">${h(c.note)} ${photoTag(c.photo)}</td><td><button class="ghost sm" data-action="del" data-col="checkins" data-id="${h(c.id)}">✕</button></td></tr>`).join('')}
           </tbody></table></div>` : '<div class="empty">Noch kein Check-in.</div>'}</div>`;
     },
 
@@ -423,7 +447,53 @@
           </form>
           <p class="sub">Aus einer Claude-Session heraus: <code>node tracker.js session "Titel" "Zusammenfassung" --points 20</code></p></div>
         <div class="card" style="margin-top:14px">
-          ${list.length ? `<ul class="feed">${list.map((s) => `<li><span class="date">${S.fmtDateShort(s.date)}</span><span><b>${h(s.title)}</b>${s.summary ? `<div class="muted small">${h(s.summary)}</div>` : ''}</span><span class="row" style="gap:6px"><span class="pts">+${S.sessionPoints(s)}</span><button class="ghost sm" data-action="del" data-col="sessions" data-id="${h(s.id)}">✕</button></span></li>`).join('')}</ul>` : '<div class="empty">Noch keine Session-Erfolge.</div>'}</div>`;
+          ${list.length ? `<ul class="feed">${list.map((s) => `<li><span class="date">${S.fmtDateShort(s.date)}</span><span><b>${h(s.title)}</b>${s.summary ? `<div class="muted small">${h(s.summary)}</div>` : ''}${photoTag(s.photo)}</span><span class="row" style="gap:6px"><span class="pts">+${S.sessionPoints(s)}</span><button class="ghost sm" data-action="del" data-col="sessions" data-id="${h(s.id)}">✕</button></span></li>`).join('')}</ul>` : '<div class="empty">Noch keine Session-Erfolge.</div>'}</div>`;
+    },
+
+    woche() {
+      const d = state.data, t = today();
+      const st = S.reviewStatus(d.reviews, t);
+      const week = state.filter.week || st.due || S.startOfWeek(t);
+      const existing = d.reviews.find((r) => r.weekStart === week);
+      const wk = S.workoutsInWeek(d.workouts, week);
+      const ck = d.checkins.filter((c) => S.startOfWeek(c.date) === week);
+      const avg = S.average(ck.map((c) => S.eatingScore(c, settings())));
+      const goal = Number(settings().weeklyWorkoutGoal) || 0;
+      const list = [...d.reviews].sort((a, b) => b.weekStart.localeCompare(a.weekStart));
+      const scale = (name, labels, val) => `<div class="choices">${[1, 2, 3, 4, 5].map((v) => `<label class="pick"><input type="radio" name="${name}" value="${v}" ${Number(val) === v ? 'checked' : ''} required><span>${v}${labels[v - 1] ? '<small>' + labels[v - 1] + '</small>' : ''}</span></label>`).join('')}</div>`;
+      const r = existing || {};
+      return `
+        <div class="page-head"><div><h2>Wochen-Check</h2><p class="muted">Einmal pro Woche, wie beim Coach: kurz zurückschauen, ehrlich bewerten, Fokus setzen. +20 Punkte.</p></div>
+          <label>Woche<select data-action="pick-week">${(() => { const o = []; let w = S.startOfWeek(t); for (let i = 0; i < 12; i++) { o.push(`<option value="${w}" ${w === week ? 'selected' : ''}>KW ${S.isoWeek(w)} · ab ${S.fmtDateShort(w)}${d.reviews.some((x) => x.weekStart === w) ? ' ✔' : ''}</option>`); w = S.addDays(w, -7); } return o.join(''); })()}</select></label></div>
+        <div class="grid two">
+          <div class="card"><h3>Deine Woche in Zahlen · KW ${S.isoWeek(week)}</h3>
+            <ul class="feed">
+              <li><span class="date">Sport</span><span>${wk.length}/${goal || '–'} Workouts, ${wk.reduce((a, w) => a + (Number(w.minutes) || 0), 0)} min</span><span class="small muted">${goal && wk.length >= goal ? 'Ziel erreicht ✔' : goal ? `${goal - wk.length} fehlen` : ''}</span></li>
+              <li><span class="date">Essen</span><span>${ck.length} Check-ins, Ø ${avg === null ? '–' : avg.toFixed(1)}/10</span><span class="small muted">${ck.length < 5 ? 'lückenhaft' : 'gut dokumentiert'}</span></li>
+              <li><span class="date">Erfolge</span><span>${d.sessions.filter((x) => S.startOfWeek(x.date) === week).length} Session-Erfolge, ${d.milestones.filter((m) => m.done && m.doneAt && S.startOfWeek(m.doneAt) === week).length} Meilensteine</span><span></span></li>
+              <li><span class="date">Geld</span><span>${h(money(d.finances.expenses.filter((e) => S.startOfWeek(e.date) === week).reduce((a, e) => a + (Number(e.amount) || 0), 0)))} variabel ausgegeben</span><span></span></li>
+            </ul>
+            ${existing ? `<div class="hint" style="margin-top:12px">Check für diese Woche ist gespeichert. Speichern überschreibt ihn.</div>` : ''}</div>
+          <div class="card"><h3>Coach-Fragen</h3>
+            <form class="stack" data-form="review">
+              <input type="hidden" name="weekStart" value="${week}">
+              <div class="q"><span class="lbl">1 · Wie war dein Energielevel?</span>${scale('energy', ['leer', '', 'okay', '', 'voll'], r.energy)}</div>
+              <div class="q"><span class="lbl">2 · Wie gut hast du geschlafen?</span>${scale('sleep', ['mies', '', 'okay', '', 'top'], r.sleep)}</div>
+              <div class="q"><span class="lbl">3 · Wie hoch war der Stress?</span>${scale('stress', ['keiner', '', 'mittel', '', 'extrem'], r.stress)}</div>
+              <div class="q"><span class="lbl">4 · Wie konsequent hast du deinen Plan (Training, Essen, Uni) umgesetzt?</span>${scale('adherence', ['gar nicht', '', 'halb', '', 'komplett'], r.adherence)}</div>
+              <label>5 · Gewicht (optional, kg)<input type="number" name="weight" step="0.1" min="30" max="300" value="${h(r.weight ?? '')}" placeholder="optional"></label>
+              <label>6 · Worauf bist du diese Woche stolz?<textarea name="wins" placeholder="Mindestens eine Sache. Auch kleine zählen.">${h(r.wins || '')}</textarea></label>
+              <label>7 · Was hat dich ausgebremst?<textarea name="obstacles" placeholder="Ehrlich: Zeit, Motivation, Umfeld, Schlaf …">${h(r.obstacles || '')}</textarea></label>
+              <label>8 · Was nimmst du daraus mit?<textarea name="learned" placeholder="Eine Erkenntnis reicht.">${h(r.learned || '')}</textarea></label>
+              <label>9 · Dein eine Fokus für nächste Woche<input name="focus" value="${h(r.focus || '')}" placeholder="z. B. 3 Workouts, jeden Tag Check-in, Lernplan Statistik" required></label>
+              ${r.coach ? `<div class="hint"><b>Coach-Notiz:</b> ${h(r.coach)}</div>` : ''}
+              <div><button class="primary" type="submit">Wochen-Check speichern</button></div>
+            </form></div>
+        </div>
+        <div class="card" style="margin-top:14px"><h3>Bisherige Wochen-Checks</h3>
+          ${list.length ? `<div class="table-wrap"><table><thead><tr><th>KW</th><th class="num">Energie</th><th class="num">Schlaf</th><th class="num">Stress</th><th class="num">Plan</th><th class="num">kg</th><th>Fokus</th><th></th></tr></thead><tbody>
+          ${list.map((x) => `<tr><td>KW ${S.isoWeek(x.weekStart)} <span class="muted small">${S.fmtDateShort(x.weekStart)}</span></td><td class="num">${h(x.energy ?? '–')}</td><td class="num">${h(x.sleep ?? '–')}</td><td class="num">${h(x.stress ?? '–')}</td><td class="num">${h(x.adherence ?? '–')}</td><td class="num">${h(x.weight ?? '–')}</td><td>${h(x.focus)}${x.wins ? `<div class="muted small">Stolz: ${h(x.wins)}</div>` : ''}${x.coach ? `<div class="small" style="color:var(--accent)">Coach: ${h(x.coach)}</div>` : ''}</td><td><button class="ghost sm" data-action="del" data-col="reviews" data-id="${h(x.id)}">✕</button></td></tr>`).join('')}
+          </tbody></table></div>` : '<div class="empty">Noch kein Wochen-Check. Der erste kommt am Wochenende.</div>'}</div>`;
     },
 
     einstellungen() {
@@ -458,7 +528,7 @@
                 <label class="btn" style="display:inline-block">Import JSON<input type="file" accept="application/json" data-action="import" hidden></label></div>
               <p class="small muted">Export enthält alle Sammlungen. Import überschreibt die aktuellen Daten.</p>
               <h3>Punkte-Regeln</h3>
-              <p class="small muted">Workout 10 + 1 je 5 min (max. 40) · Check-in 5 (+3 ab Score 7) · Meilenstein 40–100 plus Notenbonus · Session frei (Standard 15).</p>
+              <p class="small muted">Workout 10 + 1 je 5 min (max. 40) · Check-in 5 (+3 ab Score 7) · Meilenstein 40–100 plus Notenbonus · Session frei (Standard 15) · Wochen-Check 20.</p>
               <h3>Level</h3>
               <p class="small muted">${S.LEVELS.map((l, i) => `${i + 1} ${l.name} (${l.min})`).join(' · ')}</p>
             </div></div>
@@ -503,6 +573,14 @@
       await load(); render();
       toast(state.mode === 'github' ? `Verbunden: ${state.gh.repo}@${state.gh.branch}` : (state.ghError || 'Verbindung fehlgeschlagen'), state.mode !== 'github');
     },
+    review(fd) {
+      const weekStart = fd.get('weekStart');
+      const r = { id: newId(), createdAt: new Date().toISOString(), date: today(), weekStart,
+        energy: Number(fd.get('energy')), sleep: Number(fd.get('sleep')), stress: Number(fd.get('stress')), adherence: Number(fd.get('adherence')),
+        weight: fd.get('weight') ? Number(fd.get('weight')) : null,
+        wins: fd.get('wins').trim(), obstacles: fd.get('obstacles').trim(), learned: fd.get('learned').trim(), focus: fd.get('focus').trim(), points: 20 };
+      return mutate('reviews', (l) => { const old = l.find((x) => x.weekStart === weekStart); if (old) Object.assign(r, { id: old.id, coach: old.coach, createdAt: old.createdAt }); return [...l.filter((x) => x.weekStart !== weekStart), r]; }, `Wochen-Check KW ${S.isoWeek(weekStart)} gespeichert · +20 P.`);
+    },
     settings(fd) {
       return mutate('settings', (s) => Object.assign(s, { name: fd.get('name').trim(), weeklyWorkoutGoal: Number(fd.get('weeklyWorkoutGoal')) || 0, dailyWaterGoal: Number(fd.get('dailyWaterGoal')) || 0, currency: fd.get('currency').trim() || '€' }), 'Einstellungen gespeichert');
     },
@@ -544,6 +622,8 @@
       ghSave(null); state.gh = null;
       await load(); render(); toast('GitHub getrennt');
     },
+    'pick-week'(el) { state.filter.week = el.value; render(); },
+    async 'photo-open'(el) { try { window.open(await photoUrl(el.dataset.photo), '_blank'); } catch (e) { toast('Foto nicht ladbar', true); } },
     export() {
       const blob = new Blob([JSON.stringify(state.data, null, 2)], { type: 'application/json' });
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `erfolgstracker-${today()}.json`; a.click();
@@ -571,15 +651,17 @@
     $mode.textContent = state.mode === 'api' ? 'data/*.json' : state.mode === 'github' ? `GitHub ${state.gh.repo.split('/')[1]}@${state.gh.branch}${state.gh.token ? '' : ' (lesen)'}` : 'nur Browser';
     $mode.classList.toggle('local', state.mode === 'local' || (state.mode === 'github' && !state.gh.token));
     document.title = `Erfolgstracker · ${$nav.querySelector('a.active')?.textContent || ''}`;
+    loadPhotos();
   }
   window.addEventListener('hashchange', () => { window.scrollTo(0, 0); render(); });
   $view.addEventListener('click', (e) => {
     const el = e.target.closest('[data-action]');
-    if (!el || el.tagName === 'INPUT') return;
+    if (!el || el.tagName === 'INPUT' || el.tagName === 'SELECT') return;
+    if (el.dataset.action === 'photo-open') e.preventDefault();
     const fn = actions[el.dataset.action]; if (fn) fn(el);
   });
   $view.addEventListener('change', (e) => {
-    const el = e.target.closest('[data-action]'); if (!el || el.tagName !== 'INPUT') return;
+    const el = e.target.closest('[data-action]'); if (!el || (el.tagName !== 'INPUT' && el.tagName !== 'SELECT')) return;
     const fn = actions[el.dataset.action]; if (fn) fn(el);
   });
   $view.addEventListener('input', (e) => {
@@ -592,7 +674,7 @@
   });
   document.addEventListener('keydown', (e) => {
     if (e.target.matches('input, textarea, select') || e.metaKey || e.ctrlKey || e.altKey) return;
-    const map = { 1: 'dashboard', 2: 'workouts', 3: 'essen', 4: 'meilensteine', 5: 'finanzen', 6: 'sessions' };
+    const map = { 1: 'dashboard', 2: 'workouts', 3: 'essen', 4: 'meilensteine', 5: 'finanzen', 6: 'sessions', 7: 'woche' };
     if (map[e.key]) location.hash = map[e.key];
   });
 

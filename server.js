@@ -13,7 +13,7 @@ const PUBLIC_DIR = path.join(__dirname, 'public');
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png', '.ico': 'image/x-icon',
-  '.webmanifest': 'application/manifest+json',
+  '.webmanifest': 'application/manifest+json', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp', '.gif': 'image/gif', '.heic': 'image/heic',
 };
 
 function send(res, status, body, type = 'application/json; charset=utf-8') {
@@ -70,6 +70,11 @@ function serveStatic(req, res, pathname) {
 const server = http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    if (url.pathname.startsWith('/data/photos/')) {
+      const file = path.normalize(path.join(store.DATA_DIR, 'photos', decodeURIComponent(url.pathname.slice('/data/photos/'.length))));
+      if (!file.startsWith(path.join(store.DATA_DIR, 'photos'))) return send(res, 403, 'Forbidden', 'text/plain');
+      return fs.readFile(file, (err, data) => (err ? send(res, 404, 'Nicht gefunden', 'text/plain; charset=utf-8') : send(res, 200, data, MIME[path.extname(file).toLowerCase()] || 'image/jpeg')));
+    }
     if (url.pathname.startsWith('/api/')) {
       const parts = url.pathname.slice(5).split('/').filter(Boolean);
       return await handleApi(req, res, parts);

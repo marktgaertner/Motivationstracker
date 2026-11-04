@@ -25,6 +25,19 @@ node tracker.js expense <Betrag> [Kategorie] [Notiz]
 node tracker.js summary
 ```
 
+## Fotos vom Nutzer (Essen, Training, Noten, Kassenzettel)
+
+Lädt der Nutzer hier ein Foto hoch, gehört es in den Tracker:
+
+1. Bild ansehen und einordnen: Mahlzeit → `checkin`, Training/Fitness-App/Uhr → `workout`, Notenübersicht/Zeugnis → `milestone done --grade`, Kassenzettel → `expense`, alles andere Erreichte → `session`.
+2. Nur eintragen, was im Bild erkennbar ist. Für Essen: Mahlzeitenqualität 1–5 und Gemüse ja/nein lassen sich schätzen; Snacks, Wasser, Alkohol und Stimmung nicht. Wenn der Nutzer sie nicht nennt, in **einer** kurzen Nachricht nachfragen (z. B. „Snacks heute: keine/etwas/viel? Wasser? Alkohol?“), nicht raten. Mehrere Essensfotos am selben Tag: ein Check-in pro Tag, das Bild der Hauptmahlzeit anhängen, die anderen in der Notiz erwähnen.
+3. Eintragen mit `--photo <Pfad der hochgeladenen Datei>`; das Bild wird nach `data/photos/` kopiert. Datum mit `--date` setzen, wenn das Foto nicht von heute ist.
+4. Kurz bestätigen, was eingetragen wurde (Punkte nennen), dann `git add data && git commit && git push`.
+
+## Wöchentlicher Coach (geplanter Task, sonntags)
+
+Ein geplanter Task startet jede Woche eine Session, die den Wochen-Rückblick aus den Daten schreibt und den Fragebogen stellt. Antworten landen über `node tracker.js review …` in `data/reviews.json` (Feld `coach` = Empfehlung für die nächste Woche). Ohne Antwort wird nichts eingetragen. Ton: knapp, konkret, du-Form, Zahlen aus den Daten nennen, nicht belehren.
+
 ## Entwicklung
 
 - `npm test` vor jedem Commit (Auswertungslogik in `public/stats.js`).

@@ -123,6 +123,16 @@ input[type="checkbox"] { width: auto; }
 .stepper button { width: 42px; height: 42px; border-radius: 50%; padding: 0; font-size: 1.2rem; }
 .stepper b { min-width: 2ch; text-align: center; font-size: 1.3rem; }
 
+.thumb { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); vertical-align: middle; background: var(--surface-2); }
+.thumb.sm { width: 32px; height: 32px; border-radius: 6px; }
+.pick { cursor: pointer; }
+.pick input { display: none; }
+.pick span { display: inline-grid; place-items: center; min-width: 52px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 12px; font-weight: 600; background: var(--surface); color: var(--text); }
+.pick span small { font-weight: 500; font-size: .7rem; color: var(--muted); }
+.pick input:checked + span { background: var(--accent); border-color: var(--accent); color: #fff; }
+.pick input:checked + span small { color: #fff; opacity: .85; }
+.q { display: grid; gap: 6px; } .q .lbl { font-weight: 600; font-size: .9rem; }
+
 table { width: 100%; border-collapse: collapse; font-size: .92rem; }
 th, td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--border); vertical-align: top; }
 th { color: var(--muted); font-weight: 600; font-size: .78rem; text-transform: uppercase; letter-spacing: .04em; }
@@ -142,7 +152,7 @@ tr.done td .title { text-decoration: line-through; }
 .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: .78rem; color: var(--muted); margin-top: 6px; }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 5px; vertical-align: -1px; }
 
-svg.chart { width: 100%; height: auto; display: block; }
+svg.chart { width: 100%; max-width: 640px; height: auto; display: block; }
 svg.chart text { fill: var(--muted); font-size: 10px; }
 .heat rect { rx: 2; }
 .heat .l0 { fill: var(--heat-0); } .heat .l1 { fill: var(--heat-1); } .heat .l2 { fill: var(--heat-2); } .heat .l3 { fill: var(--heat-3); } .heat .l4 { fill: var(--heat-4); }

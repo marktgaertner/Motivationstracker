@@ -29,12 +29,13 @@ function fail(msg) { console.error('Fehler: ' + msg); process.exit(1); }
 
 const { pos, opts } = parseArgs(rest);
 const today = opts.date || store.localDate();
+const photo = opts.photo ? store.storePhoto(String(opts.photo), today) : undefined;
 
 const commands = {
   workout() {
     const [type, minutes, ...note] = pos;
     if (!type) fail('Nutzung: workout <Typ> <Minuten> [Notiz]');
-    const e = store.append('workouts', { date: today, type, minutes: num(minutes, 0), intensity: num(opts.intensity, 2), note: note.join(' ') });
+    const e = store.append('workouts', { date: today, type, minutes: num(minutes, 0), intensity: num(opts.intensity, 2), note: note.join(' '), photo });
     out(`✔ Workout gespeichert: ${e.type}, ${e.minutes} min (+${S.workoutPoints(e)} Punkte)`);
   },
   checkin() {
@@ -42,7 +43,7 @@ const commands = {
     const e = {
       date: today,
       meals: num(opts.meals, 3), veggies: !!opts.veggies, snacks: num(opts.snacks, 1),
-      water: num(opts.water, 0), alcohol: !!opts.alcohol, mood: num(opts.mood, 3), note: pos.join(' '),
+      water: num(opts.water, 0), alcohol: !!opts.alcohol, mood: num(opts.mood, 3), note: pos.join(' '), photo,
     };
     const saved = store.append('checkins', e);
     out(`✔ Check-in gespeichert: ${S.eatingScore(saved, settings)}/10 (+${S.checkinPoints(saved, settings)} Punkte)`);
@@ -73,8 +74,22 @@ const commands = {
   session() {
     const [title, ...summary] = pos;
     if (!title) fail('Nutzung: session <Titel> [Zusammenfassung] [--points 15]');
-    const e = store.append('sessions', { date: today, title, summary: summary.join(' '), points: num(opts.points, 15) });
+    const e = store.append('sessions', { date: today, title, summary: summary.join(' '), points: num(opts.points, 15), photo });
     out(`✔ Session-Erfolg gespeichert: ${e.title} (+${S.sessionPoints(e)} Punkte)`);
+  },
+  review() {
+    const weekStart = S.startOfWeek(opts.week || today);
+    const list = store.read('reviews');
+    const existing = list.find((r) => r.weekStart === weekStart);
+    const entry = {
+      date: today, weekStart,
+      energy: num(opts.energy, null), sleep: num(opts.sleep, null), stress: num(opts.stress, null), adherence: num(opts.adherence, null),
+      weight: opts.weight !== undefined ? num(opts.weight, null) : null,
+      wins: opts.wins || '', obstacles: opts.obstacles || '', learned: opts.learned || '', focus: opts.focus || '', coach: opts.coach || '',
+      points: num(opts.points, 20),
+    };
+    if (existing) { store.update('reviews', existing.id, entry); out(`✔ Wochen-Check KW ${S.isoWeek(weekStart)} aktualisiert`); }
+    else { const e = store.append('reviews', entry); out(`✔ Wochen-Check KW ${S.isoWeek(weekStart)} gespeichert (+${S.reviewPoints(e)} Punkte)`); }
   },
   fixed() {
     const [sub, ...args] = pos;
@@ -124,12 +139,13 @@ const commands = {
     const bar = (p) => { const n = Math.round(p * 20); return '█'.repeat(n) + '░'.repeat(20 - n); };
     out(`\n  ERFOLGSTRACKER · ${S.fmtDate(s.today)}${data.settings.name ? ' · ' + data.settings.name : ''}\n`);
     out(`  Level ${s.level.number} „${s.level.name}“   ${s.points.total} Punkte   ${bar(s.level.progress)} ${s.level.next ? `nächstes Level bei ${s.level.next}` : 'Maximum'}`);
-    out(`    Workouts ${s.points.by.workouts} · Essen ${s.points.by.checkins} · Meilensteine ${s.points.by.milestones} · Sessions ${s.points.by.sessions}\n`);
+    out(`    Workouts ${s.points.by.workouts} · Essen ${s.points.by.checkins} · Meilensteine ${s.points.by.milestones} · Sessions ${s.points.by.sessions} · Wochen-Checks ${s.points.by.reviews}\n`);
     out(`  WORKOUTS   diese Woche ${s.workouts.thisWeek}/${s.workouts.goal} (${s.workouts.minutesThisWeek} min) · ${s.workouts.weekStreak} Wochen in Folge Ziel erreicht · gesamt ${s.workouts.total}`);
     out(`             letzte 8 Wochen: ${s.workouts.series.map((w) => w.count).join(' ')}`);
     out(`  ESSEN      heute ${s.eating.todayDone ? s.eating.todayScore + '/10 ✔' : 'noch kein Check-in'} · ${s.eating.streak} Tage in Folge · Ø 7 Tage ${s.eating.avg7 === null ? '–' : s.eating.avg7.toFixed(1)}`);
     const uni = s.milestones.uni;
     out(`  UNI        ${uni ? `Ø Note ${uni.average.toFixed(2)} über ${uni.ects} ECTS (${uni.count} Module)` : 'noch keine benoteten Module'}`);
+    out(`  WOCHE      ${s.review.due ? `Wochen-Check fällig für KW ${S.isoWeek(s.review.due)} (ab ${S.fmtDate(s.review.due)})` : 'Wochen-Check erledigt'} · ${(data.reviews || []).length} Checks gesamt`);
     out(`  MEILENST.  ${s.milestones.done} erledigt · ${s.milestones.open.length} offen`);
     for (const m of s.milestones.open.slice(0, 5)) out(`             ○ ${m.title} (${S.CATEGORIES[m.category] || m.category}${m.due ? ', bis ' + S.fmtDate(m.due) : ''})`);
     const f = s.finance;
@@ -147,12 +163,14 @@ const commands = {
   milestone add <Titel> --cat <kat> --due YYYY-MM-DD
   milestone done <id|Titelteil> [--grade 1.7 --ects 5]
   session <Titel> [Zusammenfassung] [--points 15]
+  review --week YYYY-MM-DD --energy 1-5 --sleep 1-5 --stress 1-5 --adherence 1-5 [--weight 78.5] --wins "…" --obstacles "…" --learned "…" --focus "…" [--coach "…"]
   fixed [add <Name> <Betrag> [monthly|quarterly|yearly|weekly]]
   income [add <Name> <Betrag> [Intervall]]
   expense <Betrag> [Kategorie] [Notiz]
   list <Sammlung>  ·  remove <Sammlung> <id> [--sub ...]
   summary
-Alle Befehle akzeptieren --date YYYY-MM-DD für Nachträge.`);
+Alle Befehle akzeptieren --date YYYY-MM-DD für Nachträge.
+workout, checkin und session akzeptieren --photo <Pfad> (Bild wird nach data/photos/ kopiert).`);
   },
 };
 

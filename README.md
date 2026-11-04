@@ -62,9 +62,16 @@ Ohne Server geht es auch: `public/index.html` direkt im Browser öffnen. Dann we
 | Meilensteine | Uni (mit Note & ECTS → gewichteter Schnitt), Praktikum, Sidehustle, Fitness, Finanzen, Persönlich |
 | Finanzen | Fixkosten & Einnahmen mit Intervall (monatlich/vierteljährlich/jährlich/wöchentlich), variable Ausgaben, Sparziel |
 | Sessions | Erfolge aus Arbeits-/Claude-Sessions mit frei wählbaren Punkten |
+| Woche | Wochen-Check mit Coach-Fragen (Energie, Schlaf, Stress, Plan, Gewicht, Stolz, Bremsen, Erkenntnis, Fokus) und Wochenzahlen |
 | ⚙︎ | Ziele (Workouts/Woche, Wasser), Name, Währung, Export/Import |
 
-Tastatur: `1`–`6` wechseln die Bereiche.
+Tastatur: `1`–`7` wechseln die Bereiche.
+
+## Fotos und wöchentlicher Coach
+
+**Fotos:** Ein Foto vom Essen, Training, einer Notenübersicht oder einem Kassenzettel in einer Claude-Session hochladen. Claude ordnet es ein, fragt nur nach, was im Bild nicht erkennbar ist, und trägt es mit Bild ein (`--photo`). Die Bilder liegen in `data/photos/` und erscheinen als Vorschau in den Listen. Per CLI: `node tracker.js workout Kraft 50 "Bankdrücken" --photo bild.jpg`.
+
+**Wochen-Check:** Jeden Sonntag startet ein geplanter Task eine Claude-Session, die deine Woche aus den Daten zusammenfasst (Workouts gegen Ziel, Essens-Score, Lücken, fällige Meilensteine, Ausgaben) und dir die Coach-Fragen stellt. Du antwortest in einer Nachricht, Claude trägt es ein und gibt eine Empfehlung für die nächste Woche mit. Der gleiche Fragebogen steht auch in der App unter „Woche“, ab Freitag erinnert die Übersicht daran.
 
 ## Kommandozeile
 
@@ -75,6 +82,8 @@ node tracker.js checkin --meals 4 --veggies --snacks 1 --water 6 --mood 4
 node tracker.js milestone add "Statistik II" --cat uni --due 2027-02-10
 node tracker.js milestone done "Statistik II" --grade 1.7 --ects 5
 node tracker.js session "Landingpage live" "Nächster Schritt: erste 10 Besucher" --points 25
+node tracker.js workout Kraft 50 "Bankdrücken" --photo foto.jpg
+node tracker.js review --week 2026-11-02 --energy 4 --sleep 3 --stress 2 --adherence 4 --wins "…" --obstacles "…" --focus "…"
 node tracker.js fixed add Miete 650 monthly
 node tracker.js income add BAföG 900 monthly
 node tracker.js expense 23.50 Essen "Wocheneinkauf"
@@ -94,6 +103,7 @@ Alle Befehle akzeptieren `--date YYYY-MM-DD` für Nachträge.
 | Meilenstein Sidehustle | 60 |
 | Andere Meilensteine | 40 |
 | Session-Erfolg | frei, Standard 15 |
+| Wochen-Check | 20 |
 
 Level: Start 0 · Anlauf 100 · Routine 250 · Momentum 500 · Disziplin 850 · Fokus 1300 · Flow 1900 · Ausdauer 2600 · Meister 3500 · Legende 4600 · Unaufhaltsam 6000. Regeln stehen in `public/stats.js` und lassen sich dort anpassen.
 
@@ -106,7 +116,9 @@ data/
   checkins.json    [{ id, date, meals 1-5, veggies, snacks 0-2, water, alcohol, mood 1-5, note }]
   milestones.json  [{ id, title, category, due, done, doneAt, grade, ects, note }]
   finances.json    { fixedCosts[], income[], expenses[], savings: { target, current } }
-  sessions.json    [{ id, date, title, summary, points }]
+  sessions.json    [{ id, date, title, summary, points, photo }]
+  reviews.json     [{ id, date, weekStart, energy, sleep, stress, adherence, weight, wins, obstacles, learned, focus, coach, points }]
+  photos/          Bilder zu Einträgen (Feld photo = "photos/<datei>")
 ```
 
 Backup: Ordner `data/` kopieren oder in der App exportieren. Da die Daten persönlich sind, sollte das Repository privat bleiben.

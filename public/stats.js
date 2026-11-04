@@ -25,6 +25,23 @@
     const d = parse(s);
     return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`;
   }
+  function isoWeek(s) {
+    const d = parse(s); d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() + 3 - ((d.getDay() + 6) % 7));
+    const week1 = new Date(d.getFullYear(), 0, 4);
+    return 1 + Math.round(((d - week1) / 86400000 - 3 + ((week1.getDay() + 6) % 7)) / 7);
+  }
+  // Wochen-Check: fällig für die letzte abgeschlossene Woche, ab Freitag auch für die laufende.
+  function reviewStatus(reviews, today) {
+    const weeks = new Set((reviews || []).map((r) => r.weekStart || startOfWeek(r.date)));
+    const thisWeek = startOfWeek(today), lastWeek = addDays(thisWeek, -7);
+    const dow = (parse(today).getDay() + 6) % 7; // 0 = Montag
+    let due = null;
+    if (!weeks.has(lastWeek) && (reviews || []).length) due = lastWeek;
+    if (dow >= 4 && !weeks.has(thisWeek)) due = thisWeek;
+    if (!(reviews || []).length && dow >= 4) due = thisWeek;
+    return { due, thisWeekDone: weeks.has(thisWeek), lastWeekDone: weeks.has(lastWeek) };
+  }
   function fmtDateShort(s) { const d = parse(s); return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.`; }
 
   // ---------- Labels ----------
@@ -57,6 +74,7 @@
     return base + bonus;
   }
   function sessionPoints(s) { const p = Number(s.points); return Number.isFinite(p) ? p : 15; }
+  function reviewPoints(r) { const p = Number(r.points); return Number.isFinite(p) ? p : 20; }
 
   function points(data) {
     const settings = data.settings || {};
@@ -65,6 +83,7 @@
       checkins: (data.checkins || []).reduce((a, c) => a + checkinPoints(c, settings), 0),
       milestones: (data.milestones || []).reduce((a, m) => a + milestonePoints(m), 0),
       sessions: (data.sessions || []).reduce((a, s) => a + sessionPoints(s), 0),
+      reviews: (data.reviews || []).reduce((a, r) => a + reviewPoints(r), 0),
     };
     const total = Object.values(by).reduce((a, b) => a + b, 0);
     return { total, by };
@@ -200,15 +219,17 @@
     for (const c of data.checkins || []) bump(c.date, 'checkins', checkinPoints(c, data.settings));
     for (const m of data.milestones || []) if (m.done) bump(m.doneAt || m.due, 'milestones', milestonePoints(m));
     for (const s of data.sessions || []) bump(s.date, 'sessions', sessionPoints(s));
+    for (const r of data.reviews || []) bump(r.date, 'sessions', reviewPoints(r));
     return Object.values(map);
   }
 
   function feed(data, limit = 12) {
     const items = [];
-    for (const w of data.workouts || []) items.push({ kind: 'workout', date: w.date, title: `${w.type || 'Workout'} · ${w.minutes || 0} min`, detail: w.note || '', points: workoutPoints(w), ts: w.createdAt || w.date });
-    for (const c of data.checkins || []) items.push({ kind: 'checkin', date: c.date, title: `Essens-Check-in · ${eatingScore(c, data.settings)}/10`, detail: c.note || '', points: checkinPoints(c, data.settings), ts: c.createdAt || c.date });
+    for (const w of data.workouts || []) items.push({ kind: 'workout', date: w.date, title: `${w.type || 'Workout'} · ${w.minutes || 0} min`, detail: w.note || '', points: workoutPoints(w), ts: w.createdAt || w.date, photo: w.photo || null });
+    for (const c of data.checkins || []) items.push({ kind: 'checkin', date: c.date, title: `Essens-Check-in · ${eatingScore(c, data.settings)}/10`, detail: c.note || '', points: checkinPoints(c, data.settings), ts: c.createdAt || c.date, photo: c.photo || null });
     for (const m of data.milestones || []) if (m.done) items.push({ kind: 'milestone', date: m.doneAt || m.due, title: m.title, detail: [CATEGORIES[m.category] || m.category, m.grade ? `Note ${m.grade}` : ''].filter(Boolean).join(' · '), points: milestonePoints(m), ts: m.doneAt || m.createdAt || m.due });
-    for (const s of data.sessions || []) items.push({ kind: 'session', date: s.date, title: s.title, detail: s.summary || '', points: sessionPoints(s), ts: s.createdAt || s.date });
+    for (const s of data.sessions || []) items.push({ kind: 'session', date: s.date, title: s.title, detail: s.summary || '', points: sessionPoints(s), ts: s.createdAt || s.date, photo: s.photo || null });
+    for (const r of data.reviews || []) items.push({ kind: 'review', date: r.date, title: `Wochen-Check KW ${isoWeek(r.weekStart || r.date)}`, detail: r.focus ? 'Fokus: ' + r.focus : '', points: reviewPoints(r), ts: r.createdAt || r.date });
     items.sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')) || String(b.ts || '').localeCompare(String(a.ts || '')));
     return items.slice(0, limit);
   }
@@ -247,6 +268,7 @@
         uni: uniAverage(data.milestones),
       },
       finance: financeSummary(data.finances, today),
+      review: reviewStatus(data.reviews, today),
       activity: activityByDay(data, today, 84),
       feed: feed(data, 12),
     };
@@ -255,7 +277,7 @@
   return {
     localDate, parse, addDays, startOfWeek, monthKey, daysBetween, fmtDate, fmtDateShort, fmtMoney,
     CATEGORIES, INTERVALS, WORKOUT_TYPES, EXPENSE_CATEGORIES, LEVELS,
-    workoutPoints, checkinPoints, milestonePoints, sessionPoints, points, level,
+    workoutPoints, checkinPoints, milestonePoints, sessionPoints, reviewPoints, points, level, isoWeek, reviewStatus,
     workoutsInWeek, weeklyGoalStreak, weeklyWorkoutSeries,
     eatingScore, dayStreak, checkinSeries, average,
     uniAverage, openMilestones, monthlyAmount, financeSummary, activityByDay, feed, summary,

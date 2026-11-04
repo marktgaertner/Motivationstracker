@@ -67,4 +67,14 @@ const empty = S.summary({ settings: {}, workouts: [], checkins: [], milestones: 
 assert.strictEqual(empty.activity.length, 84);
 assert.strictEqual(empty.eating.avg7, null);
 
+// Wochen-Check
+assert.strictEqual(S.isoWeek('2026-11-04'), 45);
+assert.strictEqual(S.isoWeek('2026-01-01'), 1);
+assert.strictEqual(S.reviewPoints({}), 20);
+assert.strictEqual(S.reviewStatus([], '2026-11-04').due, null);          // Mittwoch, nie gemacht → noch nichts fällig
+assert.strictEqual(S.reviewStatus([], '2026-11-06').due, '2026-11-02');  // Freitag → laufende Woche fällig
+assert.strictEqual(S.reviewStatus([{ weekStart: '2026-10-19', date: '2026-10-25' }], '2026-11-04').due, '2026-10-26'); // letzte Woche fehlt
+assert.strictEqual(S.reviewStatus([{ weekStart: '2026-10-26', date: '2026-11-01' }], '2026-11-04').due, null);
+assert.strictEqual(S.points({ reviews: [{}, { points: 5 }] }).by.reviews, 25);
+
 console.log('✔ alle Tests bestanden');

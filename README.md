@@ -6,13 +6,31 @@ Persönlicher Erfolgstracker als eigenes Programm: Workouts, schnelle Essens-Che
 - **Daten gehören dir.** Alles liegt als lesbare JSON-Dateien in `data/`. Jedes Tool (oder du per Hand) kann sie bearbeiten.
 - **Aktualisiert sich aus Sessions.** Claude-Sessions tragen Erfolge über das CLI ein und committen sie; beim nächsten `git pull` ist das Dashboard aktuell.
 
+## Einrichtung (einmalig)
+
+1. **Node.js installieren** (falls `node -v` im Terminal nichts ausgibt):
+   - Windows: `winget install OpenJS.NodeJS.LTS` in der Eingabeaufforderung, oder Installer von https://nodejs.org/ (LTS). Danach ein neues Terminal öffnen.
+   - macOS: `brew install node` oder Installer von https://nodejs.org/.
+2. **Repository holen:**
+   ```bash
+   git clone https://github.com/marktgaertner/Motivationstracker.git
+   cd Motivationstracker
+   ```
+   Ohne Git: auf GitHub „Code → Download ZIP“, entpacken, Terminal im entpackten Ordner öffnen.
+
 ## Start
+
+Windows: Doppelklick auf `start.bat` (prüft Node, startet den Server, öffnet den Browser).
+
+macOS/Linux: `./start.sh`
+
+Oder in jedem Terminal **im Projektordner**:
 
 ```bash
 npm start
 ```
 
-Dann im Browser `http://127.0.0.1:4321` öffnen. Der Server läuft nur lokal (127.0.0.1).
+Dann im Browser `http://127.0.0.1:4321` öffnen. Der Server läuft nur lokal (127.0.0.1). Beenden mit `Strg+C`.
 
 Ohne Server geht es auch: `public/index.html` direkt im Browser öffnen. Dann werden die Daten nur im Browser (localStorage) gespeichert – Import/Export gibt es unter Einstellungen.
 

@@ -46,8 +46,11 @@ const commands = {
       meals: num(opts.meals, 3), veggies: !!opts.veggies, snacks: num(opts.snacks, 1),
       water: num(opts.water, 0), alcohol: !!opts.alcohol, mood: num(opts.mood, 3), note: pos.join(' '), photo,
     };
-    const saved = store.append('checkins', e);
-    out(`✔ Check-in gespeichert: ${S.eatingScore(saved, settings)}/10 (+${S.checkinPoints(saved, settings)} Punkte)`);
+    if (settings.alcoholFreeSince && !opts.alcohol) e.alcohol = false;
+    const existing = store.read('checkins').find((c) => c.date === today);
+    if (existing && !e.photo) e.photo = existing.photo;
+    const saved = existing ? store.update('checkins', existing.id, e) : store.append('checkins', e);
+    out(`✔ Check-in ${existing ? 'aktualisiert' : 'gespeichert'}: ${S.eatingScore(saved, settings)}/10 (+${S.checkinPoints(saved, settings)} Punkte)`);
   },
   milestone() {
     const [sub, ...args] = pos;

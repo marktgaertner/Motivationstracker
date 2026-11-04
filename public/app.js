@@ -10,7 +10,7 @@
   const LS_KEY = 'erfolgstracker.data';
 
   const DEFAULTS = {
-    settings: { name: '', weeklyWorkoutGoal: 3, dailyWaterGoal: 6, currency: '€', heightCm: null, birthYear: null, targetEcts: 210, vapeGoalPerDay: 4 },
+    settings: { name: '', weeklyWorkoutGoal: 3, dailyWaterGoal: 6, currency: '€', heightCm: null, birthYear: null, targetEcts: 210, vapeGoalPerDay: 4, alcoholFreeSince: null },
     workouts: [], checkins: [], milestones: [],
     finances: { fixedCosts: [], income: [], expenses: [], savings: { target: 0, current: 0 } },
     sessions: [], reviews: [], consumption: [],
@@ -290,7 +290,7 @@
             <div class="sub">${s.workouts.minutesThisWeek} min · ${s.workouts.weekStreak} Woche${s.workouts.weekStreak === 1 ? '' : 'n'} in Folge Ziel erreicht</div>
             <div class="progress ${goalPct < 1 ? 'warn' : ''}"><i style="width:${Math.round(goalPct * 100)}%"></i></div></div>
           <div class="card"><h3>Essen</h3><div class="kpi">${s.eating.avg7 === null ? '–' : s.eating.avg7.toFixed(1)}<small>/10 Ø 7 Tage</small></div>
-            <div class="sub">${s.eating.todayDone ? `Heute ${s.eating.todayScore}/10 ✔` : 'Heute noch kein Check-in'} · ${s.eating.streak} Tag${s.eating.streak === 1 ? '' : 'e'} in Folge</div>
+            <div class="sub">${s.eating.todayDone ? `Heute ${s.eating.todayScore}/10 ✔` : 'Heute noch kein Check-in'} · ${s.eating.streak} Tag${s.eating.streak === 1 ? '' : 'e'} in Folge${settings().alcoholFreeSince ? ` · alkoholfrei seit ${S.daysBetween(settings().alcoholFreeSince, today())} Tagen` : ''}</div>
             <div class="progress"><i style="width:${Math.round(((s.eating.avg7 || 0) / 10) * 100)}%"></i></div></div>
           <div class="card"><h3>Ohne Tabak</h3><div class="kpi">${s.consumption.streak} <small>Tag${s.consumption.streak === 1 ? '' : 'e'}</small></div>
             <div class="sub">${s.consumption.today ? `Heute ${s.consumption.today.vape}× Vape, ${s.consumption.today.smoke}× Bong ✔` : '<a href="#konsum" style="text-decoration:underline">Heute noch nicht eingetragen</a>'} · 7 Tage: Ø ${s.consumption.avgVape7 === null ? '–' : s.consumption.avgVape7.toFixed(1)} Vape/Tag, ${s.consumption.smoke7}× Bong</div>
@@ -345,7 +345,7 @@
     essen() {
       const d = state.data, t = today();
       const s = S.summary(d, t);
-      if (!state.survey) state.survey = { date: t, meals: null, veggies: null, snacks: null, water: 0, alcohol: null, mood: null, note: '' };
+      if (!state.survey) state.survey = { date: t, meals: null, veggies: null, snacks: null, water: 0, alcohol: settings().alcoholFreeSince ? false : null, mood: null, note: '' };
       const sv = state.survey;
       const choice = (field, values, labels) => `<div class="choices">${values.map((v, i) => `<button type="button" data-action="survey" data-field="${field}" data-value="${v}" aria-pressed="${sv[field] === v}">${labels[i]}</button>`).join('')}</div>`;
       const existing = d.checkins.find((c) => c.date === sv.date);
@@ -362,7 +362,7 @@
               <div class="q"><span class="lbl">Snacks / Süßes?</span>${choice('snacks', [0, 1, 2], ['Keine', 'Etwas', 'Viel'])}</div>
               <div class="q"><span class="lbl">Wasser (Gläser, Ziel ${settings().dailyWaterGoal || 6})</span>
                 <div class="stepper"><button type="button" data-action="survey-step" data-delta="-1">−</button><b>${sv.water}</b><button type="button" data-action="survey-step" data-delta="1">+</button></div></div>
-              <div class="q"><span class="lbl">Alkohol?</span>${choice('alcohol', [false, true], ['Nein', 'Ja'])}</div>
+              ${settings().alcoholFreeSince ? '' : `<div class="q"><span class="lbl">Alkohol?</span>${choice('alcohol', [false, true], ['Nein', 'Ja'])}</div>`}
               <div class="q"><span class="lbl">Stimmung</span>${choice('mood', [1, 2, 3, 4, 5], ['😞', '😕', '😐', '🙂', '😄'])}</div>
               <div class="q"><input placeholder="Notiz (optional)" value="${h(sv.note)}" data-action="survey-note"></div>
               <div class="q"><label>Foto vom Essen (optional)<input type="file" accept="image/*" data-action="survey-photo"></label>${sv.file ? `<span class="small muted">📷 ${h(sv.file.name)}</span>` : ''}</div>
@@ -624,6 +624,7 @@
               <label>Größe (cm)<input type="number" name="heightCm" min="100" max="250" value="${h(st.heightCm ?? '')}"></label>
               <label>Geburtsjahr<input type="number" name="birthYear" min="1950" max="2020" value="${h(st.birthYear ?? '')}"></label>
               <label>Studium: ECTS gesamt<input type="number" name="targetEcts" min="0" max="400" value="${h(st.targetEcts ?? '')}"></label>
+              <label>Alkoholfrei seit (leer = Frage im Check-in)<input type="date" name="alcoholFreeSince" value="${h(st.alcoholFreeSince || '')}"></label>
               <div><button class="primary" type="submit">Speichern</button></div>
             </form></div>
           <div class="card"><h3>Daten</h3>
@@ -693,7 +694,7 @@
     },
     settings(fd) {
       const numOrNull = (k) => (fd.get(k) === '' || fd.get(k) === null ? null : Number(fd.get(k)));
-      return mutate('settings', (s) => Object.assign(s, { name: fd.get('name').trim(), weeklyWorkoutGoal: Number(fd.get('weeklyWorkoutGoal')) || 0, dailyWaterGoal: Number(fd.get('dailyWaterGoal')) || 0, currency: fd.get('currency').trim() || '€', vapeGoalPerDay: numOrNull('vapeGoalPerDay'), heightCm: numOrNull('heightCm'), birthYear: numOrNull('birthYear'), targetEcts: numOrNull('targetEcts') }), 'Einstellungen gespeichert');
+      return mutate('settings', (s) => Object.assign(s, { name: fd.get('name').trim(), weeklyWorkoutGoal: Number(fd.get('weeklyWorkoutGoal')) || 0, dailyWaterGoal: Number(fd.get('dailyWaterGoal')) || 0, currency: fd.get('currency').trim() || '€', vapeGoalPerDay: numOrNull('vapeGoalPerDay'), heightCm: numOrNull('heightCm'), birthYear: numOrNull('birthYear'), targetEcts: numOrNull('targetEcts'), alcoholFreeSince: fd.get('alcoholFreeSince') || null }), 'Einstellungen gespeichert');
     },
   };
 

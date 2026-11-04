@@ -8,5 +8,6 @@
   "targetEcts": 210,
   "vapeGoalPerDay": 4,
   "alcoholFreeSince": "2023-05-31",
+  "consumptionSharePct": 70,
   "startDate": "2026-11-04"
 }

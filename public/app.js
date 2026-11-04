@@ -10,7 +10,7 @@
   const LS_KEY = 'erfolgstracker.data';
 
   const DEFAULTS = {
-    settings: { name: '', weeklyWorkoutGoal: 3, dailyWaterGoal: 6, currency: '€', heightCm: null, birthYear: null, targetEcts: 210, vapeGoalPerDay: 4, alcoholFreeSince: null },
+    settings: { name: '', weeklyWorkoutGoal: 3, dailyWaterGoal: 6, currency: '€', heightCm: null, birthYear: null, targetEcts: 210, vapeGoalPerDay: 4, alcoholFreeSince: null, consumptionSharePct: 100 },
     workouts: [], checkins: [], milestones: [],
     finances: { fixedCosts: [], income: [], expenses: [], savings: { target: 0, current: 0 } },
     sessions: [], reviews: [], consumption: [],
@@ -564,7 +564,7 @@
           <div class="card"><h3>Vape pro Tag · 7 Tage</h3><div class="kpi">${k.avgVape7 === null ? '–' : k.avgVape7.toFixed(1)}${k.vapeGoal ? `<small>/ Ziel ${k.vapeGoal}</small>` : ''}</div><div class="sub">${delta(k.avgVape7 ?? 0, k.avgVapePrev7)}</div></div>
           <div class="card"><h3>Bong · 7 Tage</h3><div class="kpi">${k.smoke7}×</div><div class="sub">${delta(k.smoke7, k.daysLogged > 7 ? k.smokePrev7 : null)}</div></div>
           <div class="card"><h3>Belastung · 7 Tage</h3><div class="kpi">${k.load7}</div><div class="sub">${delta(k.load7, k.daysLogged > 7 ? k.loadPrev7 : null)} · Heuristik, siehe unten</div></div>
-          ${(() => { const sp = S.consumptionSpend(d.finances, t); return sp.months.length || sp.thisMonth ? `<div class="card"><h3>Ausgaben Konsum · ${t.slice(0, 7)}</h3><div class="kpi">${h(money(sp.thisMonth))}</div><div class="sub">${sp.avgPrev !== null ? `Ø der letzten ${sp.months.length} Monate ${h(money(sp.avgPrev))} · aufs Jahr ${h(money(sp.avgPrev * 12))}` : ''} · Kategorie „Konsum“ in Finanzen</div></div>` : ''; })()}
+          ${(() => { const sp = S.consumptionSpend(d.finances, t); const share = Math.min(100, Math.max(0, Number(settings().consumptionSharePct ?? 100))) / 100; return sp.months.length || sp.thisMonth ? `<div class="card"><h3>Ausgaben Konsum · ${t.slice(0, 7)}${share < 1 ? ` · dein Anteil ${Math.round(share * 100)} %` : ''}</h3><div class="kpi">${h(money(sp.thisMonth * share))}</div><div class="sub">${sp.avgPrev !== null ? `Ø der letzten ${sp.months.length} Monate ${h(money(sp.avgPrev * share))} · aufs Jahr ${h(money(sp.avgPrev * share * 12))}` : ''}${share < 1 ? ` · gesamt ${h(money(sp.thisMonth))}` : ''} · Kategorie „Konsum“ in Finanzen</div></div>` : ''; })()}
         </div>
         <div class="grid two" style="margin-top:14px">
           <div class="card"><h3>Heute eintragen</h3>
@@ -626,6 +626,7 @@
               <label>Geburtsjahr<input type="number" name="birthYear" min="1950" max="2020" value="${h(st.birthYear ?? '')}"></label>
               <label>Studium: ECTS gesamt<input type="number" name="targetEcts" min="0" max="400" value="${h(st.targetEcts ?? '')}"></label>
               <label>Alkoholfrei seit (leer = Frage im Check-in)<input type="date" name="alcoholFreeSince" value="${h(st.alcoholFreeSince || '')}"></label>
+              <label>Mein Anteil an Konsum-Ausgaben (%)<input type="number" name="consumptionSharePct" min="0" max="100" value="${h(st.consumptionSharePct ?? 100)}"></label>
               <div><button class="primary" type="submit">Speichern</button></div>
             </form></div>
           <div class="card"><h3>Daten</h3>
@@ -695,7 +696,7 @@
     },
     settings(fd) {
       const numOrNull = (k) => (fd.get(k) === '' || fd.get(k) === null ? null : Number(fd.get(k)));
-      return mutate('settings', (s) => Object.assign(s, { name: fd.get('name').trim(), weeklyWorkoutGoal: Number(fd.get('weeklyWorkoutGoal')) || 0, dailyWaterGoal: Number(fd.get('dailyWaterGoal')) || 0, currency: fd.get('currency').trim() || '€', vapeGoalPerDay: numOrNull('vapeGoalPerDay'), heightCm: numOrNull('heightCm'), birthYear: numOrNull('birthYear'), targetEcts: numOrNull('targetEcts'), alcoholFreeSince: fd.get('alcoholFreeSince') || null }), 'Einstellungen gespeichert');
+      return mutate('settings', (s) => Object.assign(s, { name: fd.get('name').trim(), weeklyWorkoutGoal: Number(fd.get('weeklyWorkoutGoal')) || 0, dailyWaterGoal: Number(fd.get('dailyWaterGoal')) || 0, currency: fd.get('currency').trim() || '€', vapeGoalPerDay: numOrNull('vapeGoalPerDay'), heightCm: numOrNull('heightCm'), birthYear: numOrNull('birthYear'), targetEcts: numOrNull('targetEcts'), alcoholFreeSince: fd.get('alcoholFreeSince') || null, consumptionSharePct: numOrNull('consumptionSharePct') ?? 100 }), 'Einstellungen gespeichert');
     },
   };
 

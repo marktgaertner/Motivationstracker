@@ -83,4 +83,14 @@ assert.deepStrictEqual(up.map((u) => u.name), ['Strom']);
 assert.strictEqual(up[0].inDays, 13);
 assert.deepStrictEqual(S.upcoming({ fixedCosts: [{ name: 'iCloud', amount: 4, day: 30 }], income: [] }, '2026-02-20', 14)[0].date, '2026-02-28');
 
+// Konsum
+assert.strictEqual(S.loadScore({ vape: 5, temp: 320, smoke: 1 }), 25);
+assert.strictEqual(S.loadScore({ vape: 5, temp: 200, smoke: 0 }), 5);
+assert.strictEqual(S.consumptionPoints({ smoke: 0 }), 15);
+assert.strictEqual(S.consumptionPoints({ smoke: 2 }), 5);
+assert.strictEqual(S.smokeFreeStreak([{ date: '2026-11-03', smoke: 0 }, { date: '2026-11-02', smoke: 0 }, { date: '2026-11-01', smoke: 1 }], '2026-11-04'), 2);
+assert.strictEqual(S.milestonePoints({ done: true, category: 'uni', grade: 1.0, points: 0 }), 0);
+assert.deepStrictEqual(S.ectsProgress([{ category: 'uni', done: true, ects: 5 }, { category: 'uni', done: false, ects: 5 }], 210).done, 5);
+assert.strictEqual(S.weeklyConsumption([{ date: '2026-11-02', vape: 4, smoke: 1 }], '2026-11-04', 2)[1].load, 22);
+
 console.log('✔ alle Tests bestanden');

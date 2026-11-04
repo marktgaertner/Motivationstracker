@@ -62,10 +62,29 @@ Ohne Server geht es auch: `public/index.html` direkt im Browser öffnen. Dann we
 | Meilensteine | Uni (mit Note & ECTS → gewichteter Schnitt), Praktikum, Sidehustle, Fitness, Finanzen, Persönlich |
 | Finanzen | Fixkosten & Einnahmen mit Intervall (monatlich/vierteljährlich/jährlich/wöchentlich), variable Ausgaben, Sparziel |
 | Sessions | Erfolge aus Arbeits-/Claude-Sessions mit frei wählbaren Punkten |
+| Konsum | Tägliches Cannabis-Protokoll (verdampft, Temperatur, Bong mit Tabak), Tage ohne Tabak, Belastung pro Woche als offengelegte Heuristik |
 | Woche | Wochen-Check mit Coach-Fragen (Energie, Schlaf, Stress, Plan, Gewicht, Stolz, Bremsen, Erkenntnis, Fokus) und Wochenzahlen |
 | ⚙︎ | Ziele (Workouts/Woche, Wasser), Name, Währung, Export/Import |
 
-Tastatur: `1`–`7` wechseln die Bereiche.
+Tastatur: `1`–`8` wechseln die Bereiche.
+
+## Importe (kein Connector nötig)
+
+**Apple Health (inkl. Nike Run Club, Apple Watch):** iPhone → Health → Profilbild → „Alle Gesundheitsdaten exportieren“ → `export.zip` auf den Rechner, dann:
+
+```bash
+node import-health.js export.zip --since 2026-10-01
+```
+
+Übernimmt Workouts (Laufen, Kraft, MMA …), Schlaf, Schritte, Gewicht und Ruhepuls. Mehrfach ausführen ist sicher, Duplikate werden erkannt. `--dry` zeigt nur die Vorschau.
+
+**Kontoauszug (Sparkasse CSV-CAMT, andere Banken mit ähnlichen Spalten):** Online-Banking → Umsätze → Export → CSV, dann:
+
+```bash
+node import-bank.js umsaetze.csv
+```
+
+Zeigt eine Vorschau: erkannte Fixkosten (Abgleich über Stichwörter im Namen oder im optionalen Feld `match` der Fixkosten), variable Ausgaben mit geratener Kategorie, Eingänge. Mit `--apply` speichern. Das Spaltenformat ist aus der Sparkassen-Dokumentation abgeleitet und noch nicht mit einem echten Export geprüft.
 
 ## Fotos und wöchentlicher Coach
 
@@ -104,6 +123,7 @@ Alle Befehle akzeptieren `--date YYYY-MM-DD` für Nachträge.
 | Andere Meilensteine | 40 |
 | Session-Erfolg | frei, Standard 15 |
 | Wochen-Check | 20 |
+| Konsum eingetragen | 5, +10 wenn tabakfrei |
 
 Level: Start 0 · Anlauf 100 · Routine 250 · Momentum 500 · Disziplin 850 · Fokus 1300 · Flow 1900 · Ausdauer 2600 · Meister 3500 · Legende 4600 · Unaufhaltsam 6000. Regeln stehen in `public/stats.js` und lassen sich dort anpassen.
 
@@ -118,6 +138,8 @@ data/
   finances.json    { fixedCosts[], income[], expenses[], savings: { target, current } }
   sessions.json    [{ id, date, title, summary, points, photo }]
   reviews.json     [{ id, date, weekStart, energy, sleep, stress, adherence, weight, wins, obstacles, learned, focus, coach, points }]
+  consumption.json [{ id, date, vape, temp, smoke, note }]   ein Eintrag pro Tag
+  health.json      { sleep[{date,minutes}], weight[{date,kg}], steps[{date,count}], restingHR[{date,bpm}] }
   photos/          Bilder zu Einträgen (Feld photo = "photos/<datei>")
 ```
 

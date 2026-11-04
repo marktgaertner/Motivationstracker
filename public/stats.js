@@ -65,6 +65,7 @@
   function checkinPoints(c, settings) { return 5 + (eatingScore(c, settings) >= 7 ? 3 : 0); }
   function milestonePoints(m) {
     if (!m.done) return 0;
+    if (m.points !== undefined && m.points !== null && Number.isFinite(Number(m.points))) return Number(m.points);
     const base = { uni: 60, praktikum: 100, sidehustle: 60, finanzen: 40, fitness: 40, persoenlich: 40 }[m.category] || 40;
     const g = Number(m.grade);
     let bonus = 0;
@@ -84,6 +85,7 @@
       milestones: (data.milestones || []).reduce((a, m) => a + milestonePoints(m), 0),
       sessions: (data.sessions || []).reduce((a, s) => a + sessionPoints(s), 0),
       reviews: (data.reviews || []).reduce((a, r) => a + reviewPoints(r), 0),
+      consumption: (data.consumption || []).reduce((a, e) => a + consumptionPoints(e), 0),
     };
     const total = Object.values(by).reduce((a, b) => a + b, 0);
     return { total, by };
@@ -174,10 +176,91 @@
     }
     return n ? { average: sum / weight, ects: weight, count: n } : null;
   }
+  function ectsProgress(milestones, target) {
+    const done = (milestones || []).filter((m) => m.category === 'uni' && m.done).reduce((a, m) => a + (Number(m.ects) || 0), 0);
+    const t = Number(target) || 0;
+    return { done, target: t, pct: t ? Math.min(1, done / t) : null, open: t ? Math.max(0, t - done) : null };
+  }
   function openMilestones(milestones) {
     return (milestones || []).filter((m) => !m.done)
       .sort((a, b) => (a.due || '9999').localeCompare(b.due || '9999'));
   }
+
+  // ---------- Konsum (Cannabis) ----------
+  // Belastungspunkte pro Einheit. HEURISTIK zur Motivation, keine medizinischen Messwerte:
+  // Verbrennen mit Tabak (Bong) wiegt am schwersten (Nikotin, Teer, CO); Verdampfen deutlich leichter,
+  // hohe Temperaturen schwerer als niedrige. Gewichte bewusst grob und in der App offengelegt.
+  const CONSUMPTION_WEIGHTS = { smoke: 10, vapeHigh: 3, vapeMid: 2, vapeLow: 1 };
+  function vapeWeight(temp) {
+    const t = Number(temp) || 0;
+    if (!t || t >= 300) return CONSUMPTION_WEIGHTS.vapeHigh;
+    if (t >= 230) return CONSUMPTION_WEIGHTS.vapeMid;
+    return CONSUMPTION_WEIGHTS.vapeLow;
+  }
+  function loadScore(e) { return (Number(e.smoke) || 0) * CONSUMPTION_WEIGHTS.smoke + (Number(e.vape) || 0) * vapeWeight(e.temp); }
+  function consumptionPoints(e) { return 5 + ((Number(e.smoke) || 0) === 0 ? 10 : 0); }
+  function consumptionByDate(list) { const m = {}; for (const e of list || []) m[e.date] = e; return m; }
+  function consumptionSeries(list, today, days = 28) {
+    const by = consumptionByDate(list); const out = [];
+    for (let i = days - 1; i >= 0; i--) {
+      const date = addDays(today, -i); const e = by[date];
+      out.push({ date, logged: !!e, vape: e ? Number(e.vape) || 0 : null, smoke: e ? Number(e.smoke) || 0 : null, temp: e ? e.temp : null, load: e ? loadScore(e) : null });
+    }
+    return out;
+  }
+  function smokeFreeStreak(list, today) {
+    const by = consumptionByDate(list);
+    let d = today; if (!by[d]) d = addDays(d, -1);
+    let n = 0;
+    while (by[d] && (Number(by[d].smoke) || 0) === 0) { n++; d = addDays(d, -1); }
+    return n;
+  }
+  function weeklyConsumption(list, today, weeks = 8) {
+    const by = consumptionByDate(list); const out = [];
+    let week = startOfWeek(today);
+    for (let i = 0; i < weeks; i++) {
+      const row = { week, vape: 0, smoke: 0, load: 0, days: 0 };
+      for (let d = 0; d < 7; d++) { const e = by[addDays(week, d)]; if (e) { row.days++; row.vape += Number(e.vape) || 0; row.smoke += Number(e.smoke) || 0; row.load += loadScore(e); } }
+      out.unshift(row); week = addDays(week, -7);
+    }
+    return out;
+  }
+  function consumptionSummary(list, today, settings = {}) {
+    const by = consumptionByDate(list);
+    const last7 = consumptionSeries(list, today, 7), prev7 = consumptionSeries(list, addDays(today, -7), 7);
+    const avg = (rows, k) => average(rows.filter((r) => r.logged).map((r) => r[k]));
+    const first = (list || []).map((e) => e.date).sort()[0] || null;
+    return {
+      today: by[today] || null,
+      streak: smokeFreeStreak(list, today),
+      avgVape7: avg(last7, 'vape'), avgVapePrev7: avg(prev7, 'vape'),
+      smoke7: last7.reduce((a, r) => a + (r.smoke || 0), 0), smokePrev7: prev7.reduce((a, r) => a + (r.smoke || 0), 0),
+      load7: last7.reduce((a, r) => a + (r.load || 0), 0), loadPrev7: prev7.reduce((a, r) => a + (r.load || 0), 0),
+      smokeTotal: (list || []).reduce((a, e) => a + (Number(e.smoke) || 0), 0),
+      vapeTotal: (list || []).reduce((a, e) => a + (Number(e.vape) || 0), 0),
+      since: first, daysLogged: (list || []).length,
+      series28: consumptionSeries(list, today, 28), weekly: weeklyConsumption(list, today, 8),
+      vapeGoal: Number(settings.vapeGoalPerDay) || null,
+    };
+  }
+
+  // ---------- Körper / Health-Import ----------
+  function latest(list) { const l = [...(list || [])].sort((a, b) => String(a.date).localeCompare(String(b.date))); return l.length ? l[l.length - 1] : null; }
+  function healthSummary(health, today, settings = {}) {
+    const h = health || {};
+    const inWeek = (list, weekStart) => (list || []).filter((x) => startOfWeek(x.date) === weekStart);
+    const week = startOfWeek(today);
+    const w = latest(h.weight);
+    const hcm = Number(settings.heightCm) || 0;
+    const bmi = w && hcm ? (Number(w.kg) || 0) / Math.pow(hcm / 100, 2) : null;
+    return {
+      weight: w, bmi,
+      sleepAvg7: average(consumptionSeriesDates(today, 7).map((d) => { const x = (h.sleep || []).find((s) => s.date === d); return x ? Number(x.minutes) : null; })),
+      stepsAvg7: average(consumptionSeriesDates(today, 7).map((d) => { const x = (h.steps || []).find((s) => s.date === d); return x ? Number(x.count) : null; })),
+      sleepWeek: inWeek(h.sleep, week), stepsWeek: inWeek(h.steps, week),
+    };
+  }
+  function consumptionSeriesDates(today, days) { const out = []; for (let i = days - 1; i >= 0; i--) out.push(addDays(today, -i)); return out; }
 
   // ---------- Finanzen ----------
   function monthlyAmount(amount, interval) {
@@ -240,6 +323,7 @@
     for (const m of data.milestones || []) if (m.done) bump(m.doneAt || m.due, 'milestones', milestonePoints(m));
     for (const s of data.sessions || []) bump(s.date, 'sessions', sessionPoints(s));
     for (const r of data.reviews || []) bump(r.date, 'sessions', reviewPoints(r));
+    for (const e of data.consumption || []) bump(e.date, 'checkins', consumptionPoints(e));
     return Object.values(map);
   }
 
@@ -286,7 +370,10 @@
         open: openMilestones(data.milestones),
         done: (data.milestones || []).filter((m) => m.done).length,
         uni: uniAverage(data.milestones),
+        ects: ectsProgress(data.milestones, settings.targetEcts),
       },
+      consumption: consumptionSummary(data.consumption, today, settings),
+      health: healthSummary(data.health, today, settings),
       finance: financeSummary(data.finances, today),
       review: reviewStatus(data.reviews, today),
       activity: activityByDay(data, today, 84),
@@ -300,6 +387,7 @@
     workoutPoints, checkinPoints, milestonePoints, sessionPoints, reviewPoints, points, level, isoWeek, reviewStatus,
     workoutsInWeek, weeklyGoalStreak, weeklyWorkoutSeries,
     eatingScore, dayStreak, checkinSeries, average,
-    uniAverage, openMilestones, monthlyAmount, financeSummary, upcoming, activityByDay, feed, summary,
+    uniAverage, ectsProgress, openMilestones, monthlyAmount, financeSummary, upcoming,
+    CONSUMPTION_WEIGHTS, vapeWeight, loadScore, consumptionPoints, consumptionSeries, smokeFreeStreak, weeklyConsumption, consumptionSummary, healthSummary, activityByDay, feed, summary,
   };
 });

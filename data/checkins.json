@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "id": "mw1yj49y8yqc5",
+    "createdAt": "2026-11-04T10:11:49.990Z",
+    "date": "2026-11-04",
+    "meals": 4,
+    "veggies": true,
+    "snacks": 1,
+    "water": 0,
+    "alcohol": false,
+    "mood": 3,
+    "note": "Kantine: Gulasch, Salzkartoffeln, Rotkohl (Snacks/Wasser/Alkohol/Stimmung noch offen)",
+    "photo": "https://res.cloudinary.com/dhi0djnrs/image/upload/v1793787109/erfolgstracker/2026-11/0b539918-image_nxtxcs.jpg"
+  }
+]

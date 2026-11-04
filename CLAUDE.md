@@ -34,6 +34,14 @@ Lädt der Nutzer hier ein Foto hoch, gehört es in den Tracker:
 3. Bild nach Cloudinary hochladen (nicht ins Repo): MCP-Tool `sign-upload` mit `folder: "erfolgstracker/<JJJJ-MM>"`, `tags: ["erfolgstracker", "<essen|training|uni|finanzen|erfolg>"]`, `context: "alt=<kurze Beschreibung>"`, dann mit `curl` an `https://api.cloudinary.com/v1_1/<cloud_name>/image/upload` posten (alle `upload_params` als Formularfelder, Pfad als `-F 'file=@"<pfad>"'`). Die `secure_url` aus der Antwort als `--photo <URL>` eintragen. Datum mit `--date` setzen, wenn das Foto nicht von heute ist. Fallback ohne Cloudinary: `--photo <lokaler Pfad>` kopiert nach `data/photos/`.
 4. Kurz bestätigen, was eingetragen wurde (Punkte nennen), dann `git add data && git commit && git push`.
 
+## Konsum (Cannabis), Körper, Importe
+
+- Nennt der Nutzer seinen Konsum („heute 4× gedampft bei 300, 1× Bong“): `node tracker.js konsum --vape 4 --temp 300 --smoke 1`. Ein Eintrag pro Tag, erneuter Aufruf überschreibt. Ziel des Nutzers: weg von Bong + Tabak, weniger und kühler verdampfen. Nicht moralisieren, Fortschritt an den Zahlen festmachen (Tage ohne Tabak, Belastung pro Woche).
+- Gewicht: in `data/health.json` unter `weight` mit `{date, kg, source: "manuell"}` eintragen (oder im Wochen-Check).
+- Apple-Health-Export (`export.zip`) hochgeladen: `node import-health.js <datei> --dry`, Vorschau zeigen, dann ohne `--dry` speichern.
+- Kontoauszug-CSV hochgeladen: `node import-bank.js <datei>`, Vorschau zeigen, Kategorien mit dem Nutzer klären, dann `--apply`.
+- Noten: Module als Meilensteine `category: "uni"`, `done: true`, `grade`, `ects`, `points: 0` (Historie zählt nicht als Gamification-Punkte), Nichtbestandenes als offener Meilenstein mit Versuchszähler in der Notiz.
+
 ## Wöchentlicher Coach (geplanter Task, sonntags)
 
 Ein geplanter Task startet jede Woche eine Session, die den Wochen-Rückblick aus den Daten schreibt und den Fragebogen stellt. Antworten landen über `node tracker.js review …` in `data/reviews.json` (Feld `coach` = Empfehlung für die nächste Woche). Ohne Antwort wird nichts eingetragen. Ton: knapp, konkret, du-Form, Zahlen aus den Daten nennen, nicht belehren.

@@ -2,5 +2,9 @@
   "name": "",
   "weeklyWorkoutGoal": 3,
   "dailyWaterGoal": 6,
-  "currency": "€"
+  "currency": "€",
+  "heightCm": 186,
+  "birthYear": 2000,
+  "targetEcts": 210,
+  "vapeGoalPerDay": 4
 }

@@ -10,10 +10,11 @@
   const LS_KEY = 'erfolgstracker.data';
 
   const DEFAULTS = {
-    settings: { name: '', weeklyWorkoutGoal: 3, dailyWaterGoal: 6, currency: '€' },
+    settings: { name: '', weeklyWorkoutGoal: 3, dailyWaterGoal: 6, currency: '€', heightCm: null, birthYear: null, targetEcts: 210, vapeGoalPerDay: 4 },
     workouts: [], checkins: [], milestones: [],
     finances: { fixedCosts: [], income: [], expenses: [], savings: { target: 0, current: 0 } },
-    sessions: [], reviews: [],
+    sessions: [], reviews: [], consumption: [],
+    health: { sleep: [], weight: [], steps: [], restingHR: [] },
   };
 
   const state = { data: null, mode: 'api', view: 'dashboard', survey: null, filter: {}, gh: null, ghError: null };
@@ -29,6 +30,7 @@
       }
     }
     for (const k of ['fixedCosts', 'income', 'expenses']) if (!Array.isArray(out.finances[k])) out.finances[k] = [];
+    for (const k of ['sleep', 'weight', 'steps', 'restingHR']) if (!Array.isArray(out.health[k])) out.health[k] = [];
     if (!out.finances.savings) out.finances.savings = { target: 0, current: 0 };
     return out;
   }
@@ -197,7 +199,7 @@
       photoUrl(img.dataset.photo).then((u) => { img.src = u; }).catch(() => { img.alt = '📷'; });
     }
   }
-  const KIND_LABEL = { workout: 'Workout', checkin: 'Essen', milestone: 'Meilenstein', session: 'Session', review: 'Wochen-Check' };
+  const KIND_LABEL = { workout: 'Workout', checkin: 'Essen', milestone: 'Meilenstein', session: 'Session', review: 'Wochen-Check', consumption: 'Konsum' };
 
   // ---------- Diagramme (inline SVG) ----------
   function barChart(series, goal) {
@@ -290,6 +292,9 @@
           <div class="card"><h3>Essen</h3><div class="kpi">${s.eating.avg7 === null ? '–' : s.eating.avg7.toFixed(1)}<small>/10 Ø 7 Tage</small></div>
             <div class="sub">${s.eating.todayDone ? `Heute ${s.eating.todayScore}/10 ✔` : 'Heute noch kein Check-in'} · ${s.eating.streak} Tag${s.eating.streak === 1 ? '' : 'e'} in Folge</div>
             <div class="progress"><i style="width:${Math.round(((s.eating.avg7 || 0) / 10) * 100)}%"></i></div></div>
+          <div class="card"><h3>Ohne Tabak</h3><div class="kpi">${s.consumption.streak} <small>Tag${s.consumption.streak === 1 ? '' : 'e'}</small></div>
+            <div class="sub">${s.consumption.today ? `Heute ${s.consumption.today.vape}× Vape, ${s.consumption.today.smoke}× Bong ✔` : '<a href="#konsum" style="text-decoration:underline">Heute noch nicht eingetragen</a>'} · 7 Tage: Ø ${s.consumption.avgVape7 === null ? '–' : s.consumption.avgVape7.toFixed(1)} Vape/Tag, ${s.consumption.smoke7}× Bong</div>
+            ${s.consumption.daysLogged ? `<div class="progress ${s.consumption.load7 > s.consumption.loadPrev7 && s.consumption.loadPrev7 ? 'warn' : ''}"><i style="width:${Math.round(100 * Math.min(1, s.consumption.loadPrev7 ? s.consumption.load7 / Math.max(s.consumption.load7, s.consumption.loadPrev7) : 1))}%"></i></div><div class="sub">Belastung 7 Tage: ${s.consumption.load7}${s.consumption.loadPrev7 ? ` (Vorwoche ${s.consumption.loadPrev7})` : ''}</div>` : ''}</div>
           <div class="card"><h3>Frei im Monat</h3><div class="kpi" style="color:${f.free < 0 ? 'var(--danger)' : 'inherit'}">${h(money(f.free))}</div>
             <div class="sub">Einnahmen ${h(money(f.incomeMonthly))} − Fixkosten ${h(money(f.fixedMonthly))} − variabel ${h(money(f.variableMonth))}</div>
             ${f.upcoming.length ? `<div class="sub">Nächste: ${f.upcoming.slice(0, 2).map((u) => `${S.fmtDateShort(u.date)} ${u.kind === 'income' ? '+' : '−'}${h(money(u.amount))} ${h(u.name)}`).join(' · ')}</div>` : ''}
@@ -308,7 +313,7 @@
               const due = days === null ? '' : days < 0 ? `<span style="color:var(--danger)">${-days} T. überfällig</span>` : days === 0 ? '<b>heute</b>' : `in ${days} T.`;
               return `<li><span class="date">${m.due ? S.fmtDateShort(m.due) : '–'}</span><span>${h(m.title)} ${badge(m.category, S.CATEGORIES[m.category] || m.category)}</span><span class="small muted">${due}</span></li>`;
             }).join('')}</ul>` : '<div class="empty">Keine offenen Meilensteine. Lege Uni-Prüfungen, Praktikumsziele oder Sidehustle-Schritte an.</div>'}
-            ${s.milestones.uni ? `<p class="sub">Uni-Schnitt: <b>${s.milestones.uni.average.toFixed(2)}</b> über ${s.milestones.uni.ects} ECTS</p>` : ''}</div>
+            ${s.milestones.uni ? `<p class="sub">Uni-Schnitt: <b>${s.milestones.uni.average.toFixed(2)}</b> über ${s.milestones.uni.ects} benotete ECTS${s.milestones.ects.target ? ` · Fortschritt <b>${s.milestones.ects.done}/${s.milestones.ects.target} ECTS</b> (${Math.round(s.milestones.ects.pct * 100)} %)` : ''}</p>${s.milestones.ects.target ? `<div class="progress"><i style="width:${Math.round(s.milestones.ects.pct * 100)}%"></i></div>` : ''}` : ''}</div>
           <div class="card"><h3>Letzte Erfolge</h3>
             ${s.feed.length ? `<ul class="feed">${s.feed.slice(0, 8).map((e) => `<li><span class="date">${S.fmtDateShort(e.date)}</span><span>${badge(e.kind, KIND_LABEL[e.kind])} ${h(e.title)}${e.detail ? ` <span class="muted small">– ${h(e.detail)}</span>` : ''}${e.photo ? ' ' + photoTag(e.photo, 'thumb sm') : ''}</span><span class="pts">+${e.points}</span></li>`).join('')}</ul>` : '<div class="empty">Noch nichts eingetragen. Der erste Eintrag zählt am meisten.</div>'}</div>
         </div>`;
@@ -381,7 +386,7 @@
       const uni = S.uniAverage(d.milestones);
       const cats = ['alle', ...Object.keys(S.CATEGORIES)];
       return `
-        <div class="page-head"><div><h2>Meilensteine</h2><p class="muted">${d.milestones.filter((m) => m.done).length} erledigt · ${d.milestones.filter((m) => !m.done).length} offen${uni ? ` · Uni-Schnitt ${uni.average.toFixed(2)} (${uni.ects} ECTS)` : ''}</p></div></div>
+        <div class="page-head"><div><h2>Meilensteine</h2><p class="muted">${d.milestones.filter((m) => m.done).length} erledigt · ${d.milestones.filter((m) => !m.done).length} offen${uni ? ` · Uni-Schnitt ${uni.average.toFixed(2)}` : ''}${(() => { const e = S.ectsProgress(d.milestones, settings().targetEcts); return e.target ? ` · ${e.done}/${e.target} ECTS (${Math.round(e.pct * 100)} %)` : ''; })()}</p></div></div>
         <div class="card"><h3>Neuer Meilenstein</h3>
           <form class="inline" data-form="milestone">
             <label class="full">Titel<input name="title" required placeholder="z. B. Statistik II bestehen · Praktikumszeugnis · erster zahlender Kunde"></label>
@@ -501,6 +506,8 @@
               <li><span class="date">Sport</span><span>${wk.length}/${goal || '–'} Workouts, ${wk.reduce((a, w) => a + (Number(w.minutes) || 0), 0)} min</span><span class="small muted">${goal && wk.length >= goal ? 'Ziel erreicht ✔' : goal ? `${goal - wk.length} fehlen` : ''}</span></li>
               <li><span class="date">Essen</span><span>${ck.length} Check-ins, Ø ${avg === null ? '–' : avg.toFixed(1)}/10</span><span class="small muted">${ck.length < 5 ? 'lückenhaft' : 'gut dokumentiert'}</span></li>
               <li><span class="date">Erfolge</span><span>${d.sessions.filter((x) => S.startOfWeek(x.date) === week).length} Session-Erfolge, ${d.milestones.filter((m) => m.done && m.doneAt && S.startOfWeek(m.doneAt) === week).length} Meilensteine</span><span></span></li>
+              <li><span class="date">Konsum</span><span>${(() => { const rows = d.consumption.filter((x) => S.startOfWeek(x.date) === week); const v = rows.reduce((a, x) => a + (Number(x.vape) || 0), 0), sm = rows.reduce((a, x) => a + (Number(x.smoke) || 0), 0); return rows.length ? `${rows.length} Tage erfasst · ${v}× Vape · ${sm}× Bong · Belastung ${rows.reduce((a, x) => a + S.loadScore(x), 0)}` : 'nichts erfasst'; })()}</span><span></span></li>
+              <li><span class="date">Körper</span><span>${(() => { const hs = S.healthSummary(d.health, t, settings()); const parts = []; if (hs.weight) parts.push(`${hs.weight.kg} kg${hs.bmi ? ` (BMI ${hs.bmi.toFixed(1)})` : ''}`); if (hs.sleepAvg7 !== null) parts.push(`Schlaf Ø ${(hs.sleepAvg7 / 60).toFixed(1)} h`); if (hs.stepsAvg7 !== null) parts.push(`Ø ${Math.round(hs.stepsAvg7).toLocaleString('de-DE')} Schritte`); return parts.join(' · ') || 'keine Daten (Apple-Health-Import oder Gewicht unten)'; })()}</span><span></span></li>
               <li><span class="date">Geld</span><span>${h(money(d.finances.expenses.filter((e) => S.startOfWeek(e.date) === week).reduce((a, e) => a + (Number(e.amount) || 0), 0)))} variabel ausgegeben</span><span></span></li>
             </ul>
             ${existing ? `<div class="hint" style="margin-top:12px">Check für diese Woche ist gespeichert. Speichern überschreibt ihn.</div>` : ''}</div>
@@ -524,6 +531,62 @@
           ${list.length ? `<div class="table-wrap"><table><thead><tr><th>KW</th><th class="num">Energie</th><th class="num">Schlaf</th><th class="num">Stress</th><th class="num">Plan</th><th class="num">kg</th><th>Fokus</th><th></th></tr></thead><tbody>
           ${list.map((x) => `<tr><td>KW ${S.isoWeek(x.weekStart)} <span class="muted small">${S.fmtDateShort(x.weekStart)}</span></td><td class="num">${h(x.energy ?? '–')}</td><td class="num">${h(x.sleep ?? '–')}</td><td class="num">${h(x.stress ?? '–')}</td><td class="num">${h(x.adherence ?? '–')}</td><td class="num">${h(x.weight ?? '–')}</td><td>${h(x.focus)}${x.wins ? `<div class="muted small">Stolz: ${h(x.wins)}</div>` : ''}${x.coach ? `<div class="small" style="color:var(--accent)">Coach: ${h(x.coach)}</div>` : ''}</td><td><button class="ghost sm" data-action="del" data-col="reviews" data-id="${h(x.id)}">✕</button></td></tr>`).join('')}
           </tbody></table></div>` : '<div class="empty">Noch kein Wochen-Check. Der erste kommt am Wochenende.</div>'}</div>`;
+    },
+
+    konsum() {
+      const d = state.data, t = today();
+      const k = S.consumptionSummary(d.consumption, t, settings());
+      if (!state.konsum) { const e = k.today; const last = [...d.consumption].sort((a, b) => b.date.localeCompare(a.date))[0]; state.konsum = { date: t, vape: e ? e.vape : 0, smoke: e ? e.smoke : 0, temp: e ? e.temp : (last ? last.temp : 320), note: e ? e.note || '' : '' }; }
+      const kf = state.konsum;
+      const W = S.CONSUMPTION_WEIGHTS;
+      const preview = S.loadScore(kf);
+      const list = [...d.consumption].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 30);
+      const step = (field, label) => `<div class="q"><span class="lbl">${label}</span><div class="stepper"><button type="button" data-action="konsum-step" data-field="${field}" data-delta="-1">−</button><b>${kf[field]}</b><button type="button" data-action="konsum-step" data-field="${field}" data-delta="1">+</button></div></div>`;
+      const delta = (a, b) => (b === null || b === undefined || !k.daysLogged ? '' : a < b ? `<span style="color:var(--accent)">▼ ${(b - a).toFixed(1).replace(/\.0$/, '')} weniger</span>` : a > b ? `<span style="color:var(--danger)">▲ ${(a - b).toFixed(1).replace(/\.0$/, '')} mehr</span>` : '= gleich');
+      // Diagramm: 8 Wochen Belastung (Bong-Anteil dunkel, Vape-Anteil hell)
+      const weeks = k.weekly; const maxLoad = Math.max(1, ...weeks.map((w) => w.load));
+      const cw = 360, ch = 130, pb = 18, pt = 12, bw = (cw - 16) / weeks.length;
+      const bars = weeks.map((w, i) => {
+        const x = 8 + i * bw + bw * 0.18, wd = bw * 0.64;
+        const smokeLoad = w.smoke * W.smoke, vapeLoad = w.load - smokeLoad;
+        const hS = (ch - pb - pt) * smokeLoad / maxLoad, hV = (ch - pb - pt) * vapeLoad / maxLoad;
+        return `<rect class="hbar" style="fill:var(--danger)" x="${x.toFixed(1)}" y="${(ch - pb - hS).toFixed(1)}" width="${wd.toFixed(1)}" height="${hS.toFixed(1)}"><title>KW ${S.isoWeek(w.week)}: ${w.smoke}× Bong = ${smokeLoad} Punkte</title></rect>
+          <rect class="bar" x="${x.toFixed(1)}" y="${(ch - pb - hS - hV).toFixed(1)}" width="${wd.toFixed(1)}" height="${hV.toFixed(1)}"><title>KW ${S.isoWeek(w.week)}: ${w.vape}× Vape = ${vapeLoad} Punkte</title></rect>
+          ${w.days ? `<text x="${(x + wd / 2).toFixed(1)}" y="${(ch - pb - hS - hV - 3).toFixed(1)}" text-anchor="middle">${w.load}</text>` : ''}
+          <text x="${(x + wd / 2).toFixed(1)}" y="${ch - 5}" text-anchor="middle">KW ${S.isoWeek(w.week)}</text>`;
+      }).join('');
+      // 28-Tage-Streifen
+      const strip = k.series28.map((r, i) => { const lvl = !r.logged ? 'l0' : r.smoke > 0 ? 'smoke' : r.vape > (k.vapeGoal || 99) ? 'l2' : 'l4'; return `<rect class="${lvl}" x="${i * 12.5}" y="0" width="11" height="14" rx="2" style="${lvl === 'smoke' ? 'fill:var(--danger)' : ''}"><title>${S.fmtDate(r.date)}: ${r.logged ? `${r.vape}× Vape, ${r.smoke}× Bong, Belastung ${r.load}` : 'nicht eingetragen'}</title></rect>`; }).join('');
+      return `
+        <div class="page-head"><div><h2>Konsum</h2><p class="muted">Ziel: weg von Bong + Tabak, weniger und kühler verdampfen. Jeder Tag ohne Tabak zählt. Ehrlich eintragen bringt Punkte, auch an schlechten Tagen.</p></div></div>
+        <div class="grid">
+          <div class="card"><h3>Tage ohne Tabak</h3><div class="kpi">${k.streak}</div><div class="sub">${k.smokeTotal}× Bong seit ${k.since ? S.fmtDate(k.since) : 'Start'} · ${k.daysLogged} Tage erfasst</div></div>
+          <div class="card"><h3>Vape pro Tag · 7 Tage</h3><div class="kpi">${k.avgVape7 === null ? '–' : k.avgVape7.toFixed(1)}${k.vapeGoal ? `<small>/ Ziel ${k.vapeGoal}</small>` : ''}</div><div class="sub">${delta(k.avgVape7 ?? 0, k.avgVapePrev7)}</div></div>
+          <div class="card"><h3>Bong · 7 Tage</h3><div class="kpi">${k.smoke7}×</div><div class="sub">${delta(k.smoke7, k.daysLogged > 7 ? k.smokePrev7 : null)}</div></div>
+          <div class="card"><h3>Belastung · 7 Tage</h3><div class="kpi">${k.load7}</div><div class="sub">${delta(k.load7, k.daysLogged > 7 ? k.loadPrev7 : null)} · Heuristik, siehe unten</div></div>
+        </div>
+        <div class="grid two" style="margin-top:14px">
+          <div class="card"><h3>Heute eintragen</h3>
+            <div class="survey">
+              <div class="q"><span class="lbl">Tag <input type="date" value="${kf.date}" data-action="konsum-date" style="width:auto;display:inline-block;margin-left:8px"></span></div>
+              ${step('vape', 'Verdampft (Sessions)')}
+              <div class="q"><span class="lbl">Temperatur am Ballvape (°C, effektiv)</span><div class="choices">${[180, 200, 220, 240, 260, 280, 300, 320, 340].map((v) => `<button type="button" data-action="konsum-temp" data-value="${v}" aria-pressed="${Number(kf.temp) === v}">${v}</button>`).join('')}</div></div>
+              ${step('smoke', 'Bong mit Tabak (Köpfe)')}
+              <div class="q"><input placeholder="Notiz (optional, z. B. Auslöser, Uhrzeit, wie du dich gefühlt hast)" value="${h(kf.note)}" data-action="konsum-note"></div>
+              <div class="row between"><span class="muted small">Belastung heute: <b>${preview}</b> · ${kf.smoke === 0 ? '<span style="color:var(--accent)">tabakfrei, +15 Punkte</span>' : '+5 Punkte fürs Eintragen'}</span><button class="primary" data-action="konsum-save">Speichern</button></div>
+            </div></div>
+          <div class="card"><h3>Belastung pro Woche</h3>
+            <svg class="chart" viewBox="0 0 ${cw} ${ch}" role="img" aria-label="Belastung pro Woche">${bars}</svg>
+            <div class="legend"><span><i style="background:var(--danger)"></i>Bong + Tabak (${W.smoke}/Kopf)</span><span><i style="background:var(--accent)"></i>Verdampfen (${W.vapeLow}–${W.vapeHigh}/Session je nach Temperatur)</span></div>
+            <h3 style="margin-top:14px">Letzte 28 Tage</h3>
+            <svg class="chart heat" viewBox="0 0 350 14" style="max-width:520px">${strip}</svg>
+            <div class="legend"><span><i style="background:var(--heat-4)"></i>tabakfrei, im Ziel</span><span><i style="background:var(--heat-2)"></i>tabakfrei, über Vape-Ziel</span><span><i style="background:var(--danger)"></i>Bong</span><span><i style="background:var(--heat-0)"></i>nicht erfasst</span></div>
+            <p class="sub">Belastung ist eine <b>Heuristik zur Motivation</b>, kein medizinischer Messwert: Verbrennen mit Tabak zählt ${W.smoke} pro Kopf (Nikotin, Teer, Kohlenmonoxid), Verdampfen ${W.vapeHigh} ab 300 °C, ${W.vapeMid} ab 230 °C, ${W.vapeLow} darunter. Die Gewichte stehen in <code>public/stats.js</code>.</p></div>
+        </div>
+        <div class="card" style="margin-top:14px"><h3>Verlauf</h3>
+          ${list.length ? `<div class="table-wrap"><table><thead><tr><th>Datum</th><th class="num">Vape</th><th class="num">°C</th><th class="num">Bong</th><th class="num">Belastung</th><th>Notiz</th><th class="num">P.</th><th></th></tr></thead><tbody>
+          ${list.map((e) => `<tr><td>${S.fmtDate(e.date)}</td><td class="num">${h(e.vape)}</td><td class="num">${h(e.temp ?? '–')}</td><td class="num" style="${e.smoke > 0 ? 'color:var(--danger);font-weight:700' : ''}">${h(e.smoke)}</td><td class="num">${S.loadScore(e)}</td><td class="muted">${h(e.note)}</td><td class="num">+${S.consumptionPoints(e)}</td><td><button class="ghost sm" data-action="del" data-col="consumption" data-id="${h(e.id)}">✕</button></td></tr>`).join('')}
+          </tbody></table></div>` : '<div class="empty">Noch kein Eintrag. Fang heute an, egal wie der Tag war.</div>'}</div>`;
     },
 
     einstellungen() {
@@ -557,6 +620,10 @@
               <label>Workouts pro Woche<input type="number" name="weeklyWorkoutGoal" min="0" max="14" value="${h(st.weeklyWorkoutGoal)}"></label>
               <label>Wasser-Ziel (Gläser)<input type="number" name="dailyWaterGoal" min="0" max="20" value="${h(st.dailyWaterGoal)}"></label>
               <label>Währung<input name="currency" value="${h(st.currency || '€')}" maxlength="4"></label>
+              <label>Vape-Ziel pro Tag<input type="number" name="vapeGoalPerDay" min="0" max="30" value="${h(st.vapeGoalPerDay ?? '')}"></label>
+              <label>Größe (cm)<input type="number" name="heightCm" min="100" max="250" value="${h(st.heightCm ?? '')}"></label>
+              <label>Geburtsjahr<input type="number" name="birthYear" min="1950" max="2020" value="${h(st.birthYear ?? '')}"></label>
+              <label>Studium: ECTS gesamt<input type="number" name="targetEcts" min="0" max="400" value="${h(st.targetEcts ?? '')}"></label>
               <div><button class="primary" type="submit">Speichern</button></div>
             </form></div>
           <div class="card"><h3>Daten</h3>
@@ -625,7 +692,8 @@
       render();
     },
     settings(fd) {
-      return mutate('settings', (s) => Object.assign(s, { name: fd.get('name').trim(), weeklyWorkoutGoal: Number(fd.get('weeklyWorkoutGoal')) || 0, dailyWaterGoal: Number(fd.get('dailyWaterGoal')) || 0, currency: fd.get('currency').trim() || '€' }), 'Einstellungen gespeichert');
+      const numOrNull = (k) => (fd.get(k) === '' || fd.get(k) === null ? null : Number(fd.get(k)));
+      return mutate('settings', (s) => Object.assign(s, { name: fd.get('name').trim(), weeklyWorkoutGoal: Number(fd.get('weeklyWorkoutGoal')) || 0, dailyWaterGoal: Number(fd.get('dailyWaterGoal')) || 0, currency: fd.get('currency').trim() || '€', vapeGoalPerDay: numOrNull('vapeGoalPerDay'), heightCm: numOrNull('heightCm'), birthYear: numOrNull('birthYear'), targetEcts: numOrNull('targetEcts') }), 'Einstellungen gespeichert');
     },
   };
 
@@ -668,6 +736,16 @@
       await load(); render(); toast('GitHub getrennt');
     },
     'pick-week'(el) { state.filter.week = el.value; render(); },
+    'konsum-step'(el) { const f = el.dataset.field; state.konsum[f] = Math.max(0, (Number(state.konsum[f]) || 0) + Number(el.dataset.delta)); render(); },
+    'konsum-temp'(el) { state.konsum.temp = Number(el.dataset.value); render(); },
+    'konsum-date'(el) { const dt = el.value || today(); const e = state.data.consumption.find((x) => x.date === dt); state.konsum = e ? { date: dt, vape: e.vape, smoke: e.smoke, temp: e.temp, note: e.note || '' } : Object.assign({}, state.konsum, { date: dt }); render(); },
+    'konsum-note'(el) { state.konsum.note = el.value; },
+    'konsum-save'() {
+      const kf = state.konsum;
+      const e = { id: newId(), createdAt: new Date().toISOString(), date: kf.date, vape: Number(kf.vape) || 0, temp: kf.temp ? Number(kf.temp) : null, smoke: Number(kf.smoke) || 0, note: kf.note.trim() };
+      state.konsum = null;
+      return mutate('consumption', (l) => { const old = l.find((x) => x.date === e.date); if (old) { e.id = old.id; e.createdAt = old.createdAt; } return [...l.filter((x) => x.date !== e.date), e]; }, `Konsum gespeichert · Belastung ${S.loadScore(e)} · +${S.consumptionPoints(e)} P.`);
+    },
     async 'photo-open'(el) { try { window.open(await photoUrl(el.dataset.photo), '_blank'); } catch (e) { toast('Foto nicht ladbar', true); } },
     export() {
       const blob = new Blob([JSON.stringify(state.data, null, 2)], { type: 'application/json' });
@@ -691,6 +769,7 @@
   function render() {
     state.view = currentView();
     if (state.view !== 'essen') state.survey = null;
+    if (state.view !== 'konsum') state.konsum = null;
     $view.innerHTML = views[state.view]();
     for (const a of $nav.querySelectorAll('a')) a.classList.toggle('active', a.dataset.view === state.view);
     $mode.textContent = state.mode === 'api' ? 'data/*.json' : state.mode === 'github' ? `GitHub ${state.gh.repo.split('/')[1]}@${state.gh.branch}${state.gh.token ? '' : ' (lesen)'}` : 'nur Browser';
@@ -719,7 +798,7 @@
   });
   document.addEventListener('keydown', (e) => {
     if (e.target.matches('input, textarea, select') || e.metaKey || e.ctrlKey || e.altKey) return;
-    const map = { 1: 'dashboard', 2: 'workouts', 3: 'essen', 4: 'meilensteine', 5: 'finanzen', 6: 'sessions', 7: 'woche' };
+    const map = { 1: 'dashboard', 2: 'workouts', 3: 'essen', 4: 'konsum', 5: 'meilensteine', 6: 'finanzen', 7: 'sessions', 8: 'woche' };
     if (map[e.key]) location.hash = map[e.key];
   });
 

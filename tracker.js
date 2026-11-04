@@ -78,6 +78,13 @@ const commands = {
     const e = store.append('sessions', { date: today, title, summary: summary.join(' '), points: num(opts.points, 15), photo });
     out(`✔ Session-Erfolg gespeichert: ${e.title} (+${S.sessionPoints(e)} Punkte)`);
   },
+  konsum() {
+    const list = store.read('consumption');
+    const existing = list.find((e) => e.date === today);
+    const entry = { date: today, vape: num(opts.vape, existing ? existing.vape : 0), temp: opts.temp !== undefined ? num(opts.temp, null) : (existing ? existing.temp : null), smoke: num(opts.smoke, existing ? existing.smoke : 0), note: pos.join(' ') || (existing ? existing.note : '') };
+    const saved = existing ? store.update('consumption', existing.id, entry) : store.append('consumption', entry);
+    out(`✔ Konsum ${S.fmtDate(today)}: ${saved.vape}× verdampft${saved.temp ? ' bei ' + saved.temp + ' °C' : ''}, ${saved.smoke}× Bong/Tabak · Belastung ${S.loadScore(saved)} (+${S.consumptionPoints(saved)} Punkte)`);
+  },
   review() {
     const weekStart = S.startOfWeek(opts.week || today);
     const list = store.read('reviews');
@@ -140,13 +147,16 @@ const commands = {
     const bar = (p) => { const n = Math.round(p * 20); return '█'.repeat(n) + '░'.repeat(20 - n); };
     out(`\n  ERFOLGSTRACKER · ${S.fmtDate(s.today)}${data.settings.name ? ' · ' + data.settings.name : ''}\n`);
     out(`  Level ${s.level.number} „${s.level.name}“   ${s.points.total} Punkte   ${bar(s.level.progress)} ${s.level.next ? `nächstes Level bei ${s.level.next}` : 'Maximum'}`);
-    out(`    Workouts ${s.points.by.workouts} · Essen ${s.points.by.checkins} · Meilensteine ${s.points.by.milestones} · Sessions ${s.points.by.sessions} · Wochen-Checks ${s.points.by.reviews}\n`);
+    out(`    Workouts ${s.points.by.workouts} · Essen ${s.points.by.checkins} · Meilensteine ${s.points.by.milestones} · Sessions ${s.points.by.sessions} · Wochen-Checks ${s.points.by.reviews} · Konsum ${s.points.by.consumption}\n`);
     out(`  WORKOUTS   diese Woche ${s.workouts.thisWeek}/${s.workouts.goal} (${s.workouts.minutesThisWeek} min) · ${s.workouts.weekStreak} Wochen in Folge Ziel erreicht · gesamt ${s.workouts.total}`);
     out(`             letzte 8 Wochen: ${s.workouts.series.map((w) => w.count).join(' ')}`);
     out(`  ESSEN      heute ${s.eating.todayDone ? s.eating.todayScore + '/10 ✔' : 'noch kein Check-in'} · ${s.eating.streak} Tage in Folge · Ø 7 Tage ${s.eating.avg7 === null ? '–' : s.eating.avg7.toFixed(1)}`);
     const uni = s.milestones.uni;
     out(`  UNI        ${uni ? `Ø Note ${uni.average.toFixed(2)} über ${uni.ects} ECTS (${uni.count} Module)` : 'noch keine benoteten Module'}`);
     out(`  WOCHE      ${s.review.due ? `Wochen-Check fällig für KW ${S.isoWeek(s.review.due)} (ab ${S.fmtDate(s.review.due)})` : 'Wochen-Check erledigt'} · ${(data.reviews || []).length} Checks gesamt`);
+    const k = s.consumption;
+    out(`  KONSUM     ${k.today ? `heute ${k.today.vape}× Vape${k.today.temp ? ' @' + k.today.temp + '°' : ''}, ${k.today.smoke}× Bong` : 'heute noch nicht eingetragen'} · ${k.streak} Tage ohne Tabak · 7 Tage: Ø ${k.avgVape7 === null ? '–' : k.avgVape7.toFixed(1)} Vape/Tag, ${k.smoke7}× Bong, Belastung ${k.load7}${k.daysLogged ? ` (Vorwoche ${k.loadPrev7})` : ''}`);
+    out(`  ECTS       ${s.milestones.ects.done}/${s.milestones.ects.target || '?'}${s.milestones.ects.pct !== null ? ' (' + Math.round(s.milestones.ects.pct * 100) + ' %)' : ''}`);
     out(`  MEILENST.  ${s.milestones.done} erledigt · ${s.milestones.open.length} offen`);
     for (const m of s.milestones.open.slice(0, 5)) out(`             ○ ${m.title} (${S.CATEGORIES[m.category] || m.category}${m.due ? ', bis ' + S.fmtDate(m.due) : ''})`);
     const f = s.finance;
@@ -165,6 +175,7 @@ const commands = {
   milestone add <Titel> --cat <kat> --due YYYY-MM-DD
   milestone done <id|Titelteil> [--grade 1.7 --ects 5]
   session <Titel> [Zusammenfassung] [--points 15]
+  konsum --vape N [--temp 320] --smoke N [Notiz]   (ein Eintrag pro Tag, überschreibt)
   review --week YYYY-MM-DD --energy 1-5 --sleep 1-5 --stress 1-5 --adherence 1-5 [--weight 78.5] --wins "…" --obstacles "…" --learned "…" --focus "…" [--coach "…"]
   fixed [add <Name> <Betrag> [monthly|quarterly|yearly|weekly] [--day 15]]
   income [add <Name> <Betrag> [Intervall] [--day 29]]

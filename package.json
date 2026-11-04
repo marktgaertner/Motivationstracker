@@ -1,0 +1,16 @@
+{
+  "name": "erfolgstracker",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Persönlicher Erfolgstracker: Workouts, Essens-Check-ins, Meilensteine, Finanzen und Session-Erfolge – lokal, ohne Abhängigkeiten.",
+  "scripts": {
+    "start": "node server.js",
+    "cli": "node tracker.js",
+    "summary": "node tracker.js summary",
+    "test": "node test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "UNLICENSED"
+}

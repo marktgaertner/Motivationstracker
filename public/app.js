@@ -1,0 +1,507 @@
+/* Erfolgstracker – Frontend ohne Build-Schritt.
+   Daten kommen vom lokalen Server (/api) oder, falls die Seite ohne Server geöffnet wird, aus localStorage. */
+(function () {
+  'use strict';
+  const S = window.Stats;
+  const $view = document.getElementById('view');
+  const $nav = document.getElementById('nav');
+  const $mode = document.getElementById('mode');
+  const $toast = document.getElementById('toast');
+  const LS_KEY = 'erfolgstracker.data';
+
+  const DEFAULTS = {
+    settings: { name: '', weeklyWorkoutGoal: 3, dailyWaterGoal: 6, currency: '€' },
+    workouts: [], checkins: [], milestones: [],
+    finances: { fixedCosts: [], income: [], expenses: [], savings: { target: 0, current: 0 } },
+    sessions: [],
+  };
+
+  const state = { data: null, mode: 'api', view: 'dashboard', survey: null, filter: {} };
+
+  // ---------- Speicher ----------
+  function clone(v) { return JSON.parse(JSON.stringify(v)); }
+  function withDefaults(data) {
+    const out = clone(DEFAULTS);
+    for (const k of Object.keys(DEFAULTS)) {
+      if (data && data[k] !== undefined) {
+        if (Array.isArray(DEFAULTS[k])) out[k] = Array.isArray(data[k]) ? data[k] : [];
+        else out[k] = Object.assign(out[k], data[k]);
+      }
+    }
+    for (const k of ['fixedCosts', 'income', 'expenses']) if (!Array.isArray(out.finances[k])) out.finances[k] = [];
+    if (!out.finances.savings) out.finances.savings = { target: 0, current: 0 };
+    return out;
+  }
+  async function load() {
+    if (location.protocol !== 'file:') {
+      try {
+        const r = await fetch('/api/data', { cache: 'no-store' });
+        if (r.ok) { state.data = withDefaults(await r.json()); state.mode = 'api'; return; }
+      } catch (e) { /* kein Server */ }
+    }
+    state.mode = 'local';
+    let saved = null;
+    try { saved = JSON.parse(localStorage.getItem(LS_KEY) || 'null'); } catch (e) { saved = null; }
+    state.data = withDefaults(saved);
+  }
+  async function persist(collection) {
+    if (state.mode === 'api') {
+      const r = await fetch('/api/' + collection, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(state.data[collection]) });
+      if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || 'Speichern fehlgeschlagen');
+    } else {
+      try { localStorage.setItem(LS_KEY, JSON.stringify(state.data)); } catch (e) { throw new Error('localStorage nicht verfügbar'); }
+    }
+  }
+  async function mutate(collection, fn, msg) {
+    const before = clone(state.data[collection]);
+    try {
+      const next = fn(state.data[collection]);
+      if (next !== undefined) state.data[collection] = next;
+      await persist(collection);
+      if (msg) toast(msg);
+      render();
+    } catch (e) {
+      state.data[collection] = before;
+      toast(e.message || 'Fehler', true);
+      render();
+    }
+  }
+  const newId = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const today = () => S.localDate();
+  const settings = () => state.data.settings;
+  const cur = () => settings().currency || '€';
+
+  // ---------- Utilities ----------
+  function h(s) { return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+  function money(n) { return S.fmtMoney(n, cur()); }
+  let toastTimer;
+  function toast(msg, error) {
+    $toast.textContent = msg; $toast.hidden = false; $toast.classList.toggle('error', !!error);
+    clearTimeout(toastTimer); toastTimer = setTimeout(() => { $toast.hidden = true; }, 2600);
+  }
+  function opts(list, selected, labels) {
+    return list.map((v) => `<option value="${h(v)}" ${v === selected ? 'selected' : ''}>${h(labels ? labels[v] : v)}</option>`).join('');
+  }
+  function badge(kind, text) { return `<span class="badge ${h(kind)}">${h(text)}</span>`; }
+  const KIND_LABEL = { workout: 'Workout', checkin: 'Essen', milestone: 'Meilenstein', session: 'Session' };
+
+  // ---------- Diagramme (inline SVG) ----------
+  function barChart(series, goal) {
+    const W = 360, H = 120, padL = 8, padB = 18, padT = 10;
+    const max = Math.max(goal || 0, ...series.map((s) => s.count), 1);
+    const bw = (W - padL * 2) / series.length;
+    const y = (v) => padT + (H - padB - padT) * (1 - v / max);
+    const thisWeek = S.startOfWeek(today());
+    const bars = series.map((s, i) => {
+      const x = padL + i * bw + bw * 0.18, w = bw * 0.64;
+      const top = y(s.count), bh = H - padB - top;
+      return `<rect class="bar ${s.count >= (goal || Infinity) ? '' : 'dim'} ${s.week === thisWeek ? 'today' : ''}" x="${x.toFixed(1)}" y="${top.toFixed(1)}" width="${w.toFixed(1)}" height="${Math.max(bh, s.count ? 2 : 0).toFixed(1)}" rx="3"></rect>
+        <text x="${(x + w / 2).toFixed(1)}" y="${H - 5}" text-anchor="middle">${S.fmtDateShort(s.week)}</text>
+        ${s.count ? `<text x="${(x + w / 2).toFixed(1)}" y="${(top - 3).toFixed(1)}" text-anchor="middle">${s.count}</text>` : ''}`;
+    }).join('');
+    const goalLine = goal ? `<line class="goal" x1="${padL}" x2="${W - padL}" y1="${y(goal).toFixed(1)}" y2="${y(goal).toFixed(1)}"></line>` : '';
+    return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Workouts pro Woche">${goalLine}${bars}</svg>`;
+  }
+  function heatmap(days) {
+    const cell = 12, gap = 3, weeks = Math.ceil(days.length / 7);
+    const W = weeks * (cell + gap) + 58, H = 7 * (cell + gap) + 16;
+    const firstDow = (S.parse(days[0].date).getDay() + 6) % 7;
+    const max = Math.max(1, ...days.map((d) => d.score));
+    const rects = days.map((d, i) => {
+      const idx = i + firstDow, col = Math.floor(idx / 7), row = idx % 7;
+      const lvl = d.score === 0 ? 0 : Math.min(4, 1 + Math.floor((d.score / max) * 3.999));
+      const parts = [];
+      if (d.workouts) parts.push(`${d.workouts} Workout${d.workouts > 1 ? 's' : ''}`);
+      if (d.checkins) parts.push('Check-in');
+      if (d.milestones) parts.push(`${d.milestones} Meilenstein${d.milestones > 1 ? 'e' : ''}`);
+      if (d.sessions) parts.push(`${d.sessions} Session${d.sessions > 1 ? 's' : ''}`);
+      return `<rect class="l${lvl}" x="${30 + col * (cell + gap)}" y="${row * (cell + gap)}" width="${cell}" height="${cell}"><title>${S.fmtDate(d.date)}: ${parts.join(', ') || 'nichts eingetragen'}${d.score ? ` (+${d.score} P.)` : ''}</title></rect>`;
+    }).join('');
+    const labels = ['Mo', 'Mi', 'Fr'].map((l, i) => `<text x="0" y="${[0, 2, 4][i] * (cell + gap) + cell - 2}">${l}</text>`).join('');
+    const months = []; let lastM = '';
+    days.forEach((d, i) => { const m = d.date.slice(0, 7); if (m !== lastM) { lastM = m; const col = Math.floor((i + firstDow) / 7); months.push(`<text x="${30 + col * (cell + gap)}" y="${H - 3}">${S.parse(d.date).toLocaleDateString('de-DE', { month: 'short' })}</text>`); } });
+    return `<svg class="chart heat" style="max-width:${W * 2}px" viewBox="0 0 ${W} ${H}" role="img" aria-label="Aktivität der letzten 12 Wochen">${labels}${rects}${months.join('')}</svg>`;
+  }
+  function lineChart(series, maxV = 10) {
+    const W = 360, H = 110, padL = 8, padR = 8, padT = 10, padB = 18;
+    const n = series.length;
+    const x = (i) => padL + (i * (W - padL - padR)) / Math.max(1, n - 1);
+    const y = (v) => padT + (H - padT - padB) * (1 - v / maxV);
+    const pts = series.map((s, i) => (s.score === null ? null : [x(i), y(s.score)]));
+    let d = ''; let open = false;
+    pts.forEach((p) => { if (!p) { open = false; return; } d += (open ? ' L' : ' M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); open = true; });
+    const dots = pts.map((p, i) => (p ? `<circle class="dot" cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="3"><title>${S.fmtDate(series[i].date)}: ${series[i].score}/10</title></circle>` : '')).join('');
+    const labels = series.map((s, i) => (i % 2 === 0 ? `<text x="${x(i).toFixed(1)}" y="${H - 5}" text-anchor="middle">${s.date.slice(8)}.</text>` : '')).join('');
+    const goal = `<line class="goal" x1="${padL}" x2="${W - padR}" y1="${y(7).toFixed(1)}" y2="${y(7).toFixed(1)}"></line>`;
+    return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Essens-Score der letzten 14 Tage">${goal}<path class="line" d="${d.trim()}"></path>${dots}${labels}</svg>`;
+  }
+  function hbars(items, alt) {
+    const max = Math.max(1, ...items.map((i) => i.value));
+    const rowH = 22, W = 360, labelW = 120;
+    const rows = items.map((it, i) => {
+      const w = ((W - labelW - 70) * it.value) / max;
+      return `<text x="0" y="${i * rowH + 14}">${h(it.label.length > 18 ? it.label.slice(0, 17) + '…' : it.label)}</text>
+        <rect class="hbar-bg" x="${labelW}" y="${i * rowH + 4}" width="${W - labelW - 70}" height="12" rx="4"></rect>
+        <rect class="hbar ${alt ? 'alt' : ''}" x="${labelW}" y="${i * rowH + 4}" width="${w.toFixed(1)}" height="12" rx="4"></rect>
+        <text x="${W}" y="${i * rowH + 14}" text-anchor="end">${h(money(it.value))}</text>`;
+    }).join('');
+    return `<svg class="chart" viewBox="0 0 ${W} ${items.length * rowH}" role="img">${rows}</svg>`;
+  }
+
+  // ---------- Views ----------
+  const views = {
+    dashboard() {
+      const d = state.data, s = S.summary(d, today());
+      const goalPct = s.workouts.goal ? Math.min(1, s.workouts.thisWeek / s.workouts.goal) : 0;
+      const f = s.finance;
+      const name = settings().name ? `, ${h(settings().name)}` : '';
+      const hour = new Date().getHours();
+      const greet = hour < 11 ? 'Guten Morgen' : hour < 18 ? 'Hallo' : 'Guten Abend';
+      return `
+        <div class="page-head"><div><h2>${greet}${name}.</h2><p class="muted">${S.fmtDate(s.today)} · Level ${s.level.number} „${h(s.level.name)}“</p></div>
+          <div class="actions" style="margin:0">
+            <a class="btn primary" href="#workouts">+ Workout</a>
+            <a class="btn ${s.eating.todayDone ? '' : 'primary'}" href="#essen">${s.eating.todayDone ? 'Check-in ✔' : 'Essens-Check-in'}</a>
+            <a class="btn" href="#sessions">+ Erfolg</a>
+          </div></div>
+        <div class="grid">
+          <div class="card"><h3>Punkte</h3><div class="kpi">${s.points.total} <small>P.</small></div>
+            <div class="sub">${s.level.next ? `${s.level.next - s.points.total} bis Level ${s.level.number + 1}` : 'Höchstes Level erreicht'}</div>
+            <div class="progress"><i style="width:${Math.round(s.level.progress * 100)}%"></i></div></div>
+          <div class="card"><h3>Workouts diese Woche</h3><div class="kpi">${s.workouts.thisWeek}<small>/${s.workouts.goal || '–'}</small></div>
+            <div class="sub">${s.workouts.minutesThisWeek} min · ${s.workouts.weekStreak} Woche${s.workouts.weekStreak === 1 ? '' : 'n'} in Folge Ziel erreicht</div>
+            <div class="progress ${goalPct < 1 ? 'warn' : ''}"><i style="width:${Math.round(goalPct * 100)}%"></i></div></div>
+          <div class="card"><h3>Essen</h3><div class="kpi">${s.eating.avg7 === null ? '–' : s.eating.avg7.toFixed(1)}<small>/10 Ø 7 Tage</small></div>
+            <div class="sub">${s.eating.todayDone ? `Heute ${s.eating.todayScore}/10 ✔` : 'Heute noch kein Check-in'} · ${s.eating.streak} Tag${s.eating.streak === 1 ? '' : 'e'} in Folge</div>
+            <div class="progress"><i style="width:${Math.round(((s.eating.avg7 || 0) / 10) * 100)}%"></i></div></div>
+          <div class="card"><h3>Frei im Monat</h3><div class="kpi" style="color:${f.free < 0 ? 'var(--danger)' : 'inherit'}">${h(money(f.free))}</div>
+            <div class="sub">Einnahmen ${h(money(f.incomeMonthly))} − Fixkosten ${h(money(f.fixedMonthly))} − variabel ${h(money(f.variableMonth))}</div>
+            ${f.savingsPct !== null ? `<div class="progress"><i style="width:${Math.round(f.savingsPct * 100)}%"></i></div><div class="sub">Sparziel ${Math.round(f.savingsPct * 100)} %</div>` : ''}</div>
+        </div>
+        <div class="grid two" style="margin-top:14px">
+          <div class="card"><h3>Aktivität · 12 Wochen</h3>${heatmap(s.activity)}
+            <div class="legend"><span><i style="background:var(--heat-0)"></i>nichts</span><span><i style="background:var(--heat-2)"></i>etwas</span><span><i style="background:var(--heat-4)"></i>viel</span></div></div>
+          <div class="card"><h3>Workouts pro Woche</h3>${barChart(s.workouts.series, s.workouts.goal)}
+            <div class="legend"><span><i style="background:var(--accent)"></i>Ziel erreicht</span><span><i style="background:var(--heat-1)"></i>unter Ziel</span><span><i style="background:var(--info)"></i>laufende Woche</span></div></div>
+        </div>
+        <div class="grid two" style="margin-top:14px">
+          <div class="card"><div class="row between"><h3>Nächste Meilensteine</h3><a class="small" href="#meilensteine">alle →</a></div>
+            ${s.milestones.open.length ? `<ul class="feed">${s.milestones.open.slice(0, 5).map((m) => {
+              const days = m.due ? S.daysBetween(today(), m.due) : null;
+              const due = days === null ? '' : days < 0 ? `<span style="color:var(--danger)">${-days} T. überfällig</span>` : days === 0 ? '<b>heute</b>' : `in ${days} T.`;
+              return `<li><span class="date">${m.due ? S.fmtDateShort(m.due) : '–'}</span><span>${h(m.title)} ${badge(m.category, S.CATEGORIES[m.category] || m.category)}</span><span class="small muted">${due}</span></li>`;
+            }).join('')}</ul>` : '<div class="empty">Keine offenen Meilensteine. Lege Uni-Prüfungen, Praktikumsziele oder Sidehustle-Schritte an.</div>'}
+            ${s.milestones.uni ? `<p class="sub">Uni-Schnitt: <b>${s.milestones.uni.average.toFixed(2)}</b> über ${s.milestones.uni.ects} ECTS</p>` : ''}</div>
+          <div class="card"><h3>Letzte Erfolge</h3>
+            ${s.feed.length ? `<ul class="feed">${s.feed.slice(0, 8).map((e) => `<li><span class="date">${S.fmtDateShort(e.date)}</span><span>${badge(e.kind, KIND_LABEL[e.kind])} ${h(e.title)}${e.detail ? ` <span class="muted small">– ${h(e.detail)}</span>` : ''}</span><span class="pts">+${e.points}</span></li>`).join('')}</ul>` : '<div class="empty">Noch nichts eingetragen. Der erste Eintrag zählt am meisten.</div>'}</div>
+        </div>`;
+    },
+
+    workouts() {
+      const d = state.data, t = today();
+      const list = [...d.workouts].sort((a, b) => b.date.localeCompare(a.date) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+      const s = S.summary(d, t);
+      return `
+        <div class="page-head"><div><h2>Workouts</h2><p class="muted">Diese Woche ${s.workouts.thisWeek}/${s.workouts.goal} · ${s.workouts.weekStreak} Wochen in Folge · gesamt ${s.workouts.total}</p></div></div>
+        <div class="card"><h3>Workout eintragen</h3>
+          <form class="inline" data-form="workout">
+            <label>Datum<input type="date" name="date" value="${t}" required></label>
+            <label>Typ<select name="type">${opts(S.WORKOUT_TYPES, 'Kraft')}</select></label>
+            <label>Minuten<input type="number" name="minutes" min="1" max="600" value="45" required></label>
+            <label>Intensität<select name="intensity">${opts(['1', '2', '3'], '2', { 1: 'locker', 2: 'normal', 3: 'hart' })}</select></label>
+            <label class="full">Notiz<input name="note" placeholder="z. B. Push Tag, 5×5 Kniebeuge 80 kg"></label>
+            <div><button class="primary" type="submit">Speichern</button></div>
+          </form></div>
+        <div class="card" style="margin-top:14px"><h3>Pro Woche</h3>${barChart(s.workouts.series, s.workouts.goal)}</div>
+        <div class="card" style="margin-top:14px"><h3>Verlauf</h3>
+          ${list.length ? `<div class="table-wrap"><table><thead><tr><th>Datum</th><th>Typ</th><th class="num">Min</th><th>Int.</th><th>Notiz</th><th class="num">P.</th><th></th></tr></thead><tbody>
+          ${list.slice(0, 100).map((w) => `<tr><td>${S.fmtDate(w.date)}</td><td>${h(w.type)}</td><td class="num">${h(w.minutes)}</td><td>${['', 'locker', 'normal', 'hart'][w.intensity] || ''}</td><td class="muted">${h(w.note)}</td><td class="num">+${S.workoutPoints(w)}</td><td><button class="ghost sm" data-action="del" data-col="workouts" data-id="${h(w.id)}" title="Löschen">✕</button></td></tr>`).join('')}
+          </tbody></table></div>` : '<div class="empty">Noch kein Workout. Trag das erste ein – auch 20 Minuten zählen.</div>'}</div>`;
+    },
+
+    essen() {
+      const d = state.data, t = today();
+      const s = S.summary(d, t);
+      if (!state.survey) state.survey = { date: t, meals: null, veggies: null, snacks: null, water: 0, alcohol: null, mood: null, note: '' };
+      const sv = state.survey;
+      const choice = (field, values, labels) => `<div class="choices">${values.map((v, i) => `<button type="button" data-action="survey" data-field="${field}" data-value="${v}" aria-pressed="${sv[field] === v}">${labels[i]}</button>`).join('')}</div>`;
+      const existing = d.checkins.find((c) => c.date === sv.date);
+      const list = [...d.checkins].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 30);
+      return `
+        <div class="page-head"><div><h2>Essens-Check-in</h2><p class="muted">15 Sekunden pro Tag. Ø 7 Tage: ${s.eating.avg7 === null ? '–' : s.eating.avg7.toFixed(1)}/10 · ${s.eating.streak} Tage in Folge</p></div></div>
+        <div class="grid two">
+          <div class="card"><h3>Schnellumfrage</h3>
+            ${existing ? `<div class="hint">Für ${S.fmtDate(sv.date)} gibt es schon einen Check-in (${S.eatingScore(existing, settings())}/10). Ein neuer ersetzt ihn.</div>` : ''}
+            <div class="survey" style="margin-top:10px">
+              <div class="q"><span class="lbl">Tag <input type="date" value="${sv.date}" data-action="survey-date" style="width:auto;display:inline-block;margin-left:8px"></span></div>
+              <div class="q"><span class="lbl">Wie ausgewogen waren deine Mahlzeiten?</span>${choice('meals', [1, 2, 3, 4, 5], ['1 mies', '2', '3 okay', '4', '5 top'])}</div>
+              <div class="q"><span class="lbl">Gemüse oder Obst gegessen?</span>${choice('veggies', [true, false], ['Ja', 'Nein'])}</div>
+              <div class="q"><span class="lbl">Snacks / Süßes?</span>${choice('snacks', [0, 1, 2], ['Keine', 'Etwas', 'Viel'])}</div>
+              <div class="q"><span class="lbl">Wasser (Gläser, Ziel ${settings().dailyWaterGoal || 6})</span>
+                <div class="stepper"><button type="button" data-action="survey-step" data-delta="-1">−</button><b>${sv.water}</b><button type="button" data-action="survey-step" data-delta="1">+</button></div></div>
+              <div class="q"><span class="lbl">Alkohol?</span>${choice('alcohol', [false, true], ['Nein', 'Ja'])}</div>
+              <div class="q"><span class="lbl">Stimmung</span>${choice('mood', [1, 2, 3, 4, 5], ['😞', '😕', '😐', '🙂', '😄'])}</div>
+              <div class="q"><input placeholder="Notiz (optional)" value="${h(sv.note)}" data-action="survey-note"></div>
+              <div class="row between"><span class="muted small">Vorschau: <b>${S.eatingScore({ meals: sv.meals, veggies: sv.veggies, snacks: sv.snacks, water: sv.water, alcohol: sv.alcohol }, settings())}/10</b></span>
+                <button class="primary" data-action="survey-save" ${sv.meals === null || sv.veggies === null || sv.snacks === null || sv.alcohol === null ? 'disabled' : ''}>Check-in speichern</button></div>
+            </div></div>
+          <div class="card"><h3>Letzte 14 Tage</h3>${lineChart(s.eating.series14)}
+            <p class="sub">Score: Mahlzeiten 0–4 · Gemüse +2 · Snacks 0–2 · Wasserziel +1 · kein Alkohol +1. Ab 7 gibt es Bonuspunkte.</p></div>
+        </div>
+        <div class="card" style="margin-top:14px"><h3>Verlauf</h3>
+          ${list.length ? `<div class="table-wrap"><table><thead><tr><th>Datum</th><th class="num">Score</th><th>Mahlz.</th><th>Gemüse</th><th>Snacks</th><th class="num">Wasser</th><th>Alk.</th><th>Stimmung</th><th>Notiz</th><th></th></tr></thead><tbody>
+          ${list.map((c) => `<tr><td>${S.fmtDate(c.date)}</td><td class="num"><b>${S.eatingScore(c, settings())}</b></td><td>${h(c.meals)}/5</td><td>${c.veggies ? '✔' : '–'}</td><td>${['keine', 'etwas', 'viel'][c.snacks] || ''}</td><td class="num">${h(c.water)}</td><td>${c.alcohol ? 'ja' : '–'}</td><td>${['', '😞', '😕', '😐', '🙂', '😄'][c.mood] || ''}</td><td class="muted">${h(c.note)}</td><td><button class="ghost sm" data-action="del" data-col="checkins" data-id="${h(c.id)}">✕</button></td></tr>`).join('')}
+          </tbody></table></div>` : '<div class="empty">Noch kein Check-in.</div>'}</div>`;
+    },
+
+    meilensteine() {
+      const d = state.data, t = today();
+      const filter = state.filter.ms || 'alle';
+      const all = [...d.milestones].sort((a, b) => Number(a.done) - Number(b.done) || (a.due || '9999').localeCompare(b.due || '9999'));
+      const list = filter === 'alle' ? all : all.filter((m) => m.category === filter);
+      const uni = S.uniAverage(d.milestones);
+      const cats = ['alle', ...Object.keys(S.CATEGORIES)];
+      return `
+        <div class="page-head"><div><h2>Meilensteine</h2><p class="muted">${d.milestones.filter((m) => m.done).length} erledigt · ${d.milestones.filter((m) => !m.done).length} offen${uni ? ` · Uni-Schnitt ${uni.average.toFixed(2)} (${uni.ects} ECTS)` : ''}</p></div></div>
+        <div class="card"><h3>Neuer Meilenstein</h3>
+          <form class="inline" data-form="milestone">
+            <label class="full">Titel<input name="title" required placeholder="z. B. Statistik II bestehen · Praktikumszeugnis · erster zahlender Kunde"></label>
+            <label>Kategorie<select name="category">${opts(Object.keys(S.CATEGORIES), 'uni', S.CATEGORIES)}</select></label>
+            <label>Fällig am<input type="date" name="due"></label>
+            <label>ECTS (Uni)<input type="number" name="ects" min="0" step="0.5" placeholder="optional"></label>
+            <label>Notiz<input name="note" placeholder="optional"></label>
+            <div><button class="primary" type="submit">Anlegen</button></div>
+          </form></div>
+        <div class="row" style="margin:16px 0 10px">${cats.map((c) => `<button class="sm" data-action="filter-ms" data-value="${c}" ${c === filter ? 'style="background:var(--accent-soft);color:var(--accent);border-color:transparent"' : ''}>${c === 'alle' ? 'Alle' : S.CATEGORIES[c]}</button>`).join('')}</div>
+        <div class="card">
+          ${list.length ? `<div class="table-wrap"><table><thead><tr><th></th><th>Titel</th><th>Kategorie</th><th>Fällig</th><th>Ergebnis</th><th class="num">P.</th><th></th></tr></thead><tbody>
+          ${list.map((m) => `<tr class="${m.done ? 'done' : ''}">
+            <td><input type="checkbox" ${m.done ? 'checked' : ''} data-action="toggle-ms" data-id="${h(m.id)}" title="${m.done ? 'Wieder öffnen' : 'Erledigt'}"></td>
+            <td><span class="title">${h(m.title)}</span>${m.note ? `<div class="muted small">${h(m.note)}</div>` : ''}</td>
+            <td>${badge(m.category, S.CATEGORIES[m.category] || m.category)}</td>
+            <td class="small">${m.due ? S.fmtDate(m.due) : '–'}${m.done && m.doneAt ? `<div class="muted">✔ ${S.fmtDate(m.doneAt)}</div>` : ''}</td>
+            <td>${m.category === 'uni' ? `<span class="row" style="gap:4px"><input type="number" step="0.1" min="1" max="5" placeholder="Note" value="${h(m.grade ?? '')}" data-action="grade" data-id="${h(m.id)}" style="width:70px"><input type="number" step="0.5" min="0" placeholder="ECTS" value="${h(m.ects ?? '')}" data-action="ects" data-id="${h(m.id)}" style="width:70px"></span>` : ''}</td>
+            <td class="num">${m.done ? '+' + S.milestonePoints(m) : `<span class="muted">${S.milestonePoints(Object.assign({}, m, { done: true }))}</span>`}</td>
+            <td><button class="ghost sm" data-action="del" data-col="milestones" data-id="${h(m.id)}">✕</button></td></tr>`).join('')}
+          </tbody></table></div>` : '<div class="empty">Keine Meilensteine in dieser Kategorie.</div>'}</div>
+        <p class="sub">Punkte: Uni 60 (+40 bei Note ≤ 1,5, +25 bei ≤ 2,0, +10 bei ≤ 2,5) · Praktikum 100 · Sidehustle 60 · sonst 40.</p>`;
+    },
+
+    finanzen() {
+      const d = state.data, t = today(), f = d.finances;
+      const s = S.financeSummary(f, t);
+      const fixedItems = [...f.fixedCosts].map((c) => ({ label: c.name, value: S.monthlyAmount(c.amount, c.interval) })).sort((a, b) => b.value - a.value);
+      const catItems = Object.entries(s.byCategory).map(([label, value]) => ({ label, value })).sort((a, b) => b.value - a.value);
+      const expenses = [...f.expenses].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 40);
+      const listTable = (rows, sub) => rows.length ? `<table><tbody>${rows.map((c) => `<tr><td>${h(c.name)}</td><td class="muted small">${S.INTERVALS[c.interval] || c.interval}</td><td class="num">${h(money(c.amount))}</td><td class="num muted small">${h(money(S.monthlyAmount(c.amount, c.interval)))}/Mon.</td><td><button class="ghost sm" data-action="del" data-col="finances" data-sub="${sub}" data-id="${h(c.id)}">✕</button></td></tr>`).join('')}</tbody></table>` : `<div class="empty">Noch nichts eingetragen.</div>`;
+      const intervalOpts = opts(Object.keys(S.INTERVALS), 'monthly', S.INTERVALS);
+      return `
+        <div class="page-head"><div><h2>Finanzen</h2><p class="muted">${s.month} · frei ${h(money(s.free))} pro Monat</p></div></div>
+        <div class="grid">
+          <div class="card"><h3>Einnahmen / Monat</h3><div class="kpi">${h(money(s.incomeMonthly))}</div></div>
+          <div class="card"><h3>Fixkosten / Monat</h3><div class="kpi">${h(money(s.fixedMonthly))}</div><div class="sub">${s.incomeMonthly ? Math.round((s.fixedMonthly / s.incomeMonthly) * 100) + ' % der Einnahmen' : ''}</div></div>
+          <div class="card"><h3>Variabel ${s.month}</h3><div class="kpi">${h(money(s.variableMonth))}</div><div class="sub">${s.expensesMonth.length} Ausgaben</div></div>
+          <div class="card"><h3>Sparziel</h3>
+            <form class="inline" data-form="savings" style="grid-template-columns:1fr 1fr auto">
+              <label>Ziel<input type="number" name="target" step="1" min="0" value="${h(f.savings.target || '')}" placeholder="z. B. 5000"></label>
+              <label>Aktuell<input type="number" name="current" step="1" min="0" value="${h(f.savings.current || '')}"></label>
+              <div><button class="sm" type="submit">OK</button></div></form>
+            ${s.savingsPct !== null ? `<div class="progress"><i style="width:${Math.round(s.savingsPct * 100)}%"></i></div><div class="sub">${Math.round(s.savingsPct * 100)} % · noch ${h(money(Math.max(0, f.savings.target - f.savings.current)))}</div>` : ''}</div>
+        </div>
+        <div class="grid two" style="margin-top:14px">
+          <div class="card"><h3>Fixkosten</h3>
+            <form class="inline" data-form="fixed" style="margin-bottom:12px">
+              <label>Name<input name="name" required placeholder="Miete, Handy, Versicherung…"></label>
+              <label>Betrag<input type="number" name="amount" step="0.01" min="0" required></label>
+              <label>Intervall<select name="interval">${intervalOpts}</select></label>
+              <div><button class="primary sm" type="submit">+</button></div></form>
+            ${listTable(f.fixedCosts, 'fixedCosts')}
+            ${fixedItems.length ? `<div style="margin-top:12px">${hbars(fixedItems.slice(0, 10))}</div>` : ''}</div>
+          <div class="card"><h3>Einnahmen</h3>
+            <form class="inline" data-form="income" style="margin-bottom:12px">
+              <label>Quelle<input name="name" required placeholder="Gehalt, BAföG, Sidehustle…"></label>
+              <label>Betrag<input type="number" name="amount" step="0.01" min="0" required></label>
+              <label>Intervall<select name="interval">${intervalOpts}</select></label>
+              <div><button class="primary sm" type="submit">+</button></div></form>
+            ${listTable(f.income, 'income')}</div>
+        </div>
+        <div class="grid two" style="margin-top:14px">
+          <div class="card"><h3>Ausgabe erfassen</h3>
+            <form class="inline" data-form="expense">
+              <label>Datum<input type="date" name="date" value="${t}" required></label>
+              <label>Betrag<input type="number" name="amount" step="0.01" min="0" required autofocus></label>
+              <label>Kategorie<select name="category">${opts(S.EXPENSE_CATEGORIES, 'Essen')}</select></label>
+              <label>Notiz<input name="note" placeholder="optional"></label>
+              <div><button class="primary" type="submit">Speichern</button></div></form>
+            ${catItems.length ? `<div style="margin-top:14px"><h3>Nach Kategorie · ${s.month}</h3>${hbars(catItems, true)}</div>` : ''}</div>
+          <div class="card"><h3>Letzte Ausgaben</h3>
+            ${expenses.length ? `<div class="table-wrap"><table><tbody>${expenses.map((e) => `<tr><td class="small">${S.fmtDate(e.date)}</td><td>${h(e.category)}</td><td class="muted small">${h(e.note)}</td><td class="num">${h(money(e.amount))}</td><td><button class="ghost sm" data-action="del" data-col="finances" data-sub="expenses" data-id="${h(e.id)}">✕</button></td></tr>`).join('')}</tbody></table></div>` : '<div class="empty">Noch keine variablen Ausgaben erfasst.</div>'}</div>
+        </div>`;
+    },
+
+    sessions() {
+      const d = state.data, t = today();
+      const list = [...d.sessions].sort((a, b) => b.date.localeCompare(a.date) || String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+      return `
+        <div class="page-head"><div><h2>Sessions & Erfolge</h2><p class="muted">Alles, was du (oder Claude in einer Session) geschafft hast. ${list.length} Einträge · ${S.points(d).by.sessions} Punkte</p></div></div>
+        <div class="card"><h3>Erfolg eintragen</h3>
+          <form class="inline" data-form="session">
+            <label>Datum<input type="date" name="date" value="${t}" required></label>
+            <label class="full">Titel<input name="title" required placeholder="z. B. Landingpage für Sidehustle live"></label>
+            <label class="full">Was genau?<textarea name="summary" placeholder="Kurz: was wurde erreicht, was ist der nächste Schritt?"></textarea></label>
+            <label>Punkte<input type="number" name="points" min="0" max="500" value="15"></label>
+            <div><button class="primary" type="submit">Speichern</button></div>
+          </form>
+          <p class="sub">Aus einer Claude-Session heraus: <code>node tracker.js session "Titel" "Zusammenfassung" --points 20</code></p></div>
+        <div class="card" style="margin-top:14px">
+          ${list.length ? `<ul class="feed">${list.map((s) => `<li><span class="date">${S.fmtDateShort(s.date)}</span><span><b>${h(s.title)}</b>${s.summary ? `<div class="muted small">${h(s.summary)}</div>` : ''}</span><span class="row" style="gap:6px"><span class="pts">+${S.sessionPoints(s)}</span><button class="ghost sm" data-action="del" data-col="sessions" data-id="${h(s.id)}">✕</button></span></li>`).join('')}</ul>` : '<div class="empty">Noch keine Session-Erfolge.</div>'}</div>`;
+    },
+
+    einstellungen() {
+      const st = settings();
+      return `
+        <div class="page-head"><div><h2>Einstellungen</h2><p class="muted">Daten liegen ${state.mode === 'api' ? 'als JSON-Dateien im Ordner <code>data/</code>' : 'nur in diesem Browser (localStorage)'}.</p></div></div>
+        <div class="grid two">
+          <div class="card"><h3>Ziele</h3>
+            <form class="inline" data-form="settings">
+              <label>Name<input name="name" value="${h(st.name)}" placeholder="optional"></label>
+              <label>Workouts pro Woche<input type="number" name="weeklyWorkoutGoal" min="0" max="14" value="${h(st.weeklyWorkoutGoal)}"></label>
+              <label>Wasser-Ziel (Gläser)<input type="number" name="dailyWaterGoal" min="0" max="20" value="${h(st.dailyWaterGoal)}"></label>
+              <label>Währung<input name="currency" value="${h(st.currency || '€')}" maxlength="4"></label>
+              <div><button class="primary" type="submit">Speichern</button></div>
+            </form></div>
+          <div class="card"><h3>Daten</h3>
+            <div class="stack">
+              <div class="row"><button data-action="export">Export als JSON</button>
+                <label class="btn" style="display:inline-block">Import JSON<input type="file" accept="application/json" data-action="import" hidden></label></div>
+              <p class="small muted">Export enthält alle Sammlungen. Import überschreibt die aktuellen Daten.</p>
+              <h3>Punkte-Regeln</h3>
+              <p class="small muted">Workout 10 + 1 je 5 min (max. 40) · Check-in 5 (+3 ab Score 7) · Meilenstein 40–100 plus Notenbonus · Session frei (Standard 15).</p>
+              <h3>Level</h3>
+              <p class="small muted">${S.LEVELS.map((l, i) => `${i + 1} ${l.name} (${l.min})`).join(' · ')}</p>
+            </div></div>
+        </div>`;
+    },
+  };
+
+  // ---------- Formulare ----------
+  const forms = {
+    workout(fd) {
+      const w = { id: newId(), createdAt: new Date().toISOString(), date: fd.get('date'), type: fd.get('type'), minutes: Number(fd.get('minutes')) || 0, intensity: Number(fd.get('intensity')) || 2, note: fd.get('note').trim() };
+      return mutate('workouts', (l) => [...l, w], `Workout gespeichert · +${S.workoutPoints(w)} P.`);
+    },
+    milestone(fd) {
+      const m = { id: newId(), createdAt: new Date().toISOString(), title: fd.get('title').trim(), category: fd.get('category'), due: fd.get('due') || null, done: false, note: fd.get('note').trim() };
+      if (fd.get('ects')) m.ects = Number(fd.get('ects'));
+      return mutate('milestones', (l) => [...l, m], 'Meilenstein angelegt');
+    },
+    session(fd) {
+      const s = { id: newId(), createdAt: new Date().toISOString(), date: fd.get('date'), title: fd.get('title').trim(), summary: fd.get('summary').trim(), points: Number(fd.get('points')) || 0 };
+      return mutate('sessions', (l) => [...l, s], `Erfolg gespeichert · +${S.sessionPoints(s)} P.`);
+    },
+    fixed(fd) {
+      const c = { id: newId(), name: fd.get('name').trim(), amount: Number(fd.get('amount')) || 0, interval: fd.get('interval') };
+      return mutate('finances', (f) => { f.fixedCosts.push(c); }, 'Fixkosten gespeichert');
+    },
+    income(fd) {
+      const c = { id: newId(), name: fd.get('name').trim(), amount: Number(fd.get('amount')) || 0, interval: fd.get('interval') };
+      return mutate('finances', (f) => { f.income.push(c); }, 'Einnahme gespeichert');
+    },
+    expense(fd) {
+      const e = { id: newId(), date: fd.get('date'), amount: Number(fd.get('amount')) || 0, category: fd.get('category'), note: fd.get('note').trim() };
+      return mutate('finances', (f) => { f.expenses.push(e); }, 'Ausgabe gespeichert');
+    },
+    savings(fd) {
+      return mutate('finances', (f) => { f.savings = { target: Number(fd.get('target')) || 0, current: Number(fd.get('current')) || 0 }; }, 'Sparziel gespeichert');
+    },
+    settings(fd) {
+      return mutate('settings', (s) => Object.assign(s, { name: fd.get('name').trim(), weeklyWorkoutGoal: Number(fd.get('weeklyWorkoutGoal')) || 0, dailyWaterGoal: Number(fd.get('dailyWaterGoal')) || 0, currency: fd.get('currency').trim() || '€' }), 'Einstellungen gespeichert');
+    },
+  };
+
+  // ---------- Aktionen ----------
+  const actions = {
+    del(el) {
+      const col = el.dataset.col, id = el.dataset.id, sub = el.dataset.sub;
+      if (!confirm('Eintrag löschen?')) return;
+      return mutate(col, (c) => {
+        if (sub) { c[sub] = c[sub].filter((x) => x.id !== id); return c; }
+        return c.filter((x) => x.id !== id);
+      }, 'Gelöscht');
+    },
+    'toggle-ms'(el) {
+      const id = el.dataset.id;
+      return mutate('milestones', (l) => l.map((m) => (m.id === id ? Object.assign({}, m, { done: !m.done, doneAt: !m.done ? today() : null }) : m)), el.checked ? 'Meilenstein erledigt 🎉' : 'Wieder geöffnet');
+    },
+    grade(el) { const id = el.dataset.id, v = el.value === '' ? null : Number(el.value); return mutate('milestones', (l) => l.map((m) => (m.id === id ? Object.assign({}, m, { grade: v }) : m)), 'Note gespeichert'); },
+    ects(el) { const id = el.dataset.id, v = el.value === '' ? null : Number(el.value); return mutate('milestones', (l) => l.map((m) => (m.id === id ? Object.assign({}, m, { ects: v }) : m)), 'ECTS gespeichert'); },
+    'filter-ms'(el) { state.filter.ms = el.dataset.value; render(); },
+    survey(el) {
+      const f = el.dataset.field; let v = el.dataset.value;
+      v = v === 'true' ? true : v === 'false' ? false : Number(v);
+      state.survey[f] = v; render();
+    },
+    'survey-step'(el) { state.survey.water = Math.max(0, state.survey.water + Number(el.dataset.delta)); render(); },
+    'survey-date'(el) { state.survey.date = el.value || today(); render(); },
+    'survey-note'(el) { state.survey.note = el.value; },
+    'survey-save'() {
+      const sv = state.survey;
+      const c = { id: newId(), createdAt: new Date().toISOString(), date: sv.date, meals: sv.meals, veggies: sv.veggies, snacks: sv.snacks, water: sv.water, alcohol: sv.alcohol, mood: sv.mood || 3, note: sv.note.trim() };
+      const pts = S.checkinPoints(c, settings());
+      state.survey = null;
+      return mutate('checkins', (l) => [...l.filter((x) => x.date !== c.date), c], `Check-in gespeichert · ${S.eatingScore(c, settings())}/10 · +${pts} P.`);
+    },
+    export() {
+      const blob = new Blob([JSON.stringify(state.data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `erfolgstracker-${today()}.json`; a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    },
+    async import(el) {
+      const file = el.files && el.files[0]; if (!file) return;
+      try {
+        const parsed = withDefaults(JSON.parse(await file.text()));
+        if (!confirm('Aktuelle Daten durch Import ersetzen?')) return;
+        state.data = parsed;
+        for (const k of Object.keys(DEFAULTS)) await persist(k);
+        toast('Import abgeschlossen'); render();
+      } catch (e) { toast('Import fehlgeschlagen: ' + e.message, true); }
+    },
+  };
+
+  // ---------- Router & Events ----------
+  function currentView() { const v = location.hash.replace('#', '') || 'dashboard'; return views[v] ? v : 'dashboard'; }
+  function render() {
+    state.view = currentView();
+    if (state.view !== 'essen') state.survey = null;
+    $view.innerHTML = views[state.view]();
+    for (const a of $nav.querySelectorAll('a')) a.classList.toggle('active', a.dataset.view === state.view);
+    $mode.textContent = state.mode === 'api' ? 'data/*.json' : 'nur Browser';
+    $mode.classList.toggle('local', state.mode !== 'api');
+    document.title = `Erfolgstracker · ${$nav.querySelector('a.active')?.textContent || ''}`;
+  }
+  window.addEventListener('hashchange', () => { window.scrollTo(0, 0); render(); });
+  $view.addEventListener('click', (e) => {
+    const el = e.target.closest('[data-action]');
+    if (!el || el.tagName === 'INPUT') return;
+    const fn = actions[el.dataset.action]; if (fn) fn(el);
+  });
+  $view.addEventListener('change', (e) => {
+    const el = e.target.closest('[data-action]'); if (!el || el.tagName !== 'INPUT') return;
+    const fn = actions[el.dataset.action]; if (fn) fn(el);
+  });
+  $view.addEventListener('input', (e) => {
+    const el = e.target; if (el.dataset.action === 'survey-note') actions['survey-note'](el);
+  });
+  $view.addEventListener('submit', (e) => {
+    const form = e.target.closest('form[data-form]'); if (!form) return;
+    e.preventDefault();
+    const fn = forms[form.dataset.form]; if (fn) fn(new FormData(form));
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.target.matches('input, textarea, select') || e.metaKey || e.ctrlKey || e.altKey) return;
+    const map = { 1: 'dashboard', 2: 'workouts', 3: 'essen', 4: 'meilensteine', 5: 'finanzen', 6: 'sessions' };
+    if (map[e.key]) location.hash = map[e.key];
+  });
+
+  load().then(render).catch((e) => { $view.innerHTML = `<div class="empty">Fehler beim Laden: ${h(e.message)}</div>`; });
+})();

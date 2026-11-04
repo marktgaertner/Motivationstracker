@@ -1,0 +1,9 @@
+{
+  "fixedCosts": [],
+  "income": [],
+  "expenses": [],
+  "savings": {
+    "target": 0,
+    "current": 0
+  }
+}

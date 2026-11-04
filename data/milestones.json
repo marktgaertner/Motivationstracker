@@ -1,1 +1,11 @@
-[]
+[
+  {
+    "id": "mw1xsa8z44pub",
+    "createdAt": "2026-11-04T09:50:58.019Z",
+    "title": "Krankenversicherung auf Lastschrift umstellen",
+    "category": "finanzen",
+    "due": null,
+    "done": false,
+    "note": "Aktuell manuelle Überweisung (150 €/Monat)"
+  }
+]

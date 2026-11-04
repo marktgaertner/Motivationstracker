@@ -6,7 +6,8 @@
       "name": "Krankenversicherung",
       "amount": 150,
       "interval": "monthly",
-      "day": null
+      "day": null,
+      "note": "Wird noch manuell überwiesen, Lastschrift beantragen."
     },
     {
       "id": "mw1xo90yb0q0h",
@@ -109,10 +110,11 @@
     {
       "id": "mw1xo9k4cef74",
       "createdAt": "2026-11-04T09:47:50.500Z",
-      "name": "Werkstudent (netto, Vormonat; Sept.: 95 h)",
+      "name": "Werkstudent (netto, Vormonat)",
       "amount": 1310.82,
       "interval": "monthly",
-      "day": 29
+      "day": 29,
+      "note": "Sept.: 95 h → 1.310,82 € (29.10.). Okt.: 85 h, Auszahlung Ende Nov. noch offen."
     }
   ],
   "expenses": [],

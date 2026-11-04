@@ -131,6 +131,15 @@
       "day": 1,
       "match": "entgeltabrechnung",
       "note": "Aus Kontoauszug"
+    },
+    {
+      "id": "mw21zi0yubwg4",
+      "name": "Xbox Cloud Gaming (Microsoft)",
+      "amount": 17.99,
+      "interval": "monthly",
+      "day": 25,
+      "match": "microsoft payments",
+      "note": "Aus Kontoauszug, Abo laut Nutzer"
     }
   ],
   "income": [
@@ -357,8 +366,8 @@
       "id": "mw21r3ry9izgf",
       "date": "2026-10-27",
       "amount": 102.3,
-      "category": "Gesundheit",
-      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1054008997198/. DoktorABC, Ihr Einkauf bei DoktorABC",
+      "category": "Konsum",
+      "note": "Cannabis-Medikation (Rezept) · PayPal Europe S.a.r.l. et Cie S.C.A · 1054008997198/. DoktorABC, Ihr Einkauf bei DoktorABC",
       "source": "bank-csv",
       "sourceId": "c83fcb3244b799cb"
     },
@@ -453,15 +462,6 @@
       "sourceId": "1df07afb5675d245"
     },
     {
-      "id": "mw21r3rz9e074",
-      "date": "2026-10-26",
-      "amount": 17.99,
-      "category": "Freizeit",
-      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053940401315/PP.6098.PP/. Microsoft Payments, Ihr E",
-      "source": "bank-csv",
-      "sourceId": "261fa5c9f3010aaf"
-    },
-    {
       "id": "mw21r3rz3e61t",
       "date": "2026-10-23",
       "amount": 12.23,
@@ -474,8 +474,8 @@
       "id": "mw21r3rzn2p2u",
       "date": "2026-10-23",
       "amount": 60.1,
-      "category": "Gesundheit",
-      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053901168726/. DoktorABC, Ihr Einkauf bei DoktorABC",
+      "category": "Konsum",
+      "note": "Cannabis-Medikation (Rezept) · PayPal Europe S.a.r.l. et Cie S.C.A · 1053901168726/. DoktorABC, Ihr Einkauf bei DoktorABC",
       "source": "bank-csv",
       "sourceId": "1ab87183d5e7dc62"
     },
@@ -789,8 +789,8 @@
       "id": "mw21r3s4zr8x5",
       "date": "2026-10-13",
       "amount": 101.8,
-      "category": "Gesundheit",
-      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053694750815/. DoktorABC, Ihr Einkauf bei DoktorABC",
+      "category": "Konsum",
+      "note": "Cannabis-Medikation (Rezept) · PayPal Europe S.a.r.l. et Cie S.C.A · 1053694750815/. DoktorABC, Ihr Einkauf bei DoktorABC",
       "source": "bank-csv",
       "sourceId": "1d280d0f2bc1c21c"
     },
@@ -978,8 +978,8 @@
       "id": "mw21r3s7gokj4",
       "date": "2026-10-05",
       "amount": 88.53,
-      "category": "Freizeit",
-      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053466174926/PP.6098.PP/. Sky Marketing Ltd, Ihr Ei",
+      "category": "Konsum",
+      "note": "Cannabis-Medikation (Rezept) · PayPal Europe S.a.r.l. et Cie S.C.A · 1053466174926/PP.6098.PP/. Sky Marketing Ltd, Ihr Ei",
       "source": "bank-csv",
       "sourceId": "b315f5fc7e017213"
     },
@@ -1131,8 +1131,8 @@
       "id": "mw21r3s9dflk8",
       "date": "2026-09-28",
       "amount": 107.6,
-      "category": "Freizeit",
-      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053278046739/PP.6098.PP/. Sky Marketing Ltd, Ihr Ei",
+      "category": "Konsum",
+      "note": "Cannabis-Medikation (Rezept) · PayPal Europe S.a.r.l. et Cie S.C.A · 1053278046739/PP.6098.PP/. Sky Marketing Ltd, Ihr Ei",
       "source": "bank-csv",
       "sourceId": "5acbc542875938a8"
     },
@@ -1189,15 +1189,6 @@
       "note": "193 896530//Berliner Sparkasse/DE · 2026-09-23T17:53 Debitk.1 2026-12",
       "source": "bank-csv",
       "sourceId": "51ceda477b83d9ee"
-    },
-    {
-      "id": "mw21r3s9iac8q",
-      "date": "2026-09-24",
-      "amount": 17.99,
-      "category": "Freizeit",
-      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053255236576/PP.6098.PP/. Microsoft Payments, Ihr E",
-      "source": "bank-csv",
-      "sourceId": "611cc58004a46aac"
     },
     {
       "id": "mw21r3s9vgwom",
@@ -1401,8 +1392,8 @@
       "id": "mw21r3scerhnd",
       "date": "2026-09-16",
       "amount": 29.75,
-      "category": "Gesundheit",
-      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053057193328/. DoktorABC, Ihr Einkauf bei DoktorABC",
+      "category": "Konsum",
+      "note": "Cannabis-Medikation (Rezept) · PayPal Europe S.a.r.l. et Cie S.C.A · 1053057193328/. DoktorABC, Ihr Einkauf bei DoktorABC",
       "source": "bank-csv",
       "sourceId": "d664aadd55eae474"
     },
@@ -1410,8 +1401,8 @@
       "id": "mw21r3scw97c9",
       "date": "2026-09-15",
       "amount": 80.84,
-      "category": "Gesundheit",
-      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1053020991840/. DoktorABC, Ihr Einkauf bei DoktorABC",
+      "category": "Konsum",
+      "note": "Cannabis-Medikation (Rezept) · PayPal Europe S.a.r.l. et Cie S.C.A · 1053020991840/. DoktorABC, Ihr Einkauf bei DoktorABC",
       "source": "bank-csv",
       "sourceId": "c030c456c4dfc2ab"
     },
@@ -1698,8 +1689,8 @@
       "id": "mw21r3sechojo",
       "date": "2026-09-03",
       "amount": 79.07,
-      "category": "Gesundheit",
-      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052780550653/. DoktorABC, Ihr Einkauf bei DoktorABC",
+      "category": "Konsum",
+      "note": "Cannabis-Medikation (Rezept) · PayPal Europe S.a.r.l. et Cie S.C.A · 1052780550653/. DoktorABC, Ihr Einkauf bei DoktorABC",
       "source": "bank-csv",
       "sourceId": "a8b7af8ea78c9732"
     },
@@ -1833,8 +1824,8 @@
       "id": "mw21r3sfehq4y",
       "date": "2026-08-31",
       "amount": 58.85,
-      "category": "Gesundheit",
-      "note": "PayPal Europe S.a.r.l. et Cie S.C.A · 1052641522228/. DoktorABC, Ihr Einkauf bei DoktorABC",
+      "category": "Konsum",
+      "note": "Cannabis-Medikation (Rezept) · PayPal Europe S.a.r.l. et Cie S.C.A · 1052641522228/. DoktorABC, Ihr Einkauf bei DoktorABC",
       "source": "bank-csv",
       "sourceId": "9c14e576884f10c6"
     },
@@ -2458,6 +2449,18 @@
       "amount": 10,
       "fixedCostId": "mw1xo9c8ut4vr",
       "sourceId": "6049d67143592d3f"
+    },
+    {
+      "date": "2026-10-26",
+      "amount": 17.99,
+      "fixedCostId": "mw21zi0yubwg4",
+      "sourceId": "261fa5c9f3010aaf"
+    },
+    {
+      "date": "2026-09-24",
+      "amount": 17.99,
+      "fixedCostId": "mw21zi0yubwg4",
+      "sourceId": "611cc58004a46aac"
     }
   ]
 }

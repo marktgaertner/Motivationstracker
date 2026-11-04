@@ -244,6 +244,17 @@
     };
   }
 
+  // Ausgaben der Kategorie Konsum (Cannabis-Medikation, Tabak) pro Monat
+  function consumptionSpend(finances, today) {
+    const ex = ((finances && finances.expenses) || []).filter((e) => e.category === 'Konsum');
+    const month = monthKey(today);
+    const byMonth = {};
+    for (const e of ex) byMonth[monthKey(e.date)] = (byMonth[monthKey(e.date)] || 0) + (Number(e.amount) || 0);
+    const months = Object.keys(byMonth).filter((m) => m < month).sort().slice(-3);
+    const avg = months.length ? months.reduce((a, m) => a + byMonth[m], 0) / months.length : null;
+    return { thisMonth: byMonth[month] || 0, avgPrev: avg, byMonth, months };
+  }
+
   // ---------- Körper / Health-Import ----------
   function latest(list) { const l = [...(list || [])].sort((a, b) => String(a.date).localeCompare(String(b.date))); return l.length ? l[l.length - 1] : null; }
   function healthSummary(health, today, settings = {}) {
@@ -372,7 +383,7 @@
         uni: uniAverage(data.milestones),
         ects: ectsProgress(data.milestones, settings.targetEcts),
       },
-      consumption: consumptionSummary(data.consumption, today, settings),
+      consumption: Object.assign(consumptionSummary(data.consumption, today, settings), { spend: consumptionSpend(data.finances, today) }),
       health: healthSummary(data.health, today, settings),
       finance: financeSummary(data.finances, today),
       review: reviewStatus(data.reviews, today),
@@ -388,6 +399,6 @@
     workoutsInWeek, weeklyGoalStreak, weeklyWorkoutSeries,
     eatingScore, dayStreak, checkinSeries, average,
     uniAverage, ectsProgress, openMilestones, monthlyAmount, financeSummary, upcoming,
-    CONSUMPTION_WEIGHTS, vapeWeight, loadScore, consumptionPoints, consumptionSeries, smokeFreeStreak, weeklyConsumption, consumptionSummary, healthSummary, activityByDay, feed, summary,
+    CONSUMPTION_WEIGHTS, vapeWeight, loadScore, consumptionPoints, consumptionSeries, smokeFreeStreak, weeklyConsumption, consumptionSummary, consumptionSpend, healthSummary, activityByDay, feed, summary,
   };
 });

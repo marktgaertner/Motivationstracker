@@ -49,7 +49,7 @@ function toIso(s) {
 const CATEGORY_RULES = [
   ['Umbuchung', /girokonto-aufladung|umbuchung|eigenes konto|uebertrag/],
   ['Bargeld', /\bga nr|geldautomat|bargeld|\/\/(berliner sparkasse|sparkasse [a-z]+)\/de|\/\/sparkasse/],
-  ['Konsum', /tabakwaren|tabak|vape|dampf|headshop|blackmarket/],
+  ['Konsum', /tabakwaren|tabak|vape|dampf|headshop|blackmarket|doktorabc|sky marketing/], // DoktorABC/Sky Marketing = Cannabis-Medikation (Rezept)
   ['Fitness', /east bank club|superfit|fitx|mcfit|boulderhalle|kletter|freizeitbad|schwimmbad|urban sports|gym/],
   ['Gesundheit', /doktorabc|apotheke|\barzt|praxis|zahn|optik|fielmann|physio|dak-gesundheit|krankenkasse/],
   ['Kleidung', /vinted|zalando|h&m|h & m|c&a|zara|uniqlo|about you|snipes|\bnike\b|adidas|under armour|primark|tk ?maxx|newyorker|new yorker|sportscheck|decathlon|jack & jones|peek/],

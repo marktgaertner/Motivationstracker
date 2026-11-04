@@ -564,6 +564,7 @@
           <div class="card"><h3>Vape pro Tag · 7 Tage</h3><div class="kpi">${k.avgVape7 === null ? '–' : k.avgVape7.toFixed(1)}${k.vapeGoal ? `<small>/ Ziel ${k.vapeGoal}</small>` : ''}</div><div class="sub">${delta(k.avgVape7 ?? 0, k.avgVapePrev7)}</div></div>
           <div class="card"><h3>Bong · 7 Tage</h3><div class="kpi">${k.smoke7}×</div><div class="sub">${delta(k.smoke7, k.daysLogged > 7 ? k.smokePrev7 : null)}</div></div>
           <div class="card"><h3>Belastung · 7 Tage</h3><div class="kpi">${k.load7}</div><div class="sub">${delta(k.load7, k.daysLogged > 7 ? k.loadPrev7 : null)} · Heuristik, siehe unten</div></div>
+          ${(() => { const sp = S.consumptionSpend(d.finances, t); return sp.months.length || sp.thisMonth ? `<div class="card"><h3>Ausgaben Konsum · ${t.slice(0, 7)}</h3><div class="kpi">${h(money(sp.thisMonth))}</div><div class="sub">${sp.avgPrev !== null ? `Ø der letzten ${sp.months.length} Monate ${h(money(sp.avgPrev))} · aufs Jahr ${h(money(sp.avgPrev * 12))}` : ''} · Kategorie „Konsum“ in Finanzen</div></div>` : ''; })()}
         </div>
         <div class="grid two" style="margin-top:14px">
           <div class="card"><h3>Heute eintragen</h3>

@@ -23,6 +23,7 @@ node tracker.js fixed add <Name> <Betrag> [monthly|quarterly|yearly|weekly]
 node tracker.js income add <Name> <Betrag> [Intervall]
 node tracker.js expense <Betrag> [Kategorie] [Notiz]
 node tracker.js summary
+node tracker.js ziele        # Zielbewertung 0–100 % je Lebensbereich
 ```
 
 ## Fotos vom Nutzer (Essen, Training, Noten, Kassenzettel)

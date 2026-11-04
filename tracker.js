@@ -143,6 +143,12 @@ const commands = {
     if (!store.isCollection(name) || !id) fail('Nutzung: remove <Sammlung> <id> [--sub fixedCosts|income|expenses]');
     out(store.remove(name, id, opts.sub) ? '✔ Gelöscht' : 'Nicht gefunden');
   },
+  ziele() {
+    const gs = S.goalScores(store.readAll(), today);
+    out(`\n  ZIELE · ${S.fmtDate(today)} · gesamt ${gs.overall === null ? '–' : Math.round(gs.overall * 100) + ' %'}\n`);
+    for (const g of gs.goals) out(`  ${g.title.padEnd(10)} ${(g.score === null ? '  –' : String(Math.round(g.score * 100)).padStart(3) + ' %').padEnd(6)} ${S.goalLabel(g.score).padEnd(12)} Soll: ${g.target}\n${''.padEnd(32)}Ist:  ${g.actual}${g.trend !== null ? `  (${g.trend > 0 ? '+' : ''}${g.trend} % ggü. Vorwoche)` : ''}`);
+    out('');
+  },
   summary() {
     const data = store.readAll();
     const s = S.summary(data, today);
@@ -184,7 +190,7 @@ const commands = {
   income [add <Name> <Betrag> [Intervall] [--day 29]]
   expense <Betrag> [Kategorie] [Notiz]
   list <Sammlung>  ·  remove <Sammlung> <id> [--sub ...]
-  summary
+  summary · ziele
 Alle Befehle akzeptieren --date YYYY-MM-DD für Nachträge.
 workout, checkin und session akzeptieren --photo <URL oder Pfad> (URL = Cloudinary, Pfad = Kopie nach data/photos/).`);
   },

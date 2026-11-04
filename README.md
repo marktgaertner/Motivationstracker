@@ -56,6 +56,7 @@ Ohne Server geht es auch: `public/index.html` direkt im Browser öffnen. Dann we
 
 | Bereich | Was passiert |
 |---|---|
+| Ziele | Bewertung nach Zielen: Training, Ernährung, Konsum, Studium, Finanzen, Körper, Reflexion, je 0–100 % über 7 Tage mit Trend, Sollwerte in den Einstellungen |
 | Übersicht | Punkte & Level, Workouts/Woche gegen Ziel, Essens-Score, freies Monatsbudget, Aktivitäts-Heatmap, nächste Meilensteine, letzte Erfolge |
 | Workouts | Eintragen (Typ, Minuten, Intensität, Notiz), Wochenverlauf, Streak „Wochen in Folge Ziel erreicht“ |
 | Essen | 15-Sekunden-Umfrage: Mahlzeitenqualität, Gemüse, Snacks, Wasser, Alkohol, Stimmung → Score 0–10, 14-Tage-Verlauf |
@@ -96,6 +97,7 @@ Zeigt eine Vorschau: erkannte Fixkosten (Abgleich über Stichwörter im Namen od
 
 ```bash
 node tracker.js summary                                   # Textübersicht
+node tracker.js ziele                                     # Zielbewertung
 node tracker.js workout Kraft 45 "Push Tag"
 node tracker.js checkin --meals 4 --veggies --snacks 1 --water 6 --mood 4
 node tracker.js milestone add "Statistik II" --cat uni --due 2027-02-10

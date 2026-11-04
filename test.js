@@ -93,4 +93,19 @@ assert.strictEqual(S.milestonePoints({ done: true, category: 'uni', grade: 1.0, 
 assert.deepStrictEqual(S.ectsProgress([{ category: 'uni', done: true, ects: 5 }, { category: 'uni', done: false, ects: 5 }], 210).done, 5);
 assert.strictEqual(S.weeklyConsumption([{ date: '2026-11-02', vape: 4, smoke: 1 }], '2026-11-04', 2)[1].load, 22);
 
+// Ziele
+const gdata = { settings: { weeklyWorkoutGoal: 4, vapeGoalPerDay: 4, targetEcts: 210, goals: { eatingScoreMin: 7, checkinDaysPerWeek: 6, smokePerWeek: 0, vapeTempMax: 230 } },
+  workouts: [{ date: '2026-11-03', minutes: 60 }, { date: '2026-11-01', minutes: 60 }], checkins: [], milestones: [{ category: 'uni', done: true, ects: 105 }],
+  finances: { fixedCosts: [{ amount: 500, interval: 'monthly' }], income: [{ amount: 1500, interval: 'monthly' }], expenses: [{ date: '2026-11-02', amount: 100 }] },
+  sessions: [], reviews: [], consumption: [{ date: '2026-11-03', vape: 4, temp: 230, smoke: 0 }, { date: '2026-11-02', vape: 8, temp: 230, smoke: 1 }], health: {} };
+const gs = S.goalScores(gdata, '2026-11-04');
+const byKey = Object.fromEntries(gs.goals.map((g) => [g.key, g]));
+assert.strictEqual(byKey.training.score, 0.5);
+assert.strictEqual(byKey.essen.score, null);
+assert.strictEqual(byKey.konsum.score, (0.5 + (4 / 6) + 1) / 3);
+assert.strictEqual(Math.round(byKey.uni.score * 100), 65);
+assert.strictEqual(byKey.finanzen.score, 1); // 100 € nach 4 Tagen → über 7 Tage gerechnet 429 €, Break-even 1000
+assert.strictEqual(byKey.koerper.score, null);
+assert.strictEqual(S.goalLabel(0.95), 'im Ziel');
+
 console.log('✔ alle Tests bestanden');

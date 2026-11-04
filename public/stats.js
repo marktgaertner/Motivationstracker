@@ -349,6 +349,91 @@
     return items.slice(0, limit);
   }
 
+  // ---------- Zielbewertung ----------
+  // Jedes Ziel liefert score 0–1 (null = keine Daten), Ist/Soll als Text und einen Trend gegenüber den 7 Tagen davor.
+  const clamp01 = (x) => (x === null || x === undefined || Number.isNaN(x) ? null : Math.max(0, Math.min(1, x)));
+  const ratioUp = (ist, soll) => (soll > 0 ? clamp01(ist / soll) : null);           // mehr ist besser
+  const ratioDown = (ist, soll) => (ist === null ? null : ist <= soll ? 1 : clamp01(soll / ist)); // weniger ist besser
+  function last7(list, today, offset = 0) {
+    const from = addDays(today, -6 - offset), to = addDays(today, -offset);
+    return (list || []).filter((x) => x.date >= from && x.date <= to);
+  }
+  function goalScores(data, today = localDate()) {
+    const st = data.settings || {}; const g = Object.assign({ kmPerWeek: null, eatingScoreMin: 7, checkinDaysPerWeek: 6, smokePerWeek: 0, vapeTempMax: 230, variableBudget: null, stepsPerDay: null, weightTarget: null }, st.goals || {});
+    const goals = [];
+    const trendOf = (now, before) => (now === null || before === null ? null : Math.round((now - before) * 100));
+
+    // Training
+    const wGoal = Number(st.weeklyWorkoutGoal) || 0;
+    const w7 = last7(data.workouts, today), w7b = last7(data.workouts, today, 7);
+    const km7 = w7.reduce((a, w) => a + (Number(w.km) || 0), 0);
+    const tScore = (w7n, kmn) => { const parts = [ratioUp(w7n, wGoal)]; if (g.kmPerWeek) parts.push(ratioUp(kmn, g.kmPerWeek)); return average(parts.filter((x) => x !== null)); };
+    const tNow = tScore(w7.length, km7), tBefore = tScore(w7b.length, w7b.reduce((a, w) => a + (Number(w.km) || 0), 0));
+    goals.push({ key: 'training', title: 'Training', target: `${wGoal} Workouts / 7 Tage${g.kmPerWeek ? ` · ${g.kmPerWeek} km` : ''}`, actual: `${w7.length} Workouts · ${w7.reduce((a, w) => a + (Number(w.minutes) || 0), 0)} min${km7 ? ` · ${km7.toFixed(1)} km` : ''}`, score: tNow, trend: trendOf(tNow, tBefore), detail: 'letzte 7 Tage, rollierend' });
+
+    // Ernährung
+    const c7 = last7(data.checkins, today), c7b = last7(data.checkins, today, 7);
+    const eAvg = (rows) => average(rows.map((c) => eatingScore(c, st)));
+    const eScore = (rows) => (rows.length ? average([ratioUp(eAvg(rows), g.eatingScoreMin), ratioUp(new Set(rows.map((c) => c.date)).size, g.checkinDaysPerWeek)]) : null);
+    const eNow = eScore(c7), eBefore = eScore(c7b);
+    goals.push({ key: 'essen', title: 'Ernährung', target: `Ø Score ≥ ${g.eatingScoreMin} · ${g.checkinDaysPerWeek} Check-ins / Woche`, actual: c7.length ? `Ø ${eAvg(c7).toFixed(1)}/10 · ${new Set(c7.map((c) => c.date)).size} Check-ins` : 'keine Check-ins', score: eNow, trend: trendOf(eNow, eBefore), detail: 'Qualität und Regelmäßigkeit je zur Hälfte' });
+
+    // Konsum
+    const k7 = last7(data.consumption, today), k7b = last7(data.consumption, today, 7);
+    const vapeGoal = Number(st.vapeGoalPerDay) || null;
+    const kScore = (rows) => {
+      if (!rows.length) return null;
+      const smoke = rows.reduce((a, e) => a + (Number(e.smoke) || 0), 0);
+      const smokeFreeDays = rows.filter((e) => (Number(e.smoke) || 0) === 0).length;
+      const parts = [g.smokePerWeek === 0 ? smokeFreeDays / rows.length : ratioDown(smoke, g.smokePerWeek)];
+      if (vapeGoal) parts.push(ratioDown(average(rows.map((e) => Number(e.vape) || 0)), vapeGoal));
+      const temps = rows.map((e) => Number(e.temp)).filter((t) => t > 0);
+      if (g.vapeTempMax && temps.length) parts.push(ratioDown(average(temps), g.vapeTempMax));
+      return average(parts.filter((x) => x !== null));
+    };
+    const kNow = kScore(k7), kBefore = kScore(k7b);
+    const kSmoke = k7.reduce((a, e) => a + (Number(e.smoke) || 0), 0);
+    goals.push({ key: 'konsum', title: 'Konsum', target: `0× Bong/Tabak${vapeGoal ? ` · ≤ ${vapeGoal} Vape/Tag` : ''}${g.vapeTempMax ? ` · ≤ ${g.vapeTempMax} °C` : ''}`, actual: k7.length ? `${kSmoke}× Bong · Ø ${average(k7.map((e) => Number(e.vape) || 0)).toFixed(1)} Vape/Tag${k7.some((e) => e.temp) ? ` · Ø ${Math.round(average(k7.filter((e) => e.temp).map((e) => Number(e.temp))))} °C` : ''} · ${k7.length}/7 Tage erfasst` : 'nichts erfasst', score: kNow, trend: trendOf(kNow, kBefore), detail: 'tabakfreie Tage, Vape-Menge, Temperatur' });
+
+    // Uni
+    const ects = ectsProgress(data.milestones, st.targetEcts);
+    const openUni = (data.milestones || []).filter((m) => m.category === 'uni' && !m.done);
+    const overdue = openUni.filter((m) => m.due && m.due < today).length;
+    const withDue = openUni.filter((m) => m.due).length;
+    const onTime = withDue ? 1 - overdue / withDue : 1;
+    const uScore = ects.pct !== null ? ects.pct * 0.7 + onTime * 0.3 : onTime;
+    const next = openUni.filter((m) => m.due).sort((a, b) => a.due.localeCompare(b.due))[0];
+    goals.push({ key: 'uni', title: 'Studium', target: `${ects.target || '?'} ECTS · keine überfälligen Abgaben`, actual: `${ects.done} ECTS (${ects.pct !== null ? Math.round(ects.pct * 100) : '?'} %) · ${overdue} überfällig${next ? ` · nächste: ${next.title.slice(0, 30)} ${fmtDateShort(next.due)}` : ''}`, score: clamp01(uScore), trend: null, detail: 'Fortschritt 70 %, Termintreue 30 %' });
+
+    // Finanzen
+    const fin = financeSummary(data.finances, today);
+    const dom = parse(today).getDate(), dim = new Date(parse(today).getFullYear(), parse(today).getMonth() + 1, 0).getDate();
+    const projected = (fin.variableMonth / Math.max(dom, 7)) * dim; // frühe Monatstage nicht überbewerten
+    const budget = g.variableBudget || Math.max(0, fin.incomeMonthly - fin.fixedMonthly); // ohne Vorgabe: Break-even
+    const fParts = [ratioDown(projected, budget)];
+    if (fin.savingsPct !== null) fParts.push(fin.savingsPct);
+    const fNow = average(fParts.filter((x) => x !== null));
+    goals.push({ key: 'finanzen', title: 'Finanzen', target: `variabel ≤ ${fmtMoney(budget, st.currency)} / Monat${g.variableBudget ? '' : ' (Break-even)'}${fin.savingsPct !== null ? ' · Sparziel' : ''}`, actual: `${fmtMoney(fin.variableMonth, st.currency)} bisher · Hochrechnung ${fmtMoney(projected, st.currency)}${fin.savingsPct !== null ? ` · Sparziel ${Math.round(fin.savingsPct * 100)} %` : ''}`, score: fNow, trend: null, detail: 'Hochrechnung aus dem laufenden Monat' });
+
+    // Körper
+    const hs = healthSummary(data.health, today, st);
+    const bParts = [];
+    if (g.stepsPerDay && hs.stepsAvg7 !== null) bParts.push(ratioUp(hs.stepsAvg7, g.stepsPerDay));
+    if (g.weightTarget && hs.weight) { const diff = Math.abs(Number(hs.weight.kg) - g.weightTarget); bParts.push(clamp01(1 - diff / 10)); }
+    const bNow = bParts.length ? average(bParts) : null;
+    goals.push({ key: 'koerper', title: 'Körper', target: [g.stepsPerDay ? `${g.stepsPerDay.toLocaleString('de-DE')} Schritte/Tag` : null, g.weightTarget ? `${g.weightTarget} kg` : null].filter(Boolean).join(' · ') || 'kein Ziel gesetzt', actual: [hs.stepsAvg7 !== null ? `Ø ${Math.round(hs.stepsAvg7).toLocaleString('de-DE')} Schritte` : null, hs.weight ? `${hs.weight.kg} kg` : null].filter(Boolean).join(' · ') || 'keine Daten', score: bNow, trend: null, detail: 'Schritte (Apple Health), Gewicht' });
+
+    // Wochen-Check
+    const rs = reviewStatus(data.reviews, today);
+    const rScore = rs.thisWeekDone ? 1 : rs.due ? 0 : rs.lastWeekDone ? 1 : null;
+    goals.push({ key: 'woche', title: 'Reflexion', target: '1 Wochen-Check pro Woche', actual: rs.thisWeekDone ? 'diese Woche erledigt' : rs.due ? `fällig für KW ${isoWeek(rs.due)}` : rs.lastWeekDone ? 'letzte Woche erledigt' : 'noch keiner', score: rScore, trend: null, detail: 'sonntags mit dem Coach' });
+
+    const scored = goals.filter((x) => x.score !== null);
+    const overall = scored.length ? average(scored.map((x) => x.score)) : null;
+    return { goals, overall, scoredCount: scored.length };
+  }
+  function goalLabel(score) { return score === null ? 'keine Daten' : score >= 0.9 ? 'im Ziel' : score >= 0.6 ? 'dran' : 'daneben'; }
+
   // ---------- Gesamtübersicht (für Dashboard & CLI) ----------
   function summary(data, today = localDate()) {
     const settings = data.settings || {};
@@ -387,6 +472,7 @@
       health: healthSummary(data.health, today, settings),
       finance: financeSummary(data.finances, today),
       review: reviewStatus(data.reviews, today),
+      goals: goalScores(data, today),
       activity: activityByDay(data, today, 84),
       feed: feed(data, 12),
     };
@@ -399,6 +485,6 @@
     workoutsInWeek, weeklyGoalStreak, weeklyWorkoutSeries,
     eatingScore, dayStreak, checkinSeries, average,
     uniAverage, ectsProgress, openMilestones, monthlyAmount, financeSummary, upcoming,
-    CONSUMPTION_WEIGHTS, vapeWeight, loadScore, consumptionPoints, consumptionSeries, smokeFreeStreak, weeklyConsumption, consumptionSummary, consumptionSpend, healthSummary, activityByDay, feed, summary,
+    CONSUMPTION_WEIGHTS, vapeWeight, loadScore, consumptionPoints, consumptionSeries, smokeFreeStreak, weeklyConsumption, consumptionSummary, consumptionSpend, healthSummary, goalScores, goalLabel, activityByDay, feed, summary,
   };
 });

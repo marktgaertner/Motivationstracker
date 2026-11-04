@@ -10,7 +10,8 @@
   const LS_KEY = 'erfolgstracker.data';
 
   const DEFAULTS = {
-    settings: { name: '', weeklyWorkoutGoal: 3, dailyWaterGoal: 6, currency: '€', heightCm: null, birthYear: null, targetEcts: 210, vapeGoalPerDay: 4, alcoholFreeSince: null, consumptionSharePct: 100 },
+    settings: { name: '', weeklyWorkoutGoal: 3, dailyWaterGoal: 6, currency: '€', heightCm: null, birthYear: null, targetEcts: 210, vapeGoalPerDay: 4, alcoholFreeSince: null, consumptionSharePct: 100,
+    goals: { kmPerWeek: null, eatingScoreMin: 7, checkinDaysPerWeek: 6, smokePerWeek: 0, vapeTempMax: 230, variableBudget: null, stepsPerDay: null, weightTarget: null } },
     workouts: [], checkins: [], milestones: [],
     finances: { fixedCosts: [], income: [], expenses: [], savings: { target: 0, current: 0 } },
     sessions: [], reviews: [], consumption: [],
@@ -282,6 +283,8 @@
           </div></div>
         ${s.review.due ? `<div class="hint" style="margin-bottom:14px">🗓 Wochen-Check für KW ${S.isoWeek(s.review.due)} ist fällig. <a href="#woche" style="text-decoration:underline">Jetzt ausfüllen</a> (5 Fragen, ~2 Minuten, +20 Punkte).</div>` : ''}
         ${state.mode === 'local' ? '<div class="hint" style="margin-bottom:14px">Daten liegen nur in diesem Browser. Für Sync mit deinen Sessions: <a href="#einstellungen" style="text-decoration:underline">Einstellungen → GitHub-Sync</a>.</div>' : ''}
+        <div class="card" style="margin-bottom:14px"><div class="row between"><h3>Zielerfüllung · 7 Tage</h3><a class="small" href="#ziele">alle Ziele →</a></div>
+          <div class="row" style="gap:14px;margin-top:6px">${s.goals.goals.map((g) => `<a href="#ziele" class="row" style="gap:6px;min-width:120px" title="${h(g.title)}: ${h(g.actual)}"><b style="font-size:1.15rem;color:${g.score === null ? 'var(--muted)' : g.score >= 0.9 ? 'var(--accent)' : g.score >= 0.6 ? 'var(--warn)' : 'var(--danger)'}">${g.score === null ? '–' : Math.round(g.score * 100) + '%'}</b><span class="small muted">${h(g.title)}</span></a>`).join('')}<span class="row" style="gap:6px;margin-left:auto"><b style="font-size:1.15rem">${s.goals.overall === null ? '–' : Math.round(s.goals.overall * 100) + '%'}</b><span class="small muted">gesamt</span></span></div></div>
         <div class="grid">
           <div class="card"><h3>Punkte</h3><div class="kpi">${s.points.total} <small>P.</small></div>
             <div class="sub">${s.level.next ? `${s.level.next - s.points.total} bis Level ${s.level.number + 1}` : 'Höchstes Level erreicht'}</div>
@@ -590,6 +593,27 @@
           </tbody></table></div>` : '<div class="empty">Noch kein Eintrag. Fang heute an, egal wie der Tag war.</div>'}</div>`;
     },
 
+    ziele() {
+      const d = state.data, t = today();
+      const gs = S.goalScores(d, t);
+      const color = (sc) => (sc === null ? 'var(--border)' : sc >= 0.9 ? 'var(--accent)' : sc >= 0.6 ? 'var(--warn)' : 'var(--danger)');
+      const icon = { training: '🏃', essen: '🥗', konsum: '🌿', uni: '🎓', finanzen: '💶', koerper: '⚖️', woche: '🗓' };
+      const trend = (tr) => (tr === null ? '' : tr > 0 ? `<span style="color:var(--accent)">▲ +${tr} %</span>` : tr < 0 ? `<span style="color:var(--danger)">▼ ${tr} %</span>` : '<span class="muted">= wie Vorwoche</span>');
+      return `
+        <div class="page-head"><div><h2>Ziele</h2><p class="muted">Bewertung nach Zielen statt nach Aktivität. Rollierend über 7 Tage, Trend gegen die 7 Tage davor. Sollwerte unter ⚙︎ Einstellungen.</p></div></div>
+        <div class="card" style="margin-bottom:14px"><div class="row between"><div><h3>Gesamt</h3><div class="kpi">${gs.overall === null ? '–' : Math.round(gs.overall * 100) + ' %'}</div><div class="sub">${gs.scoredCount} von ${gs.goals.length} Zielen bewertbar · Durchschnitt aller bewertbaren Ziele</div></div>
+          <svg width="120" height="120" viewBox="0 0 120 120" role="img" aria-label="Gesamtwert"><circle cx="60" cy="60" r="50" fill="none" stroke="var(--surface-2)" stroke-width="12"></circle><circle cx="60" cy="60" r="50" fill="none" stroke="${color(gs.overall)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${(314 * (gs.overall || 0)).toFixed(1)} 314" transform="rotate(-90 60 60)"></circle><text x="60" y="66" text-anchor="middle" style="font-size:20px;font-weight:700;fill:var(--text)">${gs.overall === null ? '–' : Math.round(gs.overall * 100)}</text></svg></div></div>
+        <div class="grid two">
+          ${gs.goals.map((g) => `<div class="card">
+            <div class="row between"><h3>${icon[g.key] || ''} ${h(g.title)}</h3><span class="badge" style="background:${color(g.score)};color:#fff">${S.goalLabel(g.score)}</span></div>
+            <div class="row between" style="align-items:baseline"><div class="kpi">${g.score === null ? '–' : Math.round(g.score * 100) + ' %'}</div><div class="small">${trend(g.trend)}</div></div>
+            <div class="progress"><i style="width:${Math.round((g.score || 0) * 100)}%;background:${color(g.score)}"></i></div>
+            <table style="margin-top:10px;font-size:.88rem"><tbody><tr><th style="width:40px">Soll</th><td>${h(g.target)}</td></tr><tr><th>Ist</th><td>${h(g.actual)}</td></tr></tbody></table>
+            <div class="sub">${h(g.detail)}</div></div>`).join('')}
+        </div>
+        <p class="sub" style="margin-top:14px">Erfüllungsgrad: Ist/Soll bei „mehr ist besser“, Soll/Ist bei „weniger ist besser“, jeweils gedeckelt bei 100 %. Ab 90 % „im Ziel“, ab 60 % „dran“, darunter „daneben“. Die Logik steht in <code>public/stats.js</code> (goalScores).</p>`;
+    },
+
     einstellungen() {
       const st = settings();
       const cfg = ghConfig() || ghDefaults();
@@ -627,6 +651,13 @@
               <label>Studium: ECTS gesamt<input type="number" name="targetEcts" min="0" max="400" value="${h(st.targetEcts ?? '')}"></label>
               <label>Alkoholfrei seit (leer = Frage im Check-in)<input type="date" name="alcoholFreeSince" value="${h(st.alcoholFreeSince || '')}"></label>
               <label>Mein Anteil an Konsum-Ausgaben (%)<input type="number" name="consumptionSharePct" min="0" max="100" value="${h(st.consumptionSharePct ?? 100)}"></label>
+              <label>Ziel: km pro Woche<input type="number" name="g_kmPerWeek" min="0" value="${h((st.goals || {}).kmPerWeek ?? '')}" placeholder="optional"></label>
+              <label>Ziel: Essens-Score Ø ≥<input type="number" name="g_eatingScoreMin" min="0" max="10" value="${h((st.goals || {}).eatingScoreMin ?? 7)}"></label>
+              <label>Ziel: Check-ins pro Woche<input type="number" name="g_checkinDaysPerWeek" min="0" max="7" value="${h((st.goals || {}).checkinDaysPerWeek ?? 6)}"></label>
+              <label>Ziel: Vape-Temperatur ≤ °C<input type="number" name="g_vapeTempMax" min="100" max="400" value="${h((st.goals || {}).vapeTempMax ?? '')}" placeholder="optional"></label>
+              <label>Ziel: variables Budget / Monat<input type="number" name="g_variableBudget" min="0" value="${h((st.goals || {}).variableBudget ?? '')}" placeholder="leer = Break-even"></label>
+              <label>Ziel: Schritte pro Tag<input type="number" name="g_stepsPerDay" min="0" value="${h((st.goals || {}).stepsPerDay ?? '')}" placeholder="optional"></label>
+              <label>Ziel: Gewicht (kg)<input type="number" name="g_weightTarget" min="30" max="300" step="0.5" value="${h((st.goals || {}).weightTarget ?? '')}" placeholder="optional"></label>
               <div><button class="primary" type="submit">Speichern</button></div>
             </form></div>
           <div class="card"><h3>Daten</h3>
@@ -696,7 +727,7 @@
     },
     settings(fd) {
       const numOrNull = (k) => (fd.get(k) === '' || fd.get(k) === null ? null : Number(fd.get(k)));
-      return mutate('settings', (s) => Object.assign(s, { name: fd.get('name').trim(), weeklyWorkoutGoal: Number(fd.get('weeklyWorkoutGoal')) || 0, dailyWaterGoal: Number(fd.get('dailyWaterGoal')) || 0, currency: fd.get('currency').trim() || '€', vapeGoalPerDay: numOrNull('vapeGoalPerDay'), heightCm: numOrNull('heightCm'), birthYear: numOrNull('birthYear'), targetEcts: numOrNull('targetEcts'), alcoholFreeSince: fd.get('alcoholFreeSince') || null, consumptionSharePct: numOrNull('consumptionSharePct') ?? 100 }), 'Einstellungen gespeichert');
+      return mutate('settings', (s) => Object.assign(s, { name: fd.get('name').trim(), weeklyWorkoutGoal: Number(fd.get('weeklyWorkoutGoal')) || 0, dailyWaterGoal: Number(fd.get('dailyWaterGoal')) || 0, currency: fd.get('currency').trim() || '€', vapeGoalPerDay: numOrNull('vapeGoalPerDay'), heightCm: numOrNull('heightCm'), birthYear: numOrNull('birthYear'), targetEcts: numOrNull('targetEcts'), alcoholFreeSince: fd.get('alcoholFreeSince') || null, consumptionSharePct: numOrNull('consumptionSharePct') ?? 100, goals: Object.assign({}, s.goals || {}, { kmPerWeek: numOrNull('g_kmPerWeek'), eatingScoreMin: numOrNull('g_eatingScoreMin') ?? 7, checkinDaysPerWeek: numOrNull('g_checkinDaysPerWeek') ?? 6, smokePerWeek: 0, vapeTempMax: numOrNull('g_vapeTempMax'), variableBudget: numOrNull('g_variableBudget'), stepsPerDay: numOrNull('g_stepsPerDay'), weightTarget: numOrNull('g_weightTarget') }) }), 'Einstellungen gespeichert');
     },
   };
 
@@ -801,7 +832,7 @@
   });
   document.addEventListener('keydown', (e) => {
     if (e.target.matches('input, textarea, select') || e.metaKey || e.ctrlKey || e.altKey) return;
-    const map = { 1: 'dashboard', 2: 'workouts', 3: 'essen', 4: 'konsum', 5: 'meilensteine', 6: 'finanzen', 7: 'sessions', 8: 'woche' };
+    const map = { 1: 'dashboard', 2: 'ziele', 3: 'workouts', 4: 'essen', 5: 'konsum', 6: 'meilensteine', 7: 'finanzen', 8: 'sessions', 9: 'woche' };
     if (map[e.key]) location.hash = map[e.key];
   });
 

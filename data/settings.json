@@ -1,6 +1,6 @@
 {
   "name": "",
-  "weeklyWorkoutGoal": 3,
+  "weeklyWorkoutGoal": 4,
   "dailyWaterGoal": 6,
   "currency": "€",
   "heightCm": 186,
@@ -9,5 +9,15 @@
   "vapeGoalPerDay": 4,
   "alcoholFreeSince": "2023-05-31",
   "consumptionSharePct": 70,
+  "goals": {
+    "kmPerWeek": null,
+    "eatingScoreMin": 7,
+    "checkinDaysPerWeek": 6,
+    "smokePerWeek": 0,
+    "vapeTempMax": 230,
+    "variableBudget": null,
+    "stepsPerDay": null,
+    "weightTarget": null
+  },
   "startDate": "2026-11-04"
 }

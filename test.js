@@ -114,4 +114,23 @@ const lp = S.liftProgress({ lifts: [{ date: '2026-11-04', exercise: 'Klimmzug', 
 assert.strictEqual(Math.round(lp.score * 100), 85);
 assert.strictEqual(S.liftProgress({ lifts: [] }, { exercise: 'Klimmzug', kg: 30, reps: 5, bodyweight: true }, 89).score, null);
 
+// Depot
+const pf = { positions: [{ id: 'a', symbol: 'ANT', name: 'Anthropic', shares: 50, buyPrice: 95, currency: 'USD', fees: 5, date: '2026-11-19' }], quotes: { ANT: { price: 108, updatedAt: '2026-11-20T10:00:00Z' } }, cash: 300, fxRates: { USD: 0.92 } };
+const ps = S.portfolioSummary(pf, '2026-11-20');
+assert.strictEqual(Math.round(ps.cost * 100) / 100, 4374.6);   // (50*95+5)*0.92
+assert.strictEqual(Math.round(ps.value * 100) / 100, 4968);     // 50*108*0.92
+assert.strictEqual(Math.round(ps.pnl * 100) / 100, 593.4);
+assert.strictEqual(Math.round(ps.total * 100) / 100, 5268);     // inkl. 300 Cash
+assert.strictEqual(ps.drawdowns.find((d) => d.pct === 1).loss, ps.value);
+// Unbekannt bleibt unbekannt, wird nie zu 0
+assert.strictEqual(S.portfolioSummary({ positions: [{ symbol: 'ANT', shares: 1, buyPrice: 90, currency: 'USD' }], quotes: { ANT: { price: 100 } } }).cost, null);
+assert.deepStrictEqual(S.portfolioSummary({ positions: [{ symbol: 'ANT', shares: 1, buyPrice: 90, currency: 'USD' }] }).missingFx, ['USD']);
+assert.deepStrictEqual(S.portfolioSummary({ positions: [{ symbol: 'X', shares: 1, buyPrice: 10, currency: 'EUR' }] }).missingQuotes, ['X']);
+assert.strictEqual(S.portfolioSummary({ positions: [{ symbol: 'X', shares: 1, buyPrice: 10, currency: 'EUR' }], cash: 50 }).total, 60);
+assert.strictEqual(S.portfolioSummary({}).total, null);
+// Alter Kurs wird gemeldet
+assert.deepStrictEqual(S.portfolioSummary(pf, '2026-12-01').staleQuotes, ['ANT']);
+assert.strictEqual(S.lossInMonths(1000, 500), 2);
+assert.strictEqual(S.lossInMonths(1000, 0), null);
+
 console.log('✔ alle Tests bestanden');

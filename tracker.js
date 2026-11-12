@@ -97,6 +97,66 @@ const commands = {
     const w = (h.weight || []).slice().sort((a, b) => a.date.localeCompare(b.date)).pop();
     out(`✔ Kraftwert: ${e.exercise} ${e.reps}× mit +${e.kg} kg${w ? ` · geschätztes 1RM ${Math.round(S.e1rm(Number(w.kg) + e.kg, e.reps))} kg inkl. Körpergewicht` : ''}`);
   },
+  kauf() {
+    const [name, shares, price] = pos;
+    if (!name || shares === undefined || price === undefined) fail('Nutzung: kauf <Name> <Stück> <Kurs> [--symbol ANT] [--waehrung USD] [--gebuehren 5] [--date YYYY-MM-DD]');
+    const pf = store.read('portfolio');
+    const e = { id: store.newId(), date: today, name, symbol: (opts.symbol || name.slice(0, 6)).toUpperCase(), shares: num(shares, 0), buyPrice: num(price, 0), currency: (opts.waehrung || 'EUR').toUpperCase(), fees: num(opts.gebuehren, 0), note: opts.note || '' };
+    pf.positions.push(e); store.write('portfolio', pf);
+    out(`✔ Position angelegt: ${e.shares}× ${e.name} (${e.symbol}) zu ${e.buyPrice} ${e.currency}${e.fees ? ` + ${e.fees} Gebühren` : ''}`);
+    if (e.currency !== 'EUR' && !(pf.fxRates || {})[e.currency]) out(`  Hinweis: Wechselkurs fehlt. Setzen mit: node tracker.js fx ${e.currency} 0.92`);
+  },
+  kurs() {
+    const [symbol, price] = pos;
+    if (!symbol || price === undefined) fail('Nutzung: kurs <Symbol> <Preis>');
+    const pf = store.read('portfolio');
+    pf.quotes = pf.quotes || {};
+    pf.quotes[symbol.toUpperCase()] = { price: num(price, 0), updatedAt: new Date().toISOString() };
+    store.write('portfolio', pf);
+    out(`✔ Kurs gesetzt: ${symbol.toUpperCase()} = ${price}`);
+  },
+  fx() {
+    const [currency, rate] = pos;
+    if (!currency || rate === undefined) fail('Nutzung: fx <Währung> <Kurs in EUR>   z. B. fx USD 0.92');
+    const pf = store.read('portfolio');
+    pf.fxRates = pf.fxRates || {};
+    pf.fxRates[currency.toUpperCase()] = num(rate, 0);
+    store.write('portfolio', pf);
+    out(`✔ Wechselkurs: 1 ${currency.toUpperCase()} = ${rate} EUR`);
+  },
+  cash() {
+    const [amount] = pos;
+    if (amount === undefined) { out(`Freies Geld im Depot: ${S.fmtMoney(store.read('portfolio').cash)}`); return; }
+    const pf = store.read('portfolio'); pf.cash = num(amount, 0); store.write('portfolio', pf);
+    out(`✔ Freies Geld im Depot: ${S.fmtMoney(pf.cash)}`);
+  },
+  depot() {
+    const data = store.readAll();
+    const cur = data.settings.currency || '€';
+    const s = S.portfolioSummary(data.portfolio, today);
+    const fin = S.financeSummary(data.finances, today);
+    const m = (v) => (v === null ? '–'.padStart(12) : S.fmtMoney(v, cur).padStart(12));
+    out(`\n  DEPOT · ${S.fmtDate(today)}\n`);
+    if (!s.positions.length) { out('  Keine Positionen. Anlegen: node tracker.js kauf Anthropic 50 95 --symbol ANT --waehrung USD\n'); return; }
+    out('  Position                 Stück      Einstand         Wert       G/V');
+    for (const p of s.positions) {
+      const pct = p.pnlPct === null ? '' : ` (${p.pnlPct > 0 ? '+' : ''}${(p.pnlPct * 100).toFixed(1)} %)`;
+      out(`  ${(p.name || p.symbol).padEnd(22)} ${String(p.shares).padStart(6)} ${m(p.cost)} ${m(p.value)} ${m(p.pnl)}${pct}`);
+    }
+    out(`  ${''.padEnd(22)} ${''.padStart(6)} ${m(s.cost)} ${m(s.value)} ${m(s.pnl)}`);
+    if (s.cash) out(`  Freies Geld im Depot: ${S.fmtMoney(s.cash, cur)}`);
+    if (s.missingQuotes.length) out(`  ⚠ Kurs fehlt für: ${s.missingQuotes.join(', ')}  (node tracker.js kurs <Symbol> <Preis>)`);
+    if (s.missingFx.length) out(`  ⚠ Wechselkurs fehlt für: ${s.missingFx.join(', ')}  (node tracker.js fx <Währung> <Kurs>)`);
+    if (s.staleQuotes.length) out(`  ⚠ Kurs älter als 7 Tage: ${s.staleQuotes.join(', ')}`);
+    if (s.drawdowns.length) {
+      out('\n  WENN ES FÄLLT');
+      for (const d of s.drawdowns) {
+        const months = S.lossInMonths(d.loss, fin.free);
+        out(`    −${String(Math.round(d.pct * 100)).padStart(3)} %  ${S.fmtMoney(d.loss, cur).padStart(12)}${months ? `  = ${months.toFixed(1)} Monatsbudgets` : ''}`);
+      }
+    }
+    out('');
+  },
   review() {
     const weekStart = S.startOfWeek(opts.week || today);
     const list = store.read('reviews');
@@ -200,7 +260,9 @@ const commands = {
   income [add <Name> <Betrag> [Intervall] [--day 29]]
   expense <Betrag> [Kategorie] [Notiz]
   list <Sammlung>  ·  remove <Sammlung> <id> [--sub ...]
-  summary · ziele
+  summary · ziele · depot
+  kauf <Name> <Stück> <Kurs> [--symbol ANT] [--waehrung USD] [--gebuehren 5]
+  kurs <Symbol> <Preis>  ·  fx <Währung> <Kurs>  ·  cash [Betrag]
 Alle Befehle akzeptieren --date YYYY-MM-DD für Nachträge.
 workout, checkin und session akzeptieren --photo <URL oder Pfad> (URL = Cloudinary, Pfad = Kopie nach data/photos/).`);
   },

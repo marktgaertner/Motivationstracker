@@ -84,7 +84,7 @@
     "note": "",
     "points": 0,
     "imported": "hwr-notenuebersicht",
-    "grade": 3.0
+    "grade": 3
   },
   {
     "id": "a608b436d3sh8",
@@ -98,7 +98,7 @@
     "note": "2. Versuch",
     "points": 0,
     "imported": "hwr-notenuebersicht",
-    "grade": 1.0
+    "grade": 1
   },
   {
     "id": "a608b436lxj7o",
@@ -140,7 +140,7 @@
     "note": "",
     "points": 0,
     "imported": "hwr-notenuebersicht",
-    "grade": 4.0
+    "grade": 4
   },
   {
     "id": "a608b436y8hjd",
@@ -154,7 +154,7 @@
     "note": "",
     "points": 0,
     "imported": "hwr-notenuebersicht",
-    "grade": 3.0
+    "grade": 3
   },
   {
     "id": "a608b436yt9dz",
@@ -168,7 +168,7 @@
     "note": "",
     "points": 0,
     "imported": "hwr-notenuebersicht",
-    "grade": 4.0
+    "grade": 4
   },
   {
     "id": "a608b436qshch",
@@ -196,7 +196,7 @@
     "note": "",
     "points": 0,
     "imported": "hwr-notenuebersicht",
-    "grade": 3.0
+    "grade": 3
   },
   {
     "id": "a608b436abny3",
@@ -210,7 +210,7 @@
     "note": "",
     "points": 0,
     "imported": "hwr-notenuebersicht",
-    "grade": 4.0
+    "grade": 4
   },
   {
     "id": "a608b436d00gi",
@@ -238,7 +238,7 @@
     "note": "",
     "points": 0,
     "imported": "hwr-notenuebersicht",
-    "grade": 3.0
+    "grade": 3
   },
   {
     "id": "a608b4368gzy4",
@@ -252,7 +252,7 @@
     "note": "2. Versuch",
     "points": 0,
     "imported": "hwr-notenuebersicht",
-    "grade": 3.0
+    "grade": 3
   },
   {
     "id": "a608b436usrdx",
@@ -266,7 +266,7 @@
     "note": "",
     "points": 0,
     "imported": "hwr-notenuebersicht",
-    "grade": 3.0
+    "grade": 3
   },
   {
     "id": "a608b436eb3l9",
@@ -280,7 +280,7 @@
     "note": "",
     "points": 0,
     "imported": "hwr-notenuebersicht",
-    "grade": 4.0
+    "grade": 4
   },
   {
     "id": "a608b436ocm59",
@@ -294,7 +294,7 @@
     "note": "",
     "points": 0,
     "imported": "hwr-notenuebersicht",
-    "grade": 4.0
+    "grade": 4
   },
   {
     "id": "a608b436591bu",
@@ -364,7 +364,7 @@
     "note": "",
     "points": 0,
     "imported": "hwr-notenuebersicht",
-    "grade": 4.0
+    "grade": 4
   },
   {
     "id": "a608b436j7jqs",
@@ -392,7 +392,7 @@
     "note": "",
     "points": 0,
     "imported": "hwr-notenuebersicht",
-    "grade": 4.0
+    "grade": 4
   },
   {
     "id": "a608b43689brx",
@@ -527,5 +527,23 @@
     "due": null,
     "done": false,
     "note": ""
+  },
+  {
+    "id": "mwdfgahszcl8x",
+    "createdAt": "2026-11-12T10:50:59.488Z",
+    "title": "Anthropic Börsengang (Erstnotiz Nasdaq)",
+    "category": "finanzen",
+    "due": "2026-11-19",
+    "done": false,
+    "note": "Geplante Erstnotiz laut Medienberichten, Kuerzel ANT. Vorher: Depot mit US-Zugang klaeren, Geld ueberweisen, Limit festlegen."
+  },
+  {
+    "id": "mwdfgaiwqu91u",
+    "createdAt": "2026-11-12T10:50:59.528Z",
+    "title": "Anthropic: Ende der kurzen Sperrfrist",
+    "category": "finanzen",
+    "due": "2026-12-16",
+    "done": false,
+    "note": "Rund 27 Tage nach Erstnotiz kommen laut Bericht 299 Mio. weitere Aktien in den Handel."
   }
 ]

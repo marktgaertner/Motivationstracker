@@ -335,6 +335,61 @@
     return `${s} ${currency}`;
   }
 
+  // ---------- Depot ----------
+  // Kurse und Wechselkurse werden von Hand gepflegt (kein Kursanbieter angebunden).
+  // Fehlt ein Kurs oder ein Wechselkurs, bleibt der Wert null statt geschätzt zu werden.
+  function toEur(amount, currency, portfolio) {
+    if (amount === null || amount === undefined) return null;
+    const cur = currency || 'EUR';
+    if (cur === 'EUR') return amount;
+    const r = Number(((portfolio || {}).fxRates || {})[cur]);
+    return r > 0 ? amount * r : null;
+  }
+  function positionStats(p, portfolio) {
+    const cur = p.currency || 'EUR';
+    const q = ((portfolio || {}).quotes || {})[p.symbol] || null;
+    const shares = Number(p.shares) || 0;
+    const costLocal = shares * (Number(p.buyPrice) || 0) + (Number(p.fees) || 0);
+    const priceNow = q && Number(q.price) > 0 ? Number(q.price) : null;
+    const valueLocal = priceNow === null ? null : shares * priceNow;
+    const cost = toEur(costLocal, cur, portfolio);
+    const value = toEur(valueLocal, cur, portfolio);
+    const pnl = value === null || cost === null ? null : value - cost;
+    return {
+      id: p.id, symbol: p.symbol, name: p.name, date: p.date, note: p.note || '',
+      cur, shares, buyPrice: Number(p.buyPrice) || 0, fees: Number(p.fees) || 0,
+      priceNow, quoteAt: q ? q.updatedAt : null,
+      costLocal, valueLocal, cost, value, pnl,
+      pnlPct: pnl === null || !cost ? null : pnl / cost,
+    };
+  }
+  function portfolioSummary(portfolio, today = localDate()) {
+    const pf = portfolio || {};
+    const positions = (pf.positions || []).map((p) => positionStats(p, pf));
+    // Fehlt ein Wechselkurs, ist der Euro-Betrag unbekannt: dann bleibt die Summe null statt 0 zu zeigen
+    const costKnown = positions.every((p) => p.cost !== null);
+    const cost = positions.length && costKnown ? positions.reduce((a, p) => a + p.cost, 0) : null;
+    const valueKnown = positions.length > 0 && positions.every((p) => p.value !== null);
+    const value = valueKnown ? positions.reduce((a, p) => a + p.value, 0) : null;
+    const pnl = value === null || cost === null ? null : value - cost;
+    const cash = Number(pf.cash) || 0;
+    const base = value !== null ? value : cost; // null, wenn weder Wert noch Einstand bekannt sind
+    const missingFx = [...new Set(positions.filter((p) => p.cost === null).map((p) => p.cur))];
+    const missingQuotes = positions.filter((p) => p.priceNow === null).map((p) => p.symbol || p.name);
+    const stale = positions.filter((p) => p.quoteAt && daysBetween(String(p.quoteAt).slice(0, 10), today) > 7);
+    return {
+      positions, cost, value, pnl, pnlPct: pnl === null || !cost ? null : pnl / cost,
+      cash, total: base === null ? null : base + cash,
+      missingQuotes, missingFx, staleQuotes: stale.map((p) => p.symbol || p.name),
+      drawdowns: base === null ? [] : [0.3, 0.5, 1].map((pct) => ({ pct, loss: base * pct })),
+    };
+  }
+  // Was ein Verlust in Monatsbudgets bedeutet: macht die Zahl greifbar
+  function lossInMonths(loss, freePerMonth) {
+    const f = Number(freePerMonth) || 0;
+    return f > 0 ? loss / f : null;
+  }
+
   // ---------- Aktivität / Feed ----------
   function activityByDay(data, today, days = 84) {
     const from = addDays(today, -(days - 1));
@@ -485,6 +540,7 @@
       consumption: Object.assign(consumptionSummary(data.consumption, today, settings), { spend: consumptionSpend(data.finances, today) }),
       health: healthSummary(data.health, today, settings),
       finance: financeSummary(data.finances, today),
+      portfolio: portfolioSummary(data.portfolio, today),
       review: reviewStatus(data.reviews, today),
       goals: goalScores(data, today),
       activity: activityByDay(data, today, 84),
@@ -499,6 +555,7 @@
     workoutsInWeek, weeklyGoalStreak, weeklyWorkoutSeries,
     eatingScore, dayStreak, checkinSeries, average,
     uniAverage, ectsProgress, openMilestones, monthlyAmount, financeSummary, upcoming,
-    CONSUMPTION_WEIGHTS, vapeWeight, loadScore, consumptionPoints, consumptionSeries, smokeFreeStreak, weeklyConsumption, consumptionSummary, consumptionSpend, healthSummary, goalScores, goalLabel, e1rm, liftProgress, activityByDay, feed, summary,
+    CONSUMPTION_WEIGHTS, vapeWeight, loadScore, consumptionPoints, consumptionSeries, smokeFreeStreak, weeklyConsumption, consumptionSummary, consumptionSpend, healthSummary, goalScores, goalLabel, e1rm, liftProgress,
+    toEur, positionStats, portfolioSummary, lossInMonths, activityByDay, feed, summary,
   };
 });

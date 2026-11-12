@@ -62,6 +62,7 @@ Ohne Server geht es auch: `public/index.html` direkt im Browser öffnen. Dann we
 | Essen | 15-Sekunden-Umfrage: Mahlzeitenqualität, Gemüse, Snacks, Wasser, Alkohol, Stimmung → Score 0–10, 14-Tage-Verlauf |
 | Meilensteine | Uni (mit Note & ECTS → gewichteter Schnitt), Praktikum, Sidehustle, Fitness, Finanzen, Persönlich |
 | Finanzen | Fixkosten & Einnahmen mit Intervall (monatlich/vierteljährlich/jährlich/wöchentlich), variable Ausgaben, Sparziel |
+| Depot | Positionen mit Einstand, Wert, Gewinn/Verlust; Kurse und Wechselkurse von Hand gepflegt; Verlustszenarien in Monatsbudgets |
 | Sessions | Erfolge aus Arbeits-/Claude-Sessions mit frei wählbaren Punkten |
 | Konsum | Tägliches Cannabis-Protokoll (verdampft, Temperatur, Bong mit Tabak), Tage ohne Tabak, Belastung pro Woche als offengelegte Heuristik |
 | Woche | Wochen-Check mit Coach-Fragen (Energie, Schlaf, Stress, Plan, Gewicht, Stolz, Bremsen, Erkenntnis, Fokus) und Wochenzahlen |
@@ -98,6 +99,9 @@ Zeigt eine Vorschau: erkannte Fixkosten (Abgleich über Stichwörter im Namen od
 ```bash
 node tracker.js summary                                   # Textübersicht
 node tracker.js ziele                                     # Zielbewertung
+node tracker.js depot                                     # Depotübersicht
+node tracker.js kauf Anthropic 50 95 --symbol ANT --waehrung USD --gebuehren 5
+node tracker.js kurs ANT 108  ·  node tracker.js fx USD 0.92  ·  node tracker.js cash 300
 node tracker.js workout Kraft 45 "Push Tag"
 node tracker.js checkin --meals 4 --veggies --snacks 1 --water 6 --mood 4
 node tracker.js milestone add "Statistik II" --cat uni --due 2027-02-10
@@ -141,6 +145,7 @@ data/
   sessions.json    [{ id, date, title, summary, points, photo }]
   reviews.json     [{ id, date, weekStart, energy, sleep, stress, adherence, weight, wins, obstacles, learned, focus, coach, points }]
   consumption.json [{ id, date, vape, temp, smoke, note }]   ein Eintrag pro Tag
+  portfolio.json   { positions[{name,symbol,shares,buyPrice,currency,fees,date}], quotes{SYM:{price,updatedAt}}, cash, fxRates{WHG:kurs} }
   health.json      { sleep[{date,minutes}], weight[{date,kg}], steps[{date,count}], restingHR[{date,bpm}] }
   photos/          Bilder zu Einträgen (Feld photo = "photos/<datei>")
 ```

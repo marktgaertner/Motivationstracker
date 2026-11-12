@@ -44,6 +44,12 @@ Lädt der Nutzer hier ein Foto hoch, gehört es in den Tracker:
 - Kontoauszug-CSV hochgeladen: `node import-bank.js <datei>`, Vorschau zeigen, Kategorien mit dem Nutzer klären, dann `--apply`.
 - Noten: Module als Meilensteine `category: "uni"`, `done: true`, `grade`, `ects`, `points: 0` (Historie zählt nicht als Gamification-Punkte), Nichtbestandenes als offener Meilenstein mit Versuchszähler in der Notiz.
 
+## Depot
+
+- Kurse und Wechselkurse sind **nicht** angebunden und werden von Hand gepflegt: `node tracker.js kurs ANT 108`, `node tracker.js fx USD 0.92`. Nennt der Nutzer einen Kurs, eintragen; nie einen Kurs schätzen oder aus dem Gedächtnis setzen. Fehlt ein Wert, zeigt die App „unbekannt“, und das ist richtig so.
+- Positionen: `node tracker.js kauf <Name> <Stück> <Kurs> --symbol ANT --waehrung USD --gebuehren 5`.
+- Keine Anlageempfehlungen geben. Zahlen zeigen, Risiko benennen (die Ansicht rechnet Verluste in Monatsbudgets um), Entscheidung beim Nutzer lassen.
+
 ## Wöchentlicher Coach (geplanter Task, sonntags)
 
 Ein geplanter Task startet jede Woche eine Session, die den Wochen-Rückblick aus den Daten schreibt und den Fragebogen stellt. Antworten landen über `node tracker.js review …` in `data/reviews.json` (Feld `coach` = Empfehlung für die nächste Woche). Ohne Antwort wird nichts eingetragen. Ton: knapp, konkret, du-Form, Zahlen aus den Daten nennen, nicht belehren.

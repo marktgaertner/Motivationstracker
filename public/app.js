@@ -16,6 +16,7 @@
     finances: { fixedCosts: [], income: [], expenses: [], savings: { target: 0, current: 0 } },
     sessions: [], reviews: [], consumption: [],
     health: { sleep: [], weight: [], steps: [], restingHR: [], lifts: [] },
+    portfolio: { positions: [], quotes: {}, cash: 0, fxRates: {} },
   };
 
   const state = { data: null, mode: 'api', view: 'dashboard', survey: null, filter: {}, gh: null, ghError: null };
@@ -31,6 +32,9 @@
       }
     }
     for (const k of ['fixedCosts', 'income', 'expenses']) if (!Array.isArray(out.finances[k])) out.finances[k] = [];
+    if (!Array.isArray(out.portfolio.positions)) out.portfolio.positions = [];
+    if (!out.portfolio.quotes || typeof out.portfolio.quotes !== 'object') out.portfolio.quotes = {};
+    if (!out.portfolio.fxRates || typeof out.portfolio.fxRates !== 'object') out.portfolio.fxRates = {};
     for (const k of ['sleep', 'weight', 'steps', 'restingHR', 'lifts']) if (!Array.isArray(out.health[k])) out.health[k] = [];
     if (!out.finances.savings) out.finances.savings = { target: 0, current: 0 };
     return out;
@@ -298,6 +302,8 @@
           <div class="card"><h3>Ohne Tabak</h3><div class="kpi">${s.consumption.streak} <small>Tag${s.consumption.streak === 1 ? '' : 'e'}</small></div>
             <div class="sub">${s.consumption.today ? `Heute ${s.consumption.today.vape}× Vape, ${s.consumption.today.smoke}× Bong ✔` : '<a href="#konsum" style="text-decoration:underline">Heute noch nicht eingetragen</a>'} · 7 Tage: Ø ${s.consumption.avgVape7 === null ? '–' : s.consumption.avgVape7.toFixed(1)} Vape/Tag, ${s.consumption.smoke7}× Bong</div>
             ${s.consumption.daysLogged ? `<div class="progress ${s.consumption.load7 > s.consumption.loadPrev7 && s.consumption.loadPrev7 ? 'warn' : ''}"><i style="width:${Math.round(100 * Math.min(1, s.consumption.loadPrev7 ? s.consumption.load7 / Math.max(s.consumption.load7, s.consumption.loadPrev7) : 1))}%"></i></div><div class="sub">Belastung 7 Tage: ${s.consumption.load7}${s.consumption.loadPrev7 ? ` (Vorwoche ${s.consumption.loadPrev7})` : ''}</div>` : ''}</div>
+          ${s.portfolio.positions.length ? `<div class="card"><h3>Depot</h3><div class="kpi">${s.portfolio.value === null ? (s.portfolio.cost === null ? '–' : h(money(s.portfolio.cost))) : h(money(s.portfolio.value))}</div>
+            <div class="sub">${s.portfolio.pnl === null ? 'Kurs eintragen für Gewinn/Verlust' : `${s.portfolio.pnl > 0 ? '+' : ''}${h(money(s.portfolio.pnl))} (${(s.portfolio.pnlPct * 100).toFixed(1)} %)`} · <a href="#depot" style="text-decoration:underline">Details</a></div></div>` : ''}
           <div class="card"><h3>Frei im Monat</h3><div class="kpi" style="color:${f.free < 0 ? 'var(--danger)' : 'inherit'}">${h(money(f.free))}</div>
             <div class="sub">Einnahmen ${h(money(f.incomeMonthly))} − Fixkosten ${h(money(f.fixedMonthly))} − variabel ${h(money(f.variableMonth))}</div>
             ${f.upcoming.length ? `<div class="sub">Nächste: ${f.upcoming.slice(0, 2).map((u) => `${S.fmtDateShort(u.date)} ${u.kind === 'income' ? '+' : '−'}${h(money(u.amount))} ${h(u.name)}`).join(' · ')}</div>` : ''}
@@ -623,6 +629,72 @@
         <p class="sub" style="margin-top:14px">Erfüllungsgrad: Ist/Soll bei „mehr ist besser“, Soll/Ist bei „weniger ist besser“, jeweils gedeckelt bei 100 %. Ab 90 % „im Ziel“, ab 60 % „dran“, darunter „daneben“. Die Logik steht in <code>public/stats.js</code> (goalScores).</p>`;
     },
 
+    depot() {
+      const d = state.data, t = today();
+      const s = S.portfolioSummary(d.portfolio, t);
+      const fin = S.financeSummary(d.finances, t);
+      const sign = (v) => (v === null ? '' : v > 0 ? 'var(--accent)' : v < 0 ? 'var(--danger)' : 'inherit');
+      const m = (v) => (v === null ? '<span class="muted">unbekannt</span>' : h(money(v)));
+      const pct = (v) => (v === null ? '' : `${v > 0 ? '+' : ''}${(v * 100).toFixed(1)} %`);
+      const fxRows = Object.entries(d.portfolio.fxRates || {});
+      return `
+        <div class="page-head"><div><h2>Depot</h2><p class="muted">Kurse und Wechselkurse pflegst du von Hand oder ich in einer Session. Nichts wird geschätzt: Fehlt ein Wert, steht „unbekannt“.</p></div></div>
+        ${s.missingQuotes.length || s.missingFx.length ? `<div class="hint" style="margin-bottom:14px">${[s.missingQuotes.length ? `Kurs fehlt für ${h(s.missingQuotes.join(', '))}` : '', s.missingFx.length ? `Wechselkurs fehlt für ${h(s.missingFx.join(', '))}` : ''].filter(Boolean).join(' · ')}. Unten eintragen.</div>` : ''}
+        ${s.staleQuotes.length ? `<div class="hint" style="margin-bottom:14px">Kurs älter als 7 Tage: ${h(s.staleQuotes.join(', '))}</div>` : ''}
+        <div class="grid">
+          <div class="card"><h3>Einstand</h3><div class="kpi">${m(s.cost)}</div><div class="sub">${s.positions.length} Position${s.positions.length === 1 ? '' : 'en'}${s.cash ? ` · ${h(money(s.cash))} frei` : ''}</div></div>
+          <div class="card"><h3>Aktueller Wert</h3><div class="kpi">${m(s.value)}</div><div class="sub">${s.total !== null ? `inkl. freiem Geld ${h(money(s.total))}` : ''}</div></div>
+          <div class="card"><h3>Gewinn / Verlust</h3><div class="kpi" style="color:${sign(s.pnl)}">${m(s.pnl)}</div><div class="sub">${pct(s.pnlPct)}</div></div>
+          ${fin.free ? `<div class="card"><h3>Gemessen an deinem Monat</h3><div class="kpi">${s.value !== null || s.cost !== null ? (S.lossInMonths(s.value ?? s.cost, fin.free) || 0).toFixed(1) : '–'}<small> Monatsbudgets</small></div><div class="sub">frei pro Monat ${h(money(fin.free))}</div></div>` : ''}
+        </div>
+        ${s.drawdowns.length ? `<div class="card" style="margin-top:14px"><h3>Wenn es fällt</h3>
+          <div class="table-wrap"><table><thead><tr><th>Kursrückgang</th><th class="num">Verlust</th><th class="num">in Monatsbudgets</th></tr></thead><tbody>
+          ${s.drawdowns.map((dd) => { const mo = S.lossInMonths(dd.loss, fin.free); return `<tr><td>−${Math.round(dd.pct * 100)} %</td><td class="num" style="color:var(--danger)">${h(money(dd.loss))}</td><td class="num">${mo === null ? '–' : mo.toFixed(1)}</td></tr>`; }).join('')}
+          </tbody></table></div>
+          <p class="sub">Berechnet auf den aktuellen Wert, sonst auf den Einstand. Ein Totalverlust ist bei einer Einzelaktie möglich, nicht nur theoretisch.</p></div>` : ''}
+        <div class="card" style="margin-top:14px"><h3>Positionen</h3>
+          ${s.positions.length ? `<div class="table-wrap"><table><thead><tr><th>Name</th><th>Symbol</th><th class="num">Stück</th><th class="num">Kaufkurs</th><th class="num">Kurs jetzt</th><th class="num">Einstand</th><th class="num">Wert</th><th class="num">G/V</th><th>Gekauft</th><th></th></tr></thead><tbody>
+          ${s.positions.map((p) => `<tr>
+            <td>${h(p.name)}${p.note ? `<div class="muted small">${h(p.note)}</div>` : ''}</td>
+            <td class="small">${h(p.symbol)}</td>
+            <td class="num">${h(p.shares)}</td>
+            <td class="num">${h(p.buyPrice)} ${h(p.cur)}${p.fees ? `<div class="muted small">+${h(p.fees)} Geb.</div>` : ''}</td>
+            <td class="num">${p.priceNow === null ? '<span class="muted">–</span>' : h(p.priceNow) + ' ' + h(p.cur)}${p.quoteAt ? `<div class="muted small">${S.fmtDateShort(String(p.quoteAt).slice(0, 10))}</div>` : ''}</td>
+            <td class="num">${m(p.cost)}</td><td class="num">${m(p.value)}</td>
+            <td class="num" style="color:${sign(p.pnl)}">${m(p.pnl)}${p.pnlPct === null ? '' : `<div class="small">${pct(p.pnlPct)}</div>`}</td>
+            <td class="small">${p.date ? S.fmtDate(p.date) : ''}</td>
+            <td><button class="ghost sm" data-action="del" data-col="portfolio" data-sub="positions" data-id="${h(p.id)}">✕</button></td></tr>`).join('')}
+          </tbody></table></div>` : '<div class="empty">Noch keine Position.</div>'}
+          <form class="inline" data-form="position" style="margin-top:12px">
+            <label>Name<input name="name" required placeholder="Anthropic"></label>
+            <label>Symbol<input name="symbol" placeholder="ANT"></label>
+            <label>Stück<input type="number" name="shares" step="0.0001" min="0" required></label>
+            <label>Kaufkurs<input type="number" name="buyPrice" step="0.01" min="0" required></label>
+            <label>Währung<select name="currency">${opts(['EUR', 'USD'], 'EUR')}</select></label>
+            <label>Gebühren<input type="number" name="fees" step="0.01" min="0" value="0"></label>
+            <label>Datum<input type="date" name="date" value="${t}"></label>
+            <div><button class="primary sm" type="submit">+ Position</button></div>
+          </form></div>
+        <div class="grid two" style="margin-top:14px">
+          <div class="card"><h3>Kurs eintragen</h3>
+            <form class="inline" data-form="quote">
+              <label>Symbol<input name="symbol" required value="${h(s.positions.length ? s.positions[0].symbol : '')}"></label>
+              <label>Kurs<input type="number" name="price" step="0.01" min="0" required></label>
+              <div><button class="primary sm" type="submit">Speichern</button></div></form>
+            <h3 style="margin-top:14px">Wechselkurs</h3>
+            <form class="inline" data-form="fx">
+              <label>Währung<input name="currency" value="USD" required></label>
+              <label>1 Einheit = ? EUR<input type="number" name="rate" step="0.0001" min="0" required></label>
+              <div><button class="primary sm" type="submit">Speichern</button></div></form>
+            ${fxRows.length ? `<p class="sub">Gespeichert: ${fxRows.map(([c, r]) => `1 ${h(c)} = ${h(r)} €`).join(' · ')}</p>` : ''}</div>
+          <div class="card"><h3>Freies Geld im Depot</h3>
+            <form class="inline" data-form="cash">
+              <label>Betrag<input type="number" name="cash" step="0.01" min="0" value="${h(d.portfolio.cash || '')}"></label>
+              <div><button class="primary sm" type="submit">Speichern</button></div></form>
+            <p class="sub">Nicht investiertes Guthaben im Depot. Zählt zum Gesamtwert, aber nicht zum Kursrisiko.</p></div>
+        </div>`;
+    },
+
     einstellungen() {
       const st = settings();
       const cfg = ghConfig() || ghDefaults();
@@ -741,6 +813,21 @@
     lift(fd) {
       const l = { id: newId(), date: today(), exercise: fd.get('exercise').trim(), kg: Number(fd.get('kg')) || 0, reps: Number(fd.get('reps')) || 1, note: '' };
       return mutate('health', (hh) => { hh.lifts = hh.lifts || []; hh.lifts.push(l); }, `Kraftwert gespeichert: ${l.exercise} ${l.reps}× +${l.kg} kg`);
+    },
+    position(fd) {
+      const p = { id: newId(), date: fd.get('date') || today(), name: fd.get('name').trim(), symbol: (fd.get('symbol').trim() || fd.get('name').trim().slice(0, 6)).toUpperCase(), shares: Number(fd.get('shares')) || 0, buyPrice: Number(fd.get('buyPrice')) || 0, currency: fd.get('currency'), fees: Number(fd.get('fees')) || 0, note: '' };
+      return mutate('portfolio', (pf) => { pf.positions.push(p); }, `Position gespeichert: ${p.shares}× ${p.name}`);
+    },
+    quote(fd) {
+      const sym = fd.get('symbol').trim().toUpperCase(), price = Number(fd.get('price')) || 0;
+      return mutate('portfolio', (pf) => { pf.quotes = pf.quotes || {}; pf.quotes[sym] = { price, updatedAt: new Date().toISOString() }; }, `Kurs gespeichert: ${sym} = ${price}`);
+    },
+    fx(fd) {
+      const c = fd.get('currency').trim().toUpperCase(), r = Number(fd.get('rate')) || 0;
+      return mutate('portfolio', (pf) => { pf.fxRates = pf.fxRates || {}; pf.fxRates[c] = r; }, `Wechselkurs gespeichert: 1 ${c} = ${r} €`);
+    },
+    cash(fd) {
+      return mutate('portfolio', (pf) => { pf.cash = Number(fd.get('cash')) || 0; }, 'Guthaben gespeichert');
     },
     settings(fd) {
       const numOrNull = (k) => (fd.get(k) === '' || fd.get(k) === null ? null : Number(fd.get(k)));
@@ -865,7 +952,7 @@
   });
   document.addEventListener('keydown', (e) => {
     if (e.target.matches('input, textarea, select') || e.metaKey || e.ctrlKey || e.altKey) return;
-    const map = { 1: 'dashboard', 2: 'ziele', 3: 'workouts', 4: 'essen', 5: 'konsum', 6: 'meilensteine', 7: 'finanzen', 8: 'sessions', 9: 'woche' };
+    const map = { 1: 'dashboard', 2: 'ziele', 3: 'workouts', 4: 'essen', 5: 'konsum', 6: 'meilensteine', 7: 'finanzen', 8: 'depot', 9: 'sessions', 0: 'woche' };
     if (map[e.key]) location.hash = map[e.key];
   });
 

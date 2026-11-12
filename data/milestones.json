@@ -545,5 +545,32 @@
     "due": "2026-12-16",
     "done": false,
     "note": "Rund 27 Tage nach Erstnotiz kommen laut Bericht 299 Mio. weitere Aktien in den Handel."
+  },
+  {
+    "id": "mwdg0t82d1isa",
+    "createdAt": "2026-11-12T11:06:56.882Z",
+    "title": "Broker mit US-Zugang eröffnen",
+    "category": "finanzen",
+    "due": "2026-11-13",
+    "done": false,
+    "note": "ebase/tecis ist Fondsplattform, kein Einzelaktienhandel. Laut Berichten sind u.a. Trade Republic, Scalable Capital, ING, flatexDEGIRO, Interactive Brokers als Konsortialbroker gelistet. Video-Ident dauert 1-2 Tage."
+  },
+  {
+    "id": "mwdg0t95ej16f",
+    "createdAt": "2026-11-12T11:06:56.921Z",
+    "title": "Geld auf Verrechnungskonto überweisen",
+    "category": "finanzen",
+    "due": "2026-11-16",
+    "done": false,
+    "note": "SEPA braucht 1-2 Bankarbeitstage. Zielbetrag 500 EUR. Muss vor dem Zeichnungsfenster da sein."
+  },
+  {
+    "id": "mwdg0ta9jjms0",
+    "createdAt": "2026-11-12T11:06:56.961Z",
+    "title": "Zeichnungsfrist Anthropic prüfen",
+    "category": "finanzen",
+    "due": "2026-11-17",
+    "done": false,
+    "note": "Frist war am 12.11. noch nicht veroeffentlicht. Taeglich in der Broker-App nachsehen. Zeichnung endet typisch 1-2 Tage vor Erstnotiz."
   }
 ]

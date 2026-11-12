@@ -130,6 +130,13 @@ const commands = {
     const pf = store.read('portfolio'); pf.cash = num(amount, 0); store.write('portfolio', pf);
     out(`✔ Freies Geld im Depot: ${S.fmtMoney(pf.cash)}`);
   },
+  plan() {
+    const [amount] = pos;
+    const pf = store.read('portfolio');
+    if (amount === undefined) { out(`Geplanter Einsatz: ${S.fmtMoney(pf.plannedInvestment || 0)}`); return; }
+    pf.plannedInvestment = num(amount, 0); store.write('portfolio', pf);
+    out(`✔ Geplanter Einsatz: ${S.fmtMoney(pf.plannedInvestment)}`);
+  },
   depot() {
     const data = store.readAll();
     const cur = data.settings.currency || '€';
@@ -137,7 +144,18 @@ const commands = {
     const fin = S.financeSummary(data.finances, today);
     const m = (v) => (v === null ? '–'.padStart(12) : S.fmtMoney(v, cur).padStart(12));
     out(`\n  DEPOT · ${S.fmtDate(today)}\n`);
-    if (!s.positions.length) { out('  Keine Positionen. Anlegen: node tracker.js kauf Anthropic 50 95 --symbol ANT --waehrung USD\n'); return; }
+    if (!s.positions.length) {
+      out(`  Noch keine Position.${s.cash ? ` Freies Guthaben: ${S.fmtMoney(s.cash, cur)}` : ''}${s.planned ? ` · geplanter Einsatz: ${S.fmtMoney(s.planned, cur)}` : ''}`);
+      if (s.drawdowns.length) {
+        out('\n  WENN ES FÄLLT (geplanter Einsatz)');
+        for (const d of s.drawdowns) {
+          const months = S.lossInMonths(d.loss, fin.free);
+          out(`    −${String(Math.round(d.pct * 100)).padStart(3)} %  ${S.fmtMoney(d.loss, cur).padStart(11)}${months ? `  = ${months.toFixed(1)} Monatsbudgets` : ''}`);
+        }
+      }
+      out('\n  Kaufen: node tracker.js kauf Anthropic <Stück> <Kurs> --symbol ANT --waehrung USD\n');
+      return;
+    }
     out('  Position                 Stück      Einstand         Wert       G/V');
     for (const p of s.positions) {
       const pct = p.pnlPct === null ? '' : ` (${p.pnlPct > 0 ? '+' : ''}${(p.pnlPct * 100).toFixed(1)} %)`;
@@ -262,7 +280,7 @@ const commands = {
   list <Sammlung>  ·  remove <Sammlung> <id> [--sub ...]
   summary · ziele · depot
   kauf <Name> <Stück> <Kurs> [--symbol ANT] [--waehrung USD] [--gebuehren 5]
-  kurs <Symbol> <Preis>  ·  fx <Währung> <Kurs>  ·  cash [Betrag]
+  kurs <Symbol> <Preis>  ·  fx <Währung> <Kurs>  ·  cash [Betrag]  ·  plan [Betrag]
 Alle Befehle akzeptieren --date YYYY-MM-DD für Nachträge.
 workout, checkin und session akzeptieren --photo <URL oder Pfad> (URL = Cloudinary, Pfad = Kopie nach data/photos/).`);
   },

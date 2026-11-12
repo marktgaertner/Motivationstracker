@@ -16,7 +16,7 @@
     finances: { fixedCosts: [], income: [], expenses: [], savings: { target: 0, current: 0 } },
     sessions: [], reviews: [], consumption: [],
     health: { sleep: [], weight: [], steps: [], restingHR: [], lifts: [] },
-    portfolio: { positions: [], quotes: {}, cash: 0, fxRates: {} },
+    portfolio: { positions: [], quotes: {}, cash: 0, fxRates: {}, plannedInvestment: 0 },
   };
 
   const state = { data: null, mode: 'api', view: 'dashboard', survey: null, filter: {}, gh: null, ghError: null };
@@ -647,11 +647,11 @@
           <div class="card"><h3>Gewinn / Verlust</h3><div class="kpi" style="color:${sign(s.pnl)}">${m(s.pnl)}</div><div class="sub">${pct(s.pnlPct)}</div></div>
           ${fin.free ? `<div class="card"><h3>Gemessen an deinem Monat</h3><div class="kpi">${s.value !== null || s.cost !== null ? (S.lossInMonths(s.value ?? s.cost, fin.free) || 0).toFixed(1) : '–'}<small> Monatsbudgets</small></div><div class="sub">frei pro Monat ${h(money(fin.free))}</div></div>` : ''}
         </div>
-        ${s.drawdowns.length ? `<div class="card" style="margin-top:14px"><h3>Wenn es fällt</h3>
+        ${s.drawdowns.length ? `<div class="card" style="margin-top:14px"><h3>Wenn es fällt${s.isPlan ? ` · geplanter Einsatz ${h(money(s.planned))}` : ''}</h3>
           <div class="table-wrap"><table><thead><tr><th>Kursrückgang</th><th class="num">Verlust</th><th class="num">in Monatsbudgets</th></tr></thead><tbody>
           ${s.drawdowns.map((dd) => { const mo = S.lossInMonths(dd.loss, fin.free); return `<tr><td>−${Math.round(dd.pct * 100)} %</td><td class="num" style="color:var(--danger)">${h(money(dd.loss))}</td><td class="num">${mo === null ? '–' : mo.toFixed(1)}</td></tr>`; }).join('')}
           </tbody></table></div>
-          <p class="sub">Berechnet auf den aktuellen Wert, sonst auf den Einstand. Ein Totalverlust ist bei einer Einzelaktie möglich, nicht nur theoretisch.</p></div>` : ''}
+          <p class="sub">Berechnet auf ${s.isPlan ? 'deinen geplanten Einsatz' : 'den aktuellen Wert, sonst auf den Einstand'}. Ein Totalverlust ist bei einer Einzelaktie möglich, nicht nur theoretisch.</p></div>` : ''}
         <div class="card" style="margin-top:14px"><h3>Positionen</h3>
           ${s.positions.length ? `<div class="table-wrap"><table><thead><tr><th>Name</th><th>Symbol</th><th class="num">Stück</th><th class="num">Kaufkurs</th><th class="num">Kurs jetzt</th><th class="num">Einstand</th><th class="num">Wert</th><th class="num">G/V</th><th>Gekauft</th><th></th></tr></thead><tbody>
           ${s.positions.map((p) => `<tr>
@@ -691,7 +691,12 @@
             <form class="inline" data-form="cash">
               <label>Betrag<input type="number" name="cash" step="0.01" min="0" value="${h(d.portfolio.cash || '')}"></label>
               <div><button class="primary sm" type="submit">Speichern</button></div></form>
-            <p class="sub">Nicht investiertes Guthaben im Depot. Zählt zum Gesamtwert, aber nicht zum Kursrisiko.</p></div>
+            <p class="sub">Nicht investiertes Guthaben im Depot. Zählt zum Gesamtwert, aber nicht zum Kursrisiko.</p>
+            <h3 style="margin-top:14px">Geplanter Einsatz</h3>
+            <form class="inline" data-form="plan">
+              <label>Betrag<input type="number" name="planned" step="1" min="0" value="${h(d.portfolio.plannedInvestment || '')}"></label>
+              <div><button class="primary sm" type="submit">Speichern</button></div></form>
+            <p class="sub">Solange keine Position eingetragen ist, rechnet „Wenn es fällt“ mit diesem Betrag.${d.portfolio.cash ? ` Entspricht ${Math.round((Number(d.portfolio.plannedInvestment) || 0) / d.portfolio.cash * 100)} % deines Depotguthabens.` : ''}</p></div>
         </div>`;
     },
 
@@ -828,6 +833,9 @@
     },
     cash(fd) {
       return mutate('portfolio', (pf) => { pf.cash = Number(fd.get('cash')) || 0; }, 'Guthaben gespeichert');
+    },
+    plan(fd) {
+      return mutate('portfolio', (pf) => { pf.plannedInvestment = Number(fd.get('planned')) || 0; }, 'Geplanter Einsatz gespeichert');
     },
     settings(fd) {
       const numOrNull = (k) => (fd.get(k) === '' || fd.get(k) === null ? null : Number(fd.get(k)));

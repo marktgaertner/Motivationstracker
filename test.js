@@ -127,10 +127,19 @@ assert.strictEqual(S.portfolioSummary({ positions: [{ symbol: 'ANT', shares: 1, 
 assert.deepStrictEqual(S.portfolioSummary({ positions: [{ symbol: 'ANT', shares: 1, buyPrice: 90, currency: 'USD' }] }).missingFx, ['USD']);
 assert.deepStrictEqual(S.portfolioSummary({ positions: [{ symbol: 'X', shares: 1, buyPrice: 10, currency: 'EUR' }] }).missingQuotes, ['X']);
 assert.strictEqual(S.portfolioSummary({ positions: [{ symbol: 'X', shares: 1, buyPrice: 10, currency: 'EUR' }], cash: 50 }).total, 60);
-assert.strictEqual(S.portfolioSummary({}).total, null);
+assert.strictEqual(S.portfolioSummary({}).total, 0); // leeres Depot ist 0, nicht unbekannt
+assert.strictEqual(S.portfolioSummary({ positions: [{ symbol: 'ANT', shares: 1, buyPrice: 90, currency: 'USD' }], cash: 100 }).total, null); // fehlender Wechselkurs bleibt unbekannt
 // Alter Kurs wird gemeldet
 assert.deepStrictEqual(S.portfolioSummary(pf, '2026-12-01').staleQuotes, ['ANT']);
 assert.strictEqual(S.lossInMonths(1000, 500), 2);
 assert.strictEqual(S.lossInMonths(1000, 0), null);
+
+// Geplanter Einsatz trägt die Szenarien, solange nichts gekauft ist
+const planOnly = S.portfolioSummary({ positions: [], cash: 1377, plannedInvestment: 500 });
+assert.strictEqual(planOnly.isPlan, true);
+assert.strictEqual(planOnly.drawdowns.find((d) => d.pct === 1).loss, 500);
+assert.strictEqual(planOnly.total, 1377); // ohne Position zählt nur das Guthaben, der Plan nicht
+assert.strictEqual(S.portfolioSummary({ positions: [], cash: 100 }).drawdowns.length, 0);
+assert.strictEqual(S.portfolioSummary(pf, '2026-11-20').isPlan, false);
 
 console.log('✔ alle Tests bestanden');

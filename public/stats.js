@@ -373,13 +373,15 @@
     const value = valueKnown ? positions.reduce((a, p) => a + p.value, 0) : null;
     const pnl = value === null || cost === null ? null : value - cost;
     const cash = Number(pf.cash) || 0;
-    const base = value !== null ? value : cost; // null, wenn weder Wert noch Einstand bekannt sind
+    const planned = Number(pf.plannedInvestment) || 0;
+    const base = value !== null ? value : cost !== null ? cost : planned || null; // geplanter Einsatz, solange nichts gekauft ist
     const missingFx = [...new Set(positions.filter((p) => p.cost === null).map((p) => p.cur))];
     const missingQuotes = positions.filter((p) => p.priceNow === null).map((p) => p.symbol || p.name);
     const stale = positions.filter((p) => p.quoteAt && daysBetween(String(p.quoteAt).slice(0, 10), today) > 7);
     return {
       positions, cost, value, pnl, pnlPct: pnl === null || !cost ? null : pnl / cost,
-      cash, total: base === null ? null : base + cash,
+      cash, planned, isPlan: value === null && cost === null && planned > 0,
+      total: positions.length === 0 ? cash : base === null ? null : base + cash,
       missingQuotes, missingFx, staleQuotes: stale.map((p) => p.symbol || p.name),
       drawdowns: base === null ? [] : [0.3, 0.5, 1].map((pct) => ({ pct, loss: base * pct })),
     };

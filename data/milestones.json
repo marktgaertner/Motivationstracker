@@ -498,8 +498,10 @@
     "title": "BA-Eco-M42 Praktikum",
     "category": "uni",
     "due": null,
-    "done": false,
-    "note": ""
+    "done": true,
+    "note": "Bestätigt am 19.11.2026: +29 ECTS (Nutzerangabe). Praktikum bei ViP.",
+    "doneAt": "2026-11-19",
+    "ects": 29
   },
   {
     "id": "a608b436j23mq",
@@ -572,5 +574,23 @@
     "due": "2026-11-17",
     "done": false,
     "note": "Frist war am 12.11. noch nicht veroeffentlicht. Taeglich in der Broker-App nachsehen. Zeichnung endet typisch 1-2 Tage vor Erstnotiz."
+  },
+  {
+    "id": "mwnfx215ehled",
+    "createdAt": "2026-11-19T11:01:43.433Z",
+    "title": "Formlosen Antrag ans Prüfungsbüro: Zulassung zur Bachelorarbeit",
+    "category": "uni",
+    "due": "2026-11-21",
+    "done": false,
+    "note": "Telefonat 19.11.: moeglich, 3 ECTS fehlen, sind im laufenden Semester belegt. Gesonderte Erwaehnung im Antrag."
+  },
+  {
+    "id": "mwnfx22idxhei",
+    "createdAt": "2026-11-19T11:01:43.482Z",
+    "title": "Bachelorarbeit anmelden (nach Zulassung)",
+    "category": "uni",
+    "due": null,
+    "done": false,
+    "note": "Bearbeitungszeit laut Notion 4 Monate ab Anmeldung. Betreuer Prof. Dr. Strohsal."
   }
 ]

@@ -479,7 +479,7 @@
     "category": "uni",
     "due": null,
     "done": false,
-    "note": "2 Versuche nicht bestanden (Written assignment 0/100). Dritter Versuch ist der letzte.",
+    "note": "Hausarbeit im WiSe 2026/27. Bisher 2 Versuche nicht bestanden, beide Male 0/100 Punkte. Laut Notenuebersicht 3. Versuch.",
     "ects": 5
   },
   {
@@ -489,7 +489,7 @@
     "category": "uni",
     "due": null,
     "done": false,
-    "note": "Status: Bewertung ausstehend / ohne Erfolg. Klären, ob Nachholen nötig.",
+    "note": "Mini-Modul Intercultural Competence, unbenotet, im WiSe 2026/27 belegt.",
     "ects": 3
   },
   {
@@ -509,8 +509,11 @@
     "title": "BA-Eco-M43-F02 Praktikumsbericht",
     "category": "uni",
     "due": null,
-    "done": false,
-    "note": ""
+    "done": true,
+    "note": "In den 29 ECTS des Praktikums enthalten (Nutzerangabe 19.11.2026).",
+    "doneAt": "2026-11-19",
+    "ects": 0,
+    "points": 0
   },
   {
     "id": "a608b436m8h6e",
@@ -592,5 +595,33 @@
     "due": null,
     "done": false,
     "note": "Bearbeitungszeit laut Notion 4 Monate ab Anmeldung. Betreuer Prof. Dr. Strohsal."
+  },
+  {
+    "id": "mwng4bef8zcuj",
+    "createdAt": "2026-11-19T11:07:22.167Z",
+    "title": "Entrepreneurship-Modul (10 ECTS)",
+    "category": "uni",
+    "due": null,
+    "done": false,
+    "ects": 10,
+    "note": "Im WiSe 2026/27 belegt (Nutzerangabe 19.11.2026)."
+  },
+  {
+    "id": "mwng4begjr6n8",
+    "createdAt": "2026-11-19T11:07:22.168Z",
+    "title": "Zweitprüfer:in für die Bachelorarbeit finden",
+    "category": "uni",
+    "due": null,
+    "done": false,
+    "note": "Vom Pruefungsamt verlangt (19.11.2026)."
+  },
+  {
+    "id": "mwng4beg65rv3",
+    "createdAt": "2026-11-19T11:07:22.168Z",
+    "title": "Forschungsfrage und H1–H3 in eigenen Worten mit Strohsal abstimmen",
+    "category": "uni",
+    "due": null,
+    "done": false,
+    "note": "Strohsal: bisheriger Entwurf klang zu sehr nach KI. Er ist nicht grundsaetzlich dagegen, will aber Verstaendnis sehen."
   }
 ]
